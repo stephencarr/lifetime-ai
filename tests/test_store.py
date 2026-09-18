@@ -37,6 +37,19 @@ def counts(store: Store) -> tuple[int, int, int, int]:
                  for table in tables)
 
 
+def orphan_counts(store: Store) -> tuple[int, int]:
+    transitions = store.db.execute(
+        "SELECT count(*) FROM transitions t LEFT JOIN events e ON e.event_id=t.event_id "
+        "WHERE e.event_id IS NULL"
+    ).fetchone()[0]
+    items = store.db.execute(
+        "SELECT count(*) FROM state_items s LEFT JOIN events e ON e.event_id=s.source_event_id "
+        "LEFT JOIN transitions t ON t.transition_id=s.last_transition_id "
+        "WHERE e.event_id IS NULL OR t.transition_id IS NULL"
+    ).fetchone()[0]
+    return transitions, items
+
+
 def test_s1_identical_event_replay_is_noop(tmp_path):
     with Store(tmp_path / "state.sqlite") as store:
         assert store.ingest(event()) is True
@@ -126,6 +139,7 @@ def test_s8_deterministic_replay_matches_digest_repeatedly(tmp_path):
         assert store.rebuild_state() == expected
         assert store.rebuild_state() == expected
         assert counts(store) == (2, 2, 1, 2)
+        assert orphan_counts(store) == (0, 0)
 
 
 def test_schema_version_and_inspector_source_chain(tmp_path):
