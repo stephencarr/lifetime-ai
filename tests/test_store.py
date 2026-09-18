@@ -145,7 +145,7 @@ def test_s8_deterministic_replay_matches_digest_repeatedly(tmp_path):
 def test_schema_version_and_inspector_source_chain(tmp_path):
     with Store(tmp_path / "state.sqlite") as store:
         store.ingest_and_apply(event(), transition())
-        assert store.schema_version == 1
+        assert store.schema_version == 2
         assert store.inspect() == [{
             "item_id": "p1", "kind": "preference", "proposition": event().text,
             "status": "active", "last_transition_id": "t1", "source_event_id": "e1",

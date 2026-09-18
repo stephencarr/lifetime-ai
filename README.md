@@ -40,4 +40,4 @@ The model-free inspector prints each authoritative item together with the source
 uv run --frozen python -m lifetime_ai.inspect_db path/to/state.sqlite
 ```
 
-SQLite schema changes are versioned through `PRAGMA user_version` and the `schema_migrations` table. The current schema version is 1.
+SQLite schema changes are versioned through `PRAGMA user_version` and the `schema_migrations` table. The current schema version is 2.

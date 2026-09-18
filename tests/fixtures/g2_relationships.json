@@ -1,0 +1,8 @@
+[
+  {"name":"support","event_id":"g2-supports","text":"Concise is still best for work.","relationship":"supports"},
+  {"name":"contradiction","event_id":"g2-contradicts","text":"I prefer detailed work answers.","relationship":"contradicts"},
+  {"name":"scope","event_id":"g2-narrows","text":"For personal research, I prefer detailed answers.","relationship":"narrows_scope"},
+  {"name":"replacement","event_id":"g2-supersedes","text":"From now on, use detailed work answers.","relationship":"supersedes"},
+  {"name":"irrelevant","event_id":"g2-unrelated","text":"It is raining today.","relationship":"unrelated"},
+  {"name":"ambiguous","event_id":"g2-uncertain","text":"Maybe vary answer length sometimes.","relationship":"uncertain"}
+]

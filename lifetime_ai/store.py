@@ -9,7 +9,7 @@ from typing import Iterator
 
 from .types import Event, StateItem, StateKind, StateStatus, Transition
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 MIGRATION_1 = """
 CREATE TABLE schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL);
@@ -36,6 +36,22 @@ CREATE INDEX idx_transitions_event ON transitions(event_id);
 CREATE INDEX idx_state_source ON state_items(source_event_id);
 INSERT INTO schema_migrations(version, applied_at) VALUES (1, datetime('now'));
 PRAGMA user_version = 1;
+"""
+
+MIGRATION_2 = """
+CREATE TABLE proposal_records (
+ proposal_id TEXT PRIMARY KEY,
+ event_id TEXT NOT NULL REFERENCES events(event_id),
+ candidate_item_id TEXT,
+ relationship TEXT NOT NULL,
+ proposal_payload TEXT NOT NULL,
+ outcome TEXT NOT NULL CHECK(outcome IN ('accepted','rejected','abstained','noop')),
+ reason TEXT NOT NULL,
+ created_at TEXT NOT NULL
+);
+CREATE INDEX idx_proposals_event ON proposal_records(event_id);
+INSERT INTO schema_migrations(version, applied_at) VALUES (2, datetime('now'));
+PRAGMA user_version = 2;
 """
 
 
@@ -91,7 +107,11 @@ class Store:
         version = self.db.execute("PRAGMA user_version").fetchone()[0]
         if version == 0:
             self.db.executescript(MIGRATION_1)
-        elif version != SCHEMA_VERSION:
+            version = 1
+        if version == 1:
+            self.db.executescript(MIGRATION_2)
+            version = 2
+        if version != SCHEMA_VERSION:
             raise RuntimeError(f"unsupported schema version {version}")
 
     def close(self) -> None:
@@ -183,6 +203,42 @@ class Store:
         with self._transaction():
             return self._apply_uncommitted(transition, fail_after_state)
 
+    def record_proposal(self, proposal_id: str, event_id: str,
+                        candidate_item_id: str | None, relationship: str,
+                        payload: str, outcome: str, reason: str) -> None:
+        with self._transaction():
+            self._record_proposal_uncommitted(
+                proposal_id, event_id, candidate_item_id, relationship,
+                payload, outcome, reason)
+
+    def _record_proposal_uncommitted(self, proposal_id: str, event_id: str,
+                                     candidate_item_id: str | None, relationship: str,
+                                     payload: str, outcome: str, reason: str) -> None:
+        existing = self.db.execute(
+            "SELECT proposal_payload,outcome,reason FROM proposal_records WHERE proposal_id=?",
+            (proposal_id,)).fetchone()
+        if existing:
+            if (existing["proposal_payload"], existing["outcome"], existing["reason"]) != (
+                    payload, outcome, reason):
+                raise IdentifierCollisionError(f"proposal identifier collision: {proposal_id}")
+            return
+        self.db.execute(
+            "INSERT INTO proposal_records VALUES (?,?,?,?,?,?,?,datetime('now'))",
+            (proposal_id, event_id, candidate_item_id, relationship, payload, outcome, reason))
+
+    def commit_proposal(self, proposal_id: str, event_id: str,
+                        candidate_item_id: str | None, relationship: str,
+                        payload: str, transitions: tuple[Transition, ...],
+                        *, fail_after_first: bool = False) -> None:
+        with self._transaction():
+            for index, transition in enumerate(transitions):
+                self._apply_uncommitted(transition)
+                if fail_after_first and index == 0:
+                    raise RuntimeError("injected validator commit failure")
+            self._record_proposal_uncommitted(
+                proposal_id, event_id, candidate_item_id, relationship,
+                payload, "accepted", "validated")
+
     def ingest_and_apply(self, event: Event, transition: Transition, *,
                          fail_after_state: bool = False) -> tuple[bool, bool]:
         if event.event_id != transition.event_id:
@@ -198,6 +254,15 @@ class Store:
             query += " AND kind=?"
             args.append(kind.value)
         return list(self.db.execute(query + " ORDER BY occurred_at,item_id", args))
+
+    def state_item(self, item_id: str) -> sqlite3.Row | None:
+        return self.db.execute("SELECT * FROM state_items WHERE item_id=?", (item_id,)).fetchone()
+
+    def event_exists(self, event_id: str) -> bool:
+        return self.db.execute("SELECT 1 FROM events WHERE event_id=?", (event_id,)).fetchone() is not None
+
+    def proposals(self) -> list[sqlite3.Row]:
+        return list(self.db.execute("SELECT * FROM proposal_records ORDER BY created_at,proposal_id"))
 
     def transitions(self) -> list[sqlite3.Row]:
         return list(self.db.execute("SELECT * FROM transitions ORDER BY sequence"))
