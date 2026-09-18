@@ -57,7 +57,7 @@ def validate_history(history: dict[str, Any]) -> None:
         raise CorpusValidationError(f"missing history fields: {sorted(missing)}")
     if history["corpus_stage"] != "pilot":
         raise CorpusValidationError("pilot validator accepts only corpus_stage=pilot")
-    if history["partition"] not in {"pilot_development", "pilot_review"}:
+    if history["partition"] not in {"pilot_development", "pilot_holdout"}:
         raise CorpusValidationError("invalid pilot partition")
 
     events = _unique(history["timeline"], "event_id", "event")
@@ -99,6 +99,32 @@ def validate_history(history: dict[str, Any]) -> None:
             raise CorpusValidationError("unknown semantic relationship")
         if gold["transition_disposition"] not in DISPOSITIONS:
             raise CorpusValidationError("unknown transition disposition")
+
+        action_tasks = [task for task in history["downstream_tasks"]
+                        if task["task_type"] == "action_selection"]
+        expected_action = gold["expected_external_action"]
+        if expected_action == "none" and action_tasks:
+            raise CorpusValidationError(
+                "expected_external_action=none requires no action-selection task")
+        if expected_action != "none" and not action_tasks:
+            raise CorpusValidationError(
+                "a non-none external action requires an action-selection task")
+
+        effect = gold["expected_state_effect"]["effect"]
+        pair_event = events[pair["event_id"]]
+        snapshot = snapshots[pair["candidate_snapshot_id"]]
+        if effect == "invalidate":
+            if pair_event["event_type"] != "deletion":
+                raise CorpusValidationError("invalidate effect must use a deletion pair event")
+            if not set(snapshot["source_event_ids"]).intersection(pair_event["deletion_target_ids"]):
+                raise CorpusValidationError("deletion must target a candidate source event")
+        if effect == "expire":
+            valid_until = snapshot["canonical_payload"]["valid_until"]
+            if pair_event["event_type"] != "time_advance" or valid_until is None:
+                raise CorpusValidationError(
+                    "expire effect requires a time-advance pair event and explicit valid_until")
+            if valid_until > pair_event["occurred_at"]:
+                raise CorpusValidationError("expiry checkpoint precedes candidate valid_until")
 
     task_ids = {task["task_id"] for task in history["downstream_tasks"]}
     gold_task_ids = {task["task_id"] for task in history["evaluator_only"]["downstream_task_gold"]}

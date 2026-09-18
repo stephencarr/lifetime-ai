@@ -22,7 +22,7 @@ DEFAULT_CORPUS = ROOT / "evaluation" / "corpus" / "pilot-v0.1"
 
 
 def run(corpus: Path) -> dict:
-    histories = read_jsonl(corpus / "development.jsonl") + read_jsonl(corpus / "review.jsonl")
+    histories = read_jsonl(corpus / "development.jsonl") + read_jsonl(corpus / "holdout.jsonl")
     validate_corpus(histories)
     retrieval_cases = pair_cases = end_to_end_cases = 0
     leakage_failures = 0

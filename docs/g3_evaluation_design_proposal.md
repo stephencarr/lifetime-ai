@@ -93,7 +93,7 @@ history:
         semantic_relationship: supports | contradicts | narrows_scope | supersedes | unrelated | uncertain
         transition_disposition: accept | reject_unauthorized | reject_invalid | abstain | no_op
         expected_state_effect:
-          effect: reinforce | preserve_conflict | add_scoped_item | close_and_replace | none
+          effect: reinforce | preserve_conflict | add_scoped_item | close_and_replace | invalidate | expire | none
           affected_item_ids: [string]
           expected_new_item_ids: [string]
         expected_external_action: none | clarify | investigate | outreach_candidate | silence
@@ -688,7 +688,7 @@ Approval of this design authorizes corpus generation and review preparation only
 
 G4, G5, G6, and G7 use disjoint final holdout families and separately hashed manifests. A history family may contribute to only one final gate holdout. Development material may be shared only when the frozen configuration declares that reuse. Looking at G4 holdout outcomes must not spend or expose G5–G7 holdouts.
 
-The development pilot has no final holdout. Its `pilot_review` partition exists solely to exercise split and sealing machinery and becomes ordinary development material after human review.
+The development pilot has no final gate holdout. Its `pilot_holdout` partition exists solely to exercise split and sealing machinery and becomes ordinary development material after human review.
 
 ### Isolated retrieval candidate pools
 

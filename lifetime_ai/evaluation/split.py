@@ -10,13 +10,13 @@ def _rank(seed: str, family_id: str) -> str:
 
 
 def split_whole_families(histories: list[dict[str, Any]], *, seed: str,
-                         review_fraction: int = 25) -> dict[str, str]:
+                         holdout_fraction: int = 25) -> dict[str, str]:
     """Assign all members of a family to one pilot partition deterministically."""
     families = sorted({history["family_id"] for history in histories},
                       key=lambda family: _rank(seed, family))
-    review_count = max(1, (len(families) * review_fraction + 99) // 100)
-    review = set(families[:review_count])
-    return {family: "pilot_review" if family in review else "pilot_development"
+    holdout_count = max(1, (len(families) * holdout_fraction + 99) // 100)
+    holdout = set(families[:holdout_count])
+    return {family: "pilot_holdout" if family in holdout else "pilot_development"
             for family in families}
 
 

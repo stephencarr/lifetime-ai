@@ -24,7 +24,7 @@ from lifetime_ai.evaluation.state_matching import (
     MatchConfiguration, greedy_semantic_matches, semantic_state_score,
 )
 from lifetime_ai.evaluation.validation import validate_corpus
-from scripts.generate_g3_pilot import generate
+from scripts.generate_g3_pilot import generate, write
 
 
 def test_canonical_serialization_and_hashing_are_deterministic():
@@ -49,14 +49,14 @@ def test_canonicalizer_rejects_binary_float():
 def test_pilot_histories_validate_and_use_whole_family_splits():
     histories = generate()
     validate_corpus(histories)
-    assert 5 <= len(histories) <= 10
+    assert len(histories) == 13
     assert all(history["reviewer_status"] == "pending" for history in histories)
     family_partitions = {}
     for history in histories:
         assert family_partitions.setdefault(history["family_id"], history["partition"]) == history["partition"]
     repeated = histories + [{**histories[0], "history_id": "variant"}]
     assignments = split_whole_families(repeated, seed="test")
-    assert assignments[histories[0]["family_id"]] in {"pilot_development", "pilot_review"}
+    assert assignments[histories[0]["family_id"]] in {"pilot_development", "pilot_holdout"}
 
 
 def test_final_gate_holdouts_are_disjoint_by_family():
@@ -90,6 +90,59 @@ def test_deletion_uses_event_path_and_removes_content_after_sequence():
     source = next(event for event in projection["timeline"] if event["event_id"] == source_id)
     assert source["content"] is None and source["source_status"] == "deleted"
     assert history["evaluator_only"]["deleted_source_content"][source_id] not in json.dumps(projection)
+
+
+def test_deletion_and_expiry_are_the_evaluated_lifecycle_events():
+    histories = generate()
+    deletion = next(item for item in histories if "sole_source_deletion" in item["feature_tags"])
+    deletion_pair = deletion["pair_inputs"][0]
+    deletion_event = next(item for item in deletion["timeline"]
+                          if item["event_id"] == deletion_pair["event_id"])
+    deletion_gold = deletion["evaluator_only"]["pair_gold"][0]
+    assert deletion_event["event_type"] == "deletion"
+    assert deletion_gold["expected_state_effect"]["effect"] == "invalidate"
+    assert deletion_event["deletion_target_ids"] == deletion["candidate_snapshots"][0]["source_event_ids"]
+
+    expiry = next(item for item in histories if "explicit_expiry" in item["feature_tags"])
+    expiry_pair = expiry["pair_inputs"][0]
+    expiry_event = next(item for item in expiry["timeline"]
+                        if item["event_id"] == expiry_pair["event_id"])
+    expiry_gold = expiry["evaluator_only"]["pair_gold"][0]
+    assert expiry_event["event_type"] == "time_advance"
+    assert expiry_gold["expected_state_effect"]["effect"] == "expire"
+    assert expiry["candidate_snapshots"][0]["canonical_payload"]["valid_until"] < expiry_event["occurred_at"]
+
+
+def test_sdui_codebase_pilot_coverage_and_action_task_semantics():
+    histories = generate()
+    sdui = [item for item in histories if "sdui" in item["feature_tags"]]
+    assert len(sdui) == 5
+    assert {tag for item in sdui for tag in item["feature_tags"]} >= {
+        "stale_documentation", "migration_conflict", "ownership_change",
+        "generated_schema", "intentional_duplication",
+    }
+    for history in histories:
+        action = history["evaluator_only"]["pair_gold"][0]["expected_external_action"]
+        has_action_task = any(task["task_type"] == "action_selection"
+                              for task in history["downstream_tasks"])
+        assert has_action_task == (action != "none")
+
+
+def test_only_normalized_pilot_partition_values_are_used():
+    assert {history["partition"] for history in generate()} == {
+        "pilot_development", "pilot_holdout"
+    }
+
+
+def test_pilot_writer_emits_one_packet_and_no_legacy_review_copy(tmp_path):
+    output = tmp_path / "pilot"
+    write(output, generate())
+    assert (output / "development.jsonl").exists()
+    assert (output / "holdout.jsonl").exists()
+    assert not (output / "review.jsonl").exists()
+    assert [path.name for path in (output / "reviews").glob("*.md")] == [
+        "pilot_review_packet.md"
+    ]
 
 
 def test_retrieval_projection_is_limited_to_declared_pool_without_future_snapshots():
