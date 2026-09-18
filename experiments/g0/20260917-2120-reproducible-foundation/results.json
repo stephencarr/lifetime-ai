@@ -1,0 +1,31 @@
+{
+  "gate": "G0",
+  "claim": "The repository can be set up and verified reproducibly on the target Mac without undeclared global state.",
+  "commit": "0d45cc6b3c676d1ac1d1369bcbc5cc926b0a95c9",
+  "working_tree_clean_at_verified_runs": true,
+  "lock_sha256": "ebd3e13fc2dc3a064e7b0aeb20de5160c53756616db70abf691630914dbbc11b",
+  "environment": {
+    "hardware": "MacBook Air Mac16,12; Apple M4; 16 GB",
+    "os": "macOS 26.5.1 build 25F80",
+    "architecture": "arm64",
+    "python": "3.13.11",
+    "uv": "0.12.15",
+    "pytest": "8.4.2"
+  },
+  "verified_runs": [
+    {"environment": "/private/tmp/lifetime-ai-g0-verified1", "tests": 3, "passed": 3, "seconds": 0.03},
+    {"environment": "/private/tmp/lifetime-ai-g0-verified2", "tests": 3, "passed": 3, "seconds": 0.02}
+  ],
+  "criteria": {
+    "python_3_12_or_newer": "PASS",
+    "dependency_resolution": "PASS",
+    "single_documented_test_command": "PASS",
+    "two_clean_environment_runs": "PASS",
+    "no_untracked_source_or_undeclared_environment_variable": "PASS",
+    "commands_documented_in_readme": "PASS",
+    "executed_on_declared_target_hardware": "FAIL"
+  },
+  "decision": "FAIL_RETRY",
+  "reason": "The roadmap declares a base 2026 M5 MacBook Air as the target, but the execution host identifies as an Apple M4 MacBook Air."
+}
+
