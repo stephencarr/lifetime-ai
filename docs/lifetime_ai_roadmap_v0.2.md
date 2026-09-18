@@ -357,7 +357,7 @@ As of 18 September 2026:
 - G0 has **passed** with evidence under `experiments/g0/`.
 - G1 has **passed** with evidence under `experiments/g1/`.
 
-The typed transition pipeline in M2/G2 has passed. The next action is M3/G3: build and freeze the evaluation corpus, gold checkpoints, adjudication rules, and comparable baseline contracts before learned-model work.
+The typed transition pipeline in M2/G2 has passed. M3/G3 pilot preparation now has schemas, projections, mock baseline contracts, and eight generated histories awaiting human review. G3 has not passed; no final gate holdout exists. The next action is human review and revision of the pilot before expansion.
 
 ## 16. North star
 
