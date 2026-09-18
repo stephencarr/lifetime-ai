@@ -1,0 +1,7 @@
+{
+  "config_version": "pilot-v0.1",
+  "currency": "CAD",
+  "input_per_token_cad": "0",
+  "output_per_token_cad": "0",
+  "note": "Mock-only pilot price table; no model calls are authorized."
+}

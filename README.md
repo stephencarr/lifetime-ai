@@ -41,3 +41,15 @@ uv run --frozen python -m lifetime_ai.inspect_db path/to/state.sqlite
 ```
 
 SQLite schema changes are versioned through `PRAGMA user_version` and the `schema_migrations` table. The current schema version is 2.
+
+## G3 development pilot
+
+The evaluation pilot is mock-only and remains pending human review. It can be regenerated and verified with:
+
+```sh
+uv run --frozen python scripts/generate_g3_pilot.py
+uv run --frozen python scripts/run_g3_pilot_smoke.py
+uv run --frozen pytest -q
+```
+
+These commands make no model calls and create no final gate holdout. Review the generated cases in `evaluation/corpus/pilot-v0.1/reviews/pilot_review_packet.md` before authorizing expansion.

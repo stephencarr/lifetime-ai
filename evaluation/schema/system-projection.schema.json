@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifetime-ai.local/schema/system-projection-v1.json",
+  "title": "Allowlisted system history projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "dataset_version", "corpus_stage", "history_id", "family_id", "partition", "timeline", "checkpoint_requests", "downstream_tasks", "projection_sha256"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "dataset_version": {"type": "string"},
+    "corpus_stage": {"type": "string"},
+    "history_id": {"type": "string"},
+    "family_id": {"type": "string"},
+    "partition": {"type": "string"},
+    "timeline": {"type": "array", "items": {"type": "object"}},
+    "checkpoint_requests": {"type": "array", "items": {"type": "object"}},
+    "downstream_tasks": {"type": "array", "items": {"type": "object"}},
+    "projection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

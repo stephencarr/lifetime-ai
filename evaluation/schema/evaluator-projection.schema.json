@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifetime-ai.local/schema/evaluator-projection-v1.json",
+  "title": "Evaluator-only material never supplied to systems",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pair_gold", "checkpoint_gold", "downstream_task_gold", "deleted_source_content", "expected_favors", "generation_and_review_provenance"],
+  "properties": {
+    "pair_gold": {"type": "array", "items": {"type": "object"}},
+    "checkpoint_gold": {"type": "array", "items": {"type": "object"}},
+    "downstream_task_gold": {"type": "array", "items": {"type": "object"}},
+    "deleted_source_content": {"type": "object"},
+    "expected_favors": {"enum": ["architecture", "baseline_a", "baseline_b", "baseline_c", "neutral"]},
+    "generation_and_review_provenance": {"type": "object"}
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifetime-ai.local/schema/baseline-contract-v1.json",
+  "title": "Typed relationship prediction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_snapshot_id", "probabilities", "decision", "confidence", "escalate"],
+  "properties": {
+    "candidate_snapshot_id": {"type": "string"},
+    "probabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supports", "contradicts", "narrows_scope", "supersedes", "unrelated", "uncertain"],
+      "properties": {
+        "supports": {"type": "string", "pattern": "^(0(\\.[0-9]+)?|1(\\.0+)?)$"},
+        "contradicts": {"type": "string", "pattern": "^(0(\\.[0-9]+)?|1(\\.0+)?)$"},
+        "narrows_scope": {"type": "string", "pattern": "^(0(\\.[0-9]+)?|1(\\.0+)?)$"},
+        "supersedes": {"type": "string", "pattern": "^(0(\\.[0-9]+)?|1(\\.0+)?)$"},
+        "unrelated": {"type": "string", "pattern": "^(0(\\.[0-9]+)?|1(\\.0+)?)$"},
+        "uncertain": {"type": "string", "pattern": "^(0(\\.[0-9]+)?|1(\\.0+)?)$"}
+      }
+    },
+    "decision": {"enum": ["supports", "contradicts", "narrows_scope", "supersedes", "unrelated", "uncertain"]},
+    "confidence": {"type": "string", "pattern": "^(0(\\.[0-9]+)?|1(\\.0+)?)$"},
+    "escalate": {"type": "boolean"}
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifetime-ai.local/schema/oracle-projection-v1.json",
+  "title": "Limited diagnostic oracle projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["history_id", "gold_transitions", "gold_invalidations"],
+  "properties": {
+    "history_id": {"type": "string"},
+    "gold_transitions": {"type": "array", "items": {"type": "object"}},
+    "gold_invalidations": {"type": "array", "items": {"type": "object"}}
+  }
+}

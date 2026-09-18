@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifetime-ai.local/schema/candidate-snapshot-v1.json",
+  "title": "Immutable candidate state snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["snapshot_id", "item_id", "captured_after_sequence", "canonical_payload", "source_event_ids", "counterevidence_event_ids", "sha256"],
+  "properties": {
+    "snapshot_id": {"type": "string", "minLength": 1},
+    "item_id": {"type": "string", "minLength": 1},
+    "captured_after_sequence": {"type": "integer", "minimum": 0},
+    "canonical_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "proposition", "scope", "status", "epistemic_basis", "sensitivity"],
+      "properties": {
+        "kind": {"enum": ["fact", "preference", "commitment", "unresolved_thread", "prospect"]},
+        "proposition": {"type": "string"},
+        "scope": {"type": "object"},
+        "status": {"enum": ["active", "resolved", "expired", "revoked", "invalidated", "disputed"]},
+        "valid_from": {"type": ["string", "null"]},
+        "valid_until": {"type": ["string", "null"]},
+        "epistemic_basis": {"enum": ["asserted", "inferred", "operating_assumption"]},
+        "sensitivity": {"enum": ["normal", "sensitive", "highly_sensitive"]}
+      }
+    },
+    "source_event_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "counterevidence_event_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

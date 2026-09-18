@@ -1,0 +1,12 @@
+{
+  "profile": "lifetime-ai-canonical-json-v1",
+  "vectors": [
+    {
+      "name": "sorted-keys-and-unicode",
+      "value": {"z": 2, "é": "kept", "a": [true, null, "x"]},
+      "canonical_utf8": "{\"a\":[true,null,\"x\"],\"z\":2,\"é\":\"kept\"}",
+      "sha256": "ada56fd24467d73d948a9f7a62ca8055ee8fce734c5852f7c2592fa0abdfce75"
+    }
+  ],
+  "forbidden_examples": ["binary_float", "duplicate_key", "nan", "infinity", "negative_zero"]
+}

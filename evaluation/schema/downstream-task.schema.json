@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifetime-ai.local/schema/downstream-task-v1.json",
+  "title": "System-visible downstream task input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "checkpoint_id", "task_type", "request", "maximum_context_budget", "scale_family_id", "irrelevant_history_target"],
+  "properties": {
+    "task_id": {"type": "string"},
+    "checkpoint_id": {"type": "string"},
+    "task_type": {"enum": ["current_state_query", "commitment_query", "provenance_query", "deletion_query", "context_compilation", "action_selection"]},
+    "request": {"type": "object"},
+    "maximum_context_budget": {"type": ["integer", "null"], "minimum": 0},
+    "scale_family_id": {"type": ["string", "null"]},
+    "irrelevant_history_target": {"type": ["integer", "null"], "minimum": 0}
+  }
+}
