@@ -616,7 +616,7 @@ Maintain this table in pull requests or update it directly when evidence is acce
 | G0 | Passed | `experiments/g0/20260917-2120-reproducible-foundation/` | Two clean locked environments; all tests passed |
 | G1 | Passed | `experiments/g1/20260917-2140-durable-state/` | All eight scenarios pass; restart and replay digests match |
 | G2 | Passed | `experiments/g2/20260917-2200-typed-pipeline/` | Six relationships and adversarial validator paths pass |
-| G3 | In progress | `experiments/g3/20260918-1300-pilot-preparation/` | Eight pilot histories await human review; no final holdout exists |
+| G3 | In progress | `experiments/g3/20260918-1337-pilot-review-revision/` | Thirteen revised pilot histories await human review; no final gate holdout exists |
 | G4 | Not started | — | Thresholds provisional |
 | G5 | Not started | — | — |
 | G6 | Not started | — | — |

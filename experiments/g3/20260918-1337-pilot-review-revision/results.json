@@ -1,0 +1,51 @@
+{
+  "gate": "G3",
+  "evaluation_type": "development_pilot_review_revision",
+  "commit": "a298de58d730a865a1c008bd02c65f478abcd51e",
+  "status": "PILOT_READY_FOR_HUMAN_REVIEW",
+  "decision": "NOT_EVALUATED",
+  "g3_complete": false,
+  "environment": {
+    "hardware": "MacBook Air Mac16,12; Apple M4; 16 GB",
+    "os": "macOS 26.5.1 build 25F80",
+    "python": "3.13.11",
+    "uv": "0.12.15"
+  },
+  "lock_sha256": "1438f893cdae63babf1cf48af8520fcfbe84946f0f5e42c9225904eb16218861",
+  "pilot_manifest_sha256": "ae60f1ca5b10d09fbed5ca33ba2c3e5686661b3b1dcaa89026073476b714517c",
+  "histories": 13,
+  "pairs": 13,
+  "pilot_partitions": {
+    "pilot_development": 9,
+    "pilot_holdout": 4
+  },
+  "human_review": {
+    "required": 13,
+    "completed": 0,
+    "status": "pending"
+  },
+  "automated_tests": {
+    "passed": 38,
+    "failed": 0
+  },
+  "mock_smokes": {
+    "candidate_retrieval": "PASS",
+    "pair_classification": "PASS",
+    "end_to_end": "PASS",
+    "baseline_a": "PASS",
+    "baseline_b": "PASS",
+    "baseline_c_test_double": "PASS",
+    "baseline_d": "PASS"
+  },
+  "evaluator_leakage_failures": 0,
+  "model_calls": 0,
+  "embeddings_or_vector_search": false,
+  "production_connections": false,
+  "final_gate_holdouts_created": false,
+  "limitations": [
+    "The 13-history set is a development pilot, below the 30-history and 120-pair target.",
+    "No history has received human approval yet.",
+    "All baseline runs are contract test doubles, not experimental baselines.",
+    "No G4, G5, G6, or G7 final holdout has been generated."
+  ]
+}
