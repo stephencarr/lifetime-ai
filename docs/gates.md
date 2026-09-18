@@ -613,8 +613,8 @@ Maintain this table in pull requests or update it directly when evidence is acce
 
 | Gate | Status | Evidence | Decision notes |
 |---|---|---|---|
-| G0 | Not passed | Initial skeleton used Python 3.9; pytest unavailable | Establish Python 3.12+ environment and run twice |
-| G1 | In progress | Persistence code and unexecuted tests exist | Audit after G0 |
+| G0 | Passed | `experiments/g0/20260917-2120-reproducible-foundation/` | Two clean locked environments; all tests passed |
+| G1 | In progress | Initial persistence tests pass under the supported environment | Implement and verify all eight G1 scenarios |
 | G2 | Not started | — | Manual typed relationship first |
 | G3 | Not started | — | Freeze corpus before learned model work |
 | G4 | Not started | — | Thresholds provisional |

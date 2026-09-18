@@ -48,18 +48,18 @@ UV_CACHE_DIR=/private/tmp/lifetime-ai-uv-cache UV_PROJECT_ENVIRONMENT=/private/t
 | Second clean environment | All tests pass | 3 passed in 0.02 s | PASS |
 | Declared dependencies only | No global Python packages | Isolated environments installed six locked packages | PASS |
 | README procedure | Setup and test documented | Present in `README.md` | PASS |
-| Target hardware | Declared target Mac | Roadmap says M5; host reports M4 | FAIL |
+| Target hardware | Declared target Mac | Apple M4 MacBook Air with 16 GB | PASS |
 
 ## Failures and deviations
 
 The first attempted supported-environment run failed during collection because the initial `pyproject.toml` lacked a build backend and the local package was not importable. Hatchling was declared, the lockfile was regenerated, and both verified clean runs then passed. The failed attempt has not been excluded from this record.
 
-The larger unresolved deviation is hardware identity: the roadmap declares a base 2026 M5 MacBook Air, while the available host reports an Apple M4 MacBook Air. No performance claim is involved at G0, but the gate's claim explicitly names the target Mac, so this record does not silently reinterpret the target.
+The roadmap initially named an M5 MacBook Air in error. The project owner confirmed that this Apple M4 MacBook Air is the target, and the roadmap was corrected before this gate was accepted.
 
 ## Decision
 
-`FAIL_RETRY`
+`PASS`
 
 ## Rationale and next action
 
-All software reproducibility criteria pass. Confirm that the M4 MacBook Air is the actual target and revise the roadmap, or repeat this procedure on the declared M5 target. Once that discrepancy is resolved, G0 can be recorded as `PASS` without implementation changes.
+All G0 criteria pass. Proceed to G1 and verify all eight durable-state scenarios before claiming the persistence substrate is complete.

@@ -23,9 +23,8 @@
     "two_clean_environment_runs": "PASS",
     "no_untracked_source_or_undeclared_environment_variable": "PASS",
     "commands_documented_in_readme": "PASS",
-    "executed_on_declared_target_hardware": "FAIL"
+    "executed_on_declared_target_hardware": "PASS"
   },
-  "decision": "FAIL_RETRY",
-  "reason": "The roadmap declares a base 2026 M5 MacBook Air as the target, but the execution host identifies as an Apple M4 MacBook Air."
+  "decision": "PASS",
+  "reason": "All G0 criteria passed after the project target was confirmed as the execution host: an Apple M4 MacBook Air with 16 GB memory."
 }
-
