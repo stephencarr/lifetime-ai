@@ -355,9 +355,9 @@ As of 18 September 2026:
 - A small model-free persistence skeleton has been generated.
 - Python 3.13.11 and locked dependencies reproduce the test result in two clean environments.
 - G0 has **passed** with evidence under `experiments/g0/`.
-- G1 is **in progress**, not complete.
+- G1 has **passed** with evidence under `experiments/g1/`.
 
-The next action is to audit and implement the persistence invariants in G1, run all eight required scenarios, and record the evidence.
+The next action is M2/G2: implement the typed transition pipeline while preserving the validator as the sole mutation authority.
 
 ## 16. North star
 

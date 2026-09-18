@@ -614,7 +614,7 @@ Maintain this table in pull requests or update it directly when evidence is acce
 | Gate | Status | Evidence | Decision notes |
 |---|---|---|---|
 | G0 | Passed | `experiments/g0/20260917-2120-reproducible-foundation/` | Two clean locked environments; all tests passed |
-| G1 | In progress | Initial persistence tests pass under the supported environment | Implement and verify all eight G1 scenarios |
+| G1 | Passed | `experiments/g1/20260917-2140-durable-state/` | All eight scenarios pass; restart and replay digests match |
 | G2 | Not started | — | Manual typed relationship first |
 | G3 | Not started | — | Freeze corpus before learned model work |
 | G4 | Not started | — | Thresholds provisional |
