@@ -27,6 +27,16 @@ def result(relationship: Relationship) -> RelationshipResult:
                               escalate=relationship is Relationship.UNCERTAIN)
 
 
+class FixedClassifier:
+    """A non-ManualClassifier test double proving persistence is classifier-neutral."""
+
+    def __init__(self, decision: Relationship):
+        self.decision = decision
+
+    def classify(self, incoming: Event, candidate: StateItem | None) -> RelationshipResult:
+        return result(self.decision)
+
+
 def seed(store: Store) -> None:
     source = Event("seed-event", EventType.USER_MESSAGE,
                    "I prefer concise work answers.", NOW - timedelta(days=1))
@@ -168,7 +178,7 @@ def test_complete_path_survives_restart_and_classifier_is_replaceable(tmp_path):
         seed(store)
         pipeline = TransitionPipeline(
             store, ExplicitCandidateSelector(),
-            ManualClassifier({case["event_id"]: result(Relationship.NARROWS_SCOPE)}),
+            FixedClassifier(Relationship.NARROWS_SCOPE),
             TransitionValidator(store),
         )
         assert pipeline.process(event(case)).accepted
