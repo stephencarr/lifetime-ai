@@ -1,0 +1,30 @@
+{
+  "gate": "G2",
+  "claim": "Semantic interpretation proposes typed changes while a deterministic validator retains mutation authority.",
+  "commit": "a0de5d7525210389da9f450417adb3629d001c62",
+  "working_tree_clean": true,
+  "schema_version": 2,
+  "lock_sha256": "ebd3e13fc2dc3a064e7b0aeb20de5160c53756616db70abf691630914dbbc11b",
+  "tests": {"collected": 20, "passed": 20, "seconds": 0.26},
+  "relationships": {
+    "supports": "PASS",
+    "contradicts": "PASS",
+    "narrows_scope": "PASS",
+    "supersedes": "PASS",
+    "unrelated": "PASS",
+    "uncertain": "PASS"
+  },
+  "adversarial": {
+    "missing_source": "PASS",
+    "unknown_relationship": "PASS",
+    "unauthorized_kind": "PASS",
+    "unauthorized_operation": "PASS",
+    "temporal_conflict": "PASS",
+    "no_candidates": "PASS",
+    "validator_commit_failure": "PASS",
+    "classifier_replacement": "PASS"
+  },
+  "restart_digest_before": "4be99b84055e43dc6227fae7396734b9343a90ab73ae9b8426e688bb9e2fcd23",
+  "restart_digest_after": "4be99b84055e43dc6227fae7396734b9343a90ab73ae9b8426e688bb9e2fcd23",
+  "decision": "PASS"
+}

@@ -357,7 +357,7 @@ As of 18 September 2026:
 - G0 has **passed** with evidence under `experiments/g0/`.
 - G1 has **passed** with evidence under `experiments/g1/`.
 
-The next action is M2/G2: implement the typed transition pipeline while preserving the validator as the sole mutation authority.
+The typed transition pipeline in M2/G2 has passed. The next action is M3/G3: build and freeze the evaluation corpus, gold checkpoints, adjudication rules, and comparable baseline contracts before learned-model work.
 
 ## 16. North star
 
