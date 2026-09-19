@@ -142,6 +142,8 @@ def test_sdui_stale_docs_supersede_and_equal_authority_migration_abstains():
     histories = generate()
     stale_docs = next(item for item in histories if "stale_documentation" in item["feature_tags"])
     stale_gold = stale_docs["evaluator_only"]["pair_gold"][0]
+    stale_snapshot = stale_docs["candidate_snapshots"][0]
+    assert stale_snapshot["sha256"] == "0b5abec58a014fea359dccdbd8f18b3720825a913373a39ecdcc9067674d6936"
     assert stale_gold["semantic_relationship"] == "supersedes"
     assert stale_gold["transition_disposition"] == "accept"
     assert stale_gold["expected_state_effect"]["effect"] == "close_and_replace"

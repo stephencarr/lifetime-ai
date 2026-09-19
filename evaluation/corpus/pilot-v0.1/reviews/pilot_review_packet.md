@@ -381,15 +381,15 @@ Notes:
 - Partition: `pilot_development`
 - Pair: `pilot-09-pair`; evaluated event: `pilot-09-event`; context events: `pilot-09-source`
 - Candidate pool: `pilot-09-pool`; hash: `01ca0638e77810c0fd646d78b129620dd65eee50731b076a3ec247d78d03fb9e`; snapshots: `pilot-09-snapshot-target, pilot-09-snapshot-distractor`
-- Candidate snapshot: `pilot-09-snapshot-target`; runtime item: `pilot-09-runtime-target`; hash: `ee5c317389f06d84b7589b8f522025be081163a304792a2d60302c03b82d571e`
+- Candidate snapshot: `pilot-09-snapshot-target`; runtime item: `pilot-09-runtime-target`; hash: `0b5abec58a014fea359dccdbd8f18b3720825a913373a39ecdcc9067674d6936`
 - Candidate source IDs: `pilot-09-source`; counterevidence IDs: `none`
-- Candidate proposition: The checkout primary CTA emits legacy_checkout.
+- Candidate proposition: The checkout SDUI guide says the primary CTA emits legacy_checkout.
 
 - Candidate validity: `2026-09-17T12:00:00Z` through `null`
 
 ### Timeline and authority
 
-- `pilot-09-source` — seq 1; occurred `2026-09-17T12:00:00Z`; recorded `2026-09-17T12:00:00Z`; actor `system`; type `observation`; assert `true`; transition `true`; reason: checked-in SDUI guide accepted as historical operational evidence; deletion targets: `none`; metadata: `{}`; content: 'The checkout primary CTA emits legacy_checkout.'
+- `pilot-09-source` — seq 1; occurred `2026-09-17T12:00:00Z`; recorded `2026-09-17T12:00:00Z`; actor `system`; type `observation`; assert `true`; transition `true`; reason: authorized source for this scenario; deletion targets: `none`; metadata: `{}`; content: 'The checkout SDUI guide says the primary CTA emits legacy_checkout.'
 - `pilot-09-distractor-source` — seq 2; occurred `2026-09-17T13:00:00Z`; recorded `2026-09-17T13:00:00Z`; actor `system`; type `observation`; assert `true`; transition `true`; reason: authorized source for this scenario; deletion targets: `none`; metadata: `{}`; content: 'The unrelated diagnostics fixture uses the color green.'
 - `pilot-09-event` — seq 3; occurred `2026-09-18T10:00:00Z`; recorded `2026-09-18T10:00:00Z`; actor `system`; type `observation`; assert `true`; transition `true`; reason: current component registry is authoritative for emitted actions; deletion targets: `none`; metadata: `{}`; content: 'Effective with the current registry revision, the checkout primary CTA emits checkout.submit; the guide describing legacy_checkout is stale.'
 
@@ -405,7 +405,7 @@ Notes:
 ### Checkpoints and downstream tasks
 
 - Checkpoint `pilot-09-checkpoint` after sequence `3`
-- Task `pilot-09-state-task` (`current_state_query`) at `pilot-09-checkpoint`; request: `{'question': 'What is currently operationally valid?'}`; gold: `{'current_state': [{'semantic_item_ref': 'semantic:target', 'proposition': 'The checkout primary CTA emits legacy_checkout.', 'status': 'revoked'}, {'semantic_item_ref': 'semantic:replacement', 'proposition': 'Effective with the current registry revision, the checkout primary CTA emits checkout.submit; the guide describing legacy_checkout is stale.', 'status': 'active'}]}`; dependencies: `pilot-09-source, pilot-09-event`
+- Task `pilot-09-state-task` (`current_state_query`) at `pilot-09-checkpoint`; request: `{'question': 'What is currently operationally valid?'}`; gold: `{'current_state': [{'semantic_item_ref': 'semantic:target', 'proposition': 'The checkout SDUI guide says the primary CTA emits legacy_checkout.', 'status': 'revoked'}, {'semantic_item_ref': 'semantic:replacement', 'proposition': 'Effective with the current registry revision, the checkout primary CTA emits checkout.submit; the guide describing legacy_checkout is stale.', 'status': 'active'}]}`; dependencies: `pilot-09-source, pilot-09-event`
 - Task `pilot-09-action-task` (`action_selection`) at `pilot-09-checkpoint`; request: `{'question': 'What external action, if any, should be taken now?'}`; gold: `{'action': 'investigate'}`; dependencies: `pilot-09-source, pilot-09-event`
 
 Reviewer checks:
