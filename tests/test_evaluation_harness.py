@@ -51,7 +51,13 @@ def test_pilot_histories_validate_and_use_whole_family_splits():
     histories = generate()
     validate_corpus(histories)
     assert len(histories) == 13
-    assert all(history["reviewer_status"] == "pending" for history in histories)
+    reviewed = {history["history_id"] for history in histories
+                if history["reviewer_status"] == "reviewed"}
+    assert reviewed == {"pilot-04", "pilot-08", "pilot-09", "pilot-10", "pilot-11"}
+    assert sum(history["reviewer_status"] == "pending" for history in histories) == 8
+    for history in histories:
+        expected_status = "agreed" if history["history_id"] in reviewed else "pending"
+        assert history["evaluator_only"]["pair_gold"][0]["adjudication_status"] == expected_status
     family_partitions = {}
     for history in histories:
         assert family_partitions.setdefault(history["family_id"], history["partition"]) == history["partition"]
@@ -147,7 +153,11 @@ def test_sdui_stale_docs_supersede_and_equal_authority_migration_abstains():
     assert stale_gold["semantic_relationship"] == "supersedes"
     assert stale_gold["transition_disposition"] == "accept"
     assert stale_gold["expected_state_effect"]["effect"] == "close_and_replace"
+    assert stale_gold["expected_external_action"] == "none"
+    assert not any(task["task_type"] == "action_selection"
+                   for task in stale_docs["downstream_tasks"])
     assert "current registry is authoritative" in stale_gold["adjudication_notes"]
+    assert "No investigation is required" in stale_gold["adjudication_notes"]
 
     migration = next(item for item in histories if "migration_conflict" in item["feature_tags"])
     migration_gold = migration["evaluator_only"]["pair_gold"][0]

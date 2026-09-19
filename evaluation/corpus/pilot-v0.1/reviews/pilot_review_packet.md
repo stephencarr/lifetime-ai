@@ -1,6 +1,6 @@
 # G3 development-pilot review packet
 
-Status: **awaiting human review**. This packet contains gold labels for adjudication, not model predictions. G3 is not complete.
+Status: **partially reviewed** — 5 cases approved and 8 awaiting human review. This packet contains gold labels for adjudication, not model predictions. G3 is not complete.
 
 `none` means no action-selection task exists for the case. `silence` means an action-selection task exists and deliberate non-action is the expected answer.
 
@@ -185,7 +185,7 @@ Reviewer checks:
 - [ ] Checkpoint and every downstream task are correct.
 - [ ] Case wording does not trivially reveal the label.
 
-Decision: [ ] approve  [ ] revise  [ ] reject
+Decision: [x] approve  [ ] revise  [ ] reject
 
 Notes:
 
@@ -371,7 +371,7 @@ Reviewer checks:
 - [ ] Checkpoint and every downstream task are correct.
 - [ ] Case wording does not trivially reveal the label.
 
-Decision: [ ] approve  [ ] revise  [ ] reject
+Decision: [x] approve  [ ] revise  [ ] reject
 
 Notes:
 
@@ -398,15 +398,14 @@ Notes:
 - Semantic relationship: `supersedes`
 - Transition disposition: `accept`
 - Expected state effect: `close_and_replace`; affected: `semantic:target`; new: `semantic:replacement`
-- Expected external action: `investigate`; action-selection task present: `true`
+- Expected external action: `none`; action-selection task present: `false`
 - Required evidence IDs: `pilot-09-source, pilot-09-event`
-- Adjudication note: EVALUATOR_ONLY_CANARY_pilot-09 | The event explicitly identifies the registry revision as current and the guide as stale, establishing a temporal replacement boundary; the current registry is authoritative for emitted actions.
+- Adjudication note: EVALUATOR_ONLY_CANARY_pilot-09 | The event explicitly identifies the registry revision as current and the guide as stale, establishing a temporal replacement boundary; the current registry is authoritative for emitted actions. No investigation is required because the fixture already supplies the source-of-truth observation and no verification task is defined.
 
 ### Checkpoints and downstream tasks
 
 - Checkpoint `pilot-09-checkpoint` after sequence `3`
 - Task `pilot-09-state-task` (`current_state_query`) at `pilot-09-checkpoint`; request: `{'question': 'What is currently operationally valid?'}`; gold: `{'current_state': [{'semantic_item_ref': 'semantic:target', 'proposition': 'The checkout SDUI guide says the primary CTA emits legacy_checkout.', 'status': 'revoked'}, {'semantic_item_ref': 'semantic:replacement', 'proposition': 'Effective with the current registry revision, the checkout primary CTA emits checkout.submit; the guide describing legacy_checkout is stale.', 'status': 'active'}]}`; dependencies: `pilot-09-source, pilot-09-event`
-- Task `pilot-09-action-task` (`action_selection`) at `pilot-09-checkpoint`; request: `{'question': 'What external action, if any, should be taken now?'}`; gold: `{'action': 'investigate'}`; dependencies: `pilot-09-source, pilot-09-event`
 
 Reviewer checks:
 
@@ -418,7 +417,7 @@ Reviewer checks:
 - [ ] Checkpoint and every downstream task are correct.
 - [ ] Case wording does not trivially reveal the label.
 
-Decision: [ ] approve  [ ] revise  [ ] reject
+Decision: [x] approve  [ ] revise  [ ] reject
 
 Notes:
 
@@ -465,7 +464,7 @@ Reviewer checks:
 - [ ] Checkpoint and every downstream task are correct.
 - [ ] Case wording does not trivially reveal the label.
 
-Decision: [ ] approve  [ ] revise  [ ] reject
+Decision: [x] approve  [ ] revise  [ ] reject
 
 Notes:
 
@@ -511,7 +510,7 @@ Reviewer checks:
 - [ ] Checkpoint and every downstream task are correct.
 - [ ] Case wording does not trivially reveal the label.
 
-Decision: [ ] approve  [ ] revise  [ ] reject
+Decision: [x] approve  [ ] revise  [ ] reject
 
 Notes:
 

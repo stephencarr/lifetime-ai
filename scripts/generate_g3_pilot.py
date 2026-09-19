@@ -20,6 +20,7 @@ DEFAULT_OUTPUT = ROOT / "evaluation" / "corpus" / "pilot-v0.1"
 SOURCE_TIME = "2026-09-17T12:00:00Z"
 EVENT_TIME = "2026-09-18T10:00:00Z"
 CHECKPOINT_TIME = "2026-09-18T12:00:00Z"
+APPROVED_HISTORY_IDS = {"pilot-04", "pilot-08", "pilot-09", "pilot-10", "pilot-11"}
 
 SCENARIOS = [
     {"slug": "support-work-preference", "relationship": "supports",
@@ -76,10 +77,10 @@ SCENARIOS = [
      "candidate": "The checkout SDUI guide says the primary CTA emits legacy_checkout.",
      "event": "Effective with the current registry revision, the checkout primary CTA emits checkout.submit; the guide describing legacy_checkout is stale.",
      "actor": "system", "authorized": True, "event_type": "observation",
-     "disposition": "accept", "effect": "close_and_replace", "action": "investigate",
+     "disposition": "accept", "effect": "close_and_replace", "action": "none",
      "kind": "fact", "scope": {"repository": "sdui", "component": "checkout"},
      "authority_reason": "current component registry is authoritative for emitted actions",
-     "adjudication_note": "The event explicitly identifies the registry revision as current and the guide as stale, establishing a temporal replacement boundary; the current registry is authoritative for emitted actions.",
+     "adjudication_note": "The event explicitly identifies the registry revision as current and the guide as stale, establishing a temporal replacement boundary; the current registry is authoritative for emitted actions. No investigation is required because the fixture already supplies the source-of-truth observation and no verification task is defined.",
      "tags": ["sdui", "codebase", "stale_documentation"], "expected_favors": "architecture"},
     {"slug": "sdui-migration-conflict", "relationship": "contradicts",
      "candidate": "Migration 42 renames screen_id to route_id.",
@@ -162,6 +163,7 @@ def _state_item(scenario: dict, source_id: str, pair_event_id: str) -> dict:
 
 def make_history(index: int, scenario: dict) -> dict:
     prefix = f"pilot-{index:02d}"
+    approved = prefix in APPROVED_HISTORY_IDS
     source_id, distractor_source_id = f"{prefix}-source", f"{prefix}-distractor-source"
     pair_event_id = f"{prefix}-event"
     event_type = scenario.get("event_type", "message")
@@ -277,7 +279,8 @@ def make_history(index: int, scenario: dict) -> dict:
     return {
         "schema_version": "1", "dataset_version": "pilot-v0.1", "corpus_stage": "pilot",
         "history_id": prefix, "family_id": f"family-{scenario['slug']}", "partition": "PENDING",
-        "generation_origin": "generated_then_reviewed", "reviewer_status": "pending",
+        "generation_origin": "generated_then_reviewed",
+        "reviewer_status": "reviewed" if approved else "pending",
         "difficulty_tags": ["pilot"], "feature_tags": scenario["tags"], "timeline": timeline,
         "candidate_snapshots": [target_snapshot, distractor_snapshot],
         "candidate_pools": [{
@@ -306,7 +309,7 @@ def make_history(index: int, scenario: dict) -> dict:
                                      if scenario["relationship"] == "uncertain" else None),
                 "required_evidence_ids": [source_id, pair_event_id], "forbidden_evidence_ids": [],
                 "severity_if_wrong": "high" if not scenario["authorized"] else "medium",
-                "adjudication_status": "pending",
+                "adjudication_status": "agreed" if approved else "pending",
                 "adjudication_notes": (
                     f"EVALUATOR_ONLY_CANARY_{prefix} | {scenario['adjudication_note']}"
                     if scenario.get("adjudication_note")
@@ -331,7 +334,8 @@ def make_history(index: int, scenario: dict) -> dict:
                                        if scenario.get("delete_source") else {}),
             "expected_favors": scenario["expected_favors"],
             "generation_and_review_provenance": {
-                "generator": "scripts/generate_g3_pilot.py", "human_review": "pending",
+                "generator": "scripts/generate_g3_pilot.py",
+                "human_review": "approved_2026-09-19" if approved else "pending",
                 "canary": f"EVALUATOR_ONLY_CANARY_{prefix}",
             },
         },
@@ -350,7 +354,7 @@ def generate() -> list[dict]:
 def _review_packet(histories: list[dict], line_locations: dict[str, tuple[str, int]]) -> str:
     lines = [
         "# G3 development-pilot review packet", "",
-        "Status: **awaiting human review**. This packet contains gold labels for adjudication, not model predictions. G3 is not complete.", "",
+        "Status: **partially reviewed** — 5 cases approved and 8 awaiting human review. This packet contains gold labels for adjudication, not model predictions. G3 is not complete.", "",
         "`none` means no action-selection task exists for the case. `silence` means an action-selection task exists and deliberate non-action is the expected answer.", "",
     ]
     for history in histories:
@@ -412,7 +416,10 @@ def _review_packet(histories: list[dict], line_locations: dict[str, tuple[str, i
             "- [ ] Candidate snapshot, source IDs, timestamps, authority, and evidence are complete.",
             "- [ ] Checkpoint and every downstream task are correct.",
             "- [ ] Case wording does not trivially reveal the label.", "",
-            "Decision: [ ] approve  [ ] revise  [ ] reject", "", "Notes:", "",
+            ("Decision: [x] approve  [ ] revise  [ ] reject"
+             if history["reviewer_status"] == "reviewed"
+             else "Decision: [ ] approve  [ ] revise  [ ] reject"),
+            "", "Notes:", "",
         ])
     return "\n".join(lines) + "\n"
 
