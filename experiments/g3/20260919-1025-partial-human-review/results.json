@@ -1,0 +1,38 @@
+{
+  "gate": "G3",
+  "evaluation_type": "development_pilot_partial_human_review",
+  "commit": "409a430e2f135cead166b0ada0d0ab54021d00f5",
+  "status": "PILOT_PARTIALLY_REVIEWED",
+  "decision": "NOT_EVALUATED",
+  "g3_complete": false,
+  "lock_sha256": "1438f893cdae63babf1cf48af8520fcfbe84946f0f5e42c9225904eb16218861",
+  "pilot_manifest_sha256": "23380a545bd63165f6642d8ffb794e1fb072650cfb48b2abd506f79e57df9a73",
+  "histories": 13,
+  "pairs": 13,
+  "pilot_partitions": {
+    "pilot_development": 9,
+    "pilot_holdout": 4
+  },
+  "human_review": {
+    "required": 13,
+    "completed": 5,
+    "approved_history_ids": ["pilot-04", "pilot-08", "pilot-09", "pilot-10", "pilot-11"],
+    "remaining": 8,
+    "status": "partial"
+  },
+  "automated_tests": {
+    "passed": 40,
+    "failed": 0
+  },
+  "evaluator_leakage_failures": 0,
+  "model_calls": 0,
+  "embeddings_or_vector_search": false,
+  "production_connections": false,
+  "final_gate_holdouts_created": false,
+  "limitations": [
+    "Eight development-pilot histories still require human review.",
+    "The 30-history and 120-pair development corpus was not generated.",
+    "No final holdout was inspected or created.",
+    "No model predictions were generated."
+  ]
+}
