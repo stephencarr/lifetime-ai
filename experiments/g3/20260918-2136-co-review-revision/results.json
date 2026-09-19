@@ -1,0 +1,36 @@
+{
+  "gate": "G3",
+  "evaluation_type": "development_pilot_co_review_revision",
+  "commit": "39f08b6c734e0d1f2d66e0b0bfec84aaa4d66b55",
+  "status": "PILOT_READY_FOR_HUMAN_REVIEW",
+  "decision": "NOT_EVALUATED",
+  "g3_complete": false,
+  "lock_sha256": "1438f893cdae63babf1cf48af8520fcfbe84946f0f5e42c9225904eb16218861",
+  "pilot_manifest_sha256": "7fc8a2a8510592280628deee23c5c392689857b21d30fe884f89cadc4c6b34e0",
+  "histories": 13,
+  "pairs": 13,
+  "pilot_partitions": {
+    "pilot_development": 9,
+    "pilot_holdout": 4
+  },
+  "human_review": {
+    "required": 13,
+    "completed": 0,
+    "status": "pending_re_review"
+  },
+  "automated_tests": {
+    "passed": 40,
+    "failed": 0
+  },
+  "evaluator_leakage_failures": 0,
+  "model_calls": 0,
+  "embeddings_or_vector_search": false,
+  "production_connections": false,
+  "final_gate_holdouts_created": false,
+  "limitations": [
+    "The 13-history set remains a development pilot, below the 30-history and 120-pair target.",
+    "The revised cases require human re-review.",
+    "No final holdout was inspected or created.",
+    "No model predictions were generated."
+  ]
+}
