@@ -1,12 +1,12 @@
 {
   "gate": "G3",
   "evaluation_type": "development_pilot_co_review_revision",
-  "commit": "39f08b6c734e0d1f2d66e0b0bfec84aaa4d66b55",
+  "commit": "4fc9e5ab4745a9a31dbdf77506be770412f3e7ee",
   "status": "PILOT_READY_FOR_HUMAN_REVIEW",
   "decision": "NOT_EVALUATED",
   "g3_complete": false,
   "lock_sha256": "1438f893cdae63babf1cf48af8520fcfbe84946f0f5e42c9225904eb16218861",
-  "pilot_manifest_sha256": "7fc8a2a8510592280628deee23c5c392689857b21d30fe884f89cadc4c6b34e0",
+  "pilot_manifest_sha256": "23e7cb17250c86a63811d71b6d80b6e3113d734ef9706ef18694d2cb547c6387",
   "histories": 13,
   "pairs": 13,
   "pilot_partitions": {
