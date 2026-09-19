@@ -229,6 +229,10 @@ These targets must never be inferred from each other mechanically. Examples:
 - An authorized `supersedes` event can be accepted with `close_and_replace` while external action remains `none`.
 - An `unrelated` event normally receives `no_op`, state effect `none`, and either `none` or `silence` depending on the downstream task.
 
+For equally authorized contradictory observations, `abstain` is required when the record supplies no precedence, effective-order, or source-of-truth rule that can select one transition safely. `preserve_conflict` may still record both claims as disputed: this is reversible bookkeeping, not acceptance of either claim as current truth. If the unresolved choice blocks execution, an explicit action-selection task may use `clarify`.
+
+By contrast, an authorized source-of-truth observation that explicitly marks another artifact as stale establishes a temporal replacement boundary. It is `supersedes` with `accept` and `close_and_replace`, while the stale assertion remains in historical provenance.
+
 ## 7. Immutable candidate-state snapshots
 
 A candidate snapshot is the exact state item presented to a classifier. It includes proposition, scope, status, validity interval, epistemic basis, sensitivity, source references, counterevidence references, and the sequence at which it was captured.

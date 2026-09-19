@@ -72,12 +72,15 @@ SCENARIOS = [
      "task_type": "commitment_query", "kind": "commitment",
      "tags": ["commitment_failure", "explicit_expiry", "time_advance"],
      "expected_favors": "architecture"},
-    {"slug": "sdui-stale-documentation", "relationship": "contradicts",
-     "candidate": "The checkout SDUI guide says the primary CTA emits legacy_checkout.",
-     "event": "The current component registry maps the checkout primary CTA to checkout.submit; the guide is stale.",
+    {"slug": "sdui-stale-documentation", "relationship": "supersedes",
+     "candidate": "The checkout primary CTA emits legacy_checkout.",
+     "event": "Effective with the current registry revision, the checkout primary CTA emits checkout.submit; the guide describing legacy_checkout is stale.",
      "actor": "system", "authorized": True, "event_type": "observation",
-     "disposition": "accept", "effect": "preserve_conflict", "action": "investigate",
+     "disposition": "accept", "effect": "close_and_replace", "action": "investigate",
      "kind": "fact", "scope": {"repository": "sdui", "component": "checkout"},
+     "source_authority_reason": "checked-in SDUI guide accepted as historical operational evidence",
+     "authority_reason": "current component registry is authoritative for emitted actions",
+     "adjudication_note": "The event explicitly identifies the registry revision as current and the guide as stale, establishing a temporal replacement boundary; the current registry is authoritative for emitted actions.",
      "tags": ["sdui", "codebase", "stale_documentation"], "expected_favors": "architecture"},
     {"slug": "sdui-migration-conflict", "relationship": "contradicts",
      "candidate": "Migration 42 renames screen_id to route_id.",
@@ -85,6 +88,9 @@ SCENARIOS = [
      "actor": "system", "authorized": True, "event_type": "observation",
      "disposition": "abstain", "effect": "preserve_conflict", "action": "clarify",
      "kind": "fact", "scope": {"repository": "sdui", "migration": "42"},
+     "source_authority_reason": "authorized repository migration observation with no precedence rank",
+     "authority_reason": "authorized repository migration observation with no precedence rank",
+     "adjudication_note": "Both observations are authorized, share the same migration number and validity period, and provide no precedence metadata. Abstain forbids selecting a winner; preserving both claims as disputed is safe bookkeeping, and clarification is required before execution.",
      "tags": ["sdui", "codebase", "migration_conflict"], "expected_favors": "architecture"},
     {"slug": "sdui-ownership-change", "relationship": "supersedes",
      "candidate": "Team Atlas owns the sd_ui/profile package.",
@@ -116,7 +122,8 @@ def event(event_id: str, sequence: int, content: str | None, actor: str,
           targets: list[str] | None = None, sensitivity: str = "normal",
           authority_reason: str | None = None,
           may_assert_user_state: bool | None = None,
-          may_request_transition: bool | None = None) -> dict:
+          may_request_transition: bool | None = None,
+          metadata: dict | None = None) -> dict:
     return {
         "event_id": event_id, "sequence": sequence, "occurred_at": occurred_at,
         "recorded_at": occurred_at, "actor": actor, "event_type": event_type,
@@ -130,7 +137,7 @@ def event(event_id: str, sequence: int, content: str | None, actor: str,
                                             else "context-only source without state-update authority"),
         },
         "sensitivity": sensitivity, "source_status": "present",
-        "deletion_target_ids": targets or [], "metadata": {},
+        "deletion_target_ids": targets or [], "metadata": metadata or {},
     }
 
 
@@ -165,9 +172,11 @@ def make_history(index: int, scenario: dict) -> dict:
         targets=[source_id] if scenario.get("delete_source") else None,
         sensitivity="sensitive" if scenario.get("delete_source") else "normal",
         authority_reason=("evaluator clock event; valid for lifecycle evaluation only"
-                          if event_type == "time_advance" else None),
+                          if event_type == "time_advance" else scenario.get("authority_reason")),
         may_assert_user_state=False if event_type == "time_advance" else None,
         may_request_transition=True if event_type == "time_advance" else None,
+        metadata=({"advance_to": scenario["event_time"]}
+                  if event_type == "time_advance" else None),
     )
     kind = scenario.get("kind", "preference")
     source_actor = "user" if kind in {"preference", "commitment"} else "system"
@@ -175,7 +184,8 @@ def make_history(index: int, scenario: dict) -> dict:
     timeline = [
         event(source_id, 1, scenario["candidate"], source_actor, source_type, True,
               occurred_at=SOURCE_TIME,
-              sensitivity="sensitive" if scenario.get("delete_source") else "normal"),
+              sensitivity="sensitive" if scenario.get("delete_source") else "normal",
+              authority_reason=scenario.get("source_authority_reason")),
         event(distractor_source_id, 2, "The unrelated diagnostics fixture uses the color green.",
               "system", "observation", True, occurred_at="2026-09-17T13:00:00Z"),
         pair_event,
@@ -235,8 +245,17 @@ def make_history(index: int, scenario: dict) -> dict:
         "maximum_context_budget": 800, "scale_family_id": None,
         "irrelevant_history_target": None,
     }]
+    state_gold_response = {"status": current_state[0]["status"]}
+    if scenario["effect"] == "close_and_replace":
+        state_gold_response = {
+            "current_state": [
+                {"semantic_item_ref": item["semantic_item_ref"],
+                 "proposition": item["proposition"], "status": item["status"]}
+                for item in current_state
+            ]
+        }
     downstream_gold = [{
-        "task_id": state_task_id, "gold_response": {"status": current_state[0]["status"]},
+        "task_id": state_task_id, "gold_response": state_gold_response,
         "relevant_dependency_ids": [source_id, pair_event_id],
         "counterevidence_ids": current_state[0]["counterevidence_ids"],
         "primary_metric": "state_status_accuracy",
@@ -289,7 +308,11 @@ def make_history(index: int, scenario: dict) -> dict:
                 "required_evidence_ids": [source_id, pair_event_id], "forbidden_evidence_ids": [],
                 "severity_if_wrong": "high" if not scenario["authorized"] else "medium",
                 "adjudication_status": "pending",
-                "adjudication_notes": f"EVALUATOR_ONLY_CANARY_{prefix}",
+                "adjudication_notes": (
+                    f"EVALUATOR_ONLY_CANARY_{prefix} | {scenario['adjudication_note']}"
+                    if scenario.get("adjudication_note")
+                    else f"EVALUATOR_ONLY_CANARY_{prefix}"
+                ),
             }],
             "checkpoint_gold": [{
                 "checkpoint_id": checkpoint_id,
@@ -350,6 +373,7 @@ def _review_packet(histories: list[dict], line_locations: dict[str, tuple[str, i
             f"- Candidate snapshot: `{snapshot['snapshot_id']}`; runtime item: `{snapshot['item_id']}`; hash: `{snapshot['sha256']}`",
             f"- Candidate source IDs: `{', '.join(snapshot['source_event_ids'])}`; counterevidence IDs: `{', '.join(snapshot['counterevidence_event_ids']) or 'none'}`",
             f"- Candidate proposition: {snapshot['canonical_payload']['proposition']}", "",
+            f"- Candidate validity: `{snapshot['canonical_payload']['valid_from']}` through `{'null' if snapshot['canonical_payload']['valid_until'] is None else snapshot['canonical_payload']['valid_until']}`", "",
             "### Timeline and authority", "",
         ])
         for item in history["timeline"]:
@@ -359,14 +383,16 @@ def _review_packet(histories: list[dict], line_locations: dict[str, tuple[str, i
                 f"recorded `{item['recorded_at']}`; actor `{item['actor']}`; type `{item['event_type']}`; "
                 f"assert `{str(authority['may_assert_user_state']).lower()}`; transition "
                 f"`{str(authority['may_request_transition']).lower()}`; reason: {authority['reason']}; "
-                f"deletion targets: `{', '.join(item['deletion_target_ids']) or 'none'}`; content: {item['content']!r}"
+                f"deletion targets: `{', '.join(item['deletion_target_ids']) or 'none'}`; "
+                f"metadata: `{item['metadata']}`; content: {item['content']!r}"
             )
         lines.extend(["", "### Gold targets", "",
             f"- Semantic relationship: `{gold['semantic_relationship']}`",
             f"- Transition disposition: `{gold['transition_disposition']}`",
             f"- Expected state effect: `{gold['expected_state_effect']['effect']}`; affected: `{', '.join(gold['expected_state_effect']['affected_item_ids'])}`; new: `{', '.join(gold['expected_state_effect']['expected_new_item_ids']) or 'none'}`",
             f"- Expected external action: `{gold['expected_external_action']}`; action-selection task present: `{str(has_action_task).lower()}`",
-            f"- Required evidence IDs: `{', '.join(gold['required_evidence_ids'])}`", "",
+            f"- Required evidence IDs: `{', '.join(gold['required_evidence_ids'])}`",
+            f"- Adjudication note: {gold['adjudication_notes']}", "",
             "### Checkpoints and downstream tasks", "",
         ])
         for checkpoint in history["checkpoint_requests"]:

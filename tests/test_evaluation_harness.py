@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from decimal import Decimal
 
 import pytest
@@ -23,7 +24,7 @@ from lifetime_ai.evaluation.split import assign_disjoint_gate_holdouts, split_wh
 from lifetime_ai.evaluation.state_matching import (
     MatchConfiguration, greedy_semantic_matches, semantic_state_score,
 )
-from lifetime_ai.evaluation.validation import validate_corpus
+from lifetime_ai.evaluation.validation import CorpusValidationError, validate_corpus
 from scripts.generate_g3_pilot import generate, write
 
 
@@ -110,7 +111,51 @@ def test_deletion_and_expiry_are_the_evaluated_lifecycle_events():
     expiry_gold = expiry["evaluator_only"]["pair_gold"][0]
     assert expiry_event["event_type"] == "time_advance"
     assert expiry_gold["expected_state_effect"]["effect"] == "expire"
-    assert expiry["candidate_snapshots"][0]["canonical_payload"]["valid_until"] < expiry_event["occurred_at"]
+    assert expiry_event["metadata"]["advance_to"] == expiry_event["occurred_at"]
+    assert expiry["candidate_snapshots"][0]["canonical_payload"]["valid_until"] < expiry_event["metadata"]["advance_to"]
+
+    missing_clock = deepcopy(expiry)
+    missing_clock["timeline"][-1]["metadata"] = {}
+    with pytest.raises(CorpusValidationError, match="advance_to"):
+        validate_corpus([missing_clock])
+
+    malformed_clock = deepcopy(expiry)
+    malformed_clock["timeline"][-1]["metadata"]["advance_to"] = "not-a-timeZ"
+    malformed_clock["timeline"][-1]["occurred_at"] = "not-a-timeZ"
+    with pytest.raises(CorpusValidationError, match="RFC3339"):
+        validate_corpus([malformed_clock])
+
+
+def test_replacement_tasks_report_prior_and_active_state():
+    histories = generate()
+    for history_id in ("pilot-04", "pilot-11"):
+        history = next(item for item in histories if item["history_id"] == history_id)
+        task_gold = next(item for item in history["evaluator_only"]["downstream_task_gold"]
+                         if item["task_id"].endswith("state-task"))
+        states = task_gold["gold_response"]["current_state"]
+        assert [(item["semantic_item_ref"], item["status"]) for item in states] == [
+            ("semantic:target", "revoked"), ("semantic:replacement", "active")
+        ]
+
+
+def test_sdui_stale_docs_supersede_and_equal_authority_migration_abstains():
+    histories = generate()
+    stale_docs = next(item for item in histories if "stale_documentation" in item["feature_tags"])
+    stale_gold = stale_docs["evaluator_only"]["pair_gold"][0]
+    assert stale_gold["semantic_relationship"] == "supersedes"
+    assert stale_gold["transition_disposition"] == "accept"
+    assert stale_gold["expected_state_effect"]["effect"] == "close_and_replace"
+    assert "current registry is authoritative" in stale_gold["adjudication_notes"]
+
+    migration = next(item for item in histories if "migration_conflict" in item["feature_tags"])
+    migration_gold = migration["evaluator_only"]["pair_gold"][0]
+    assert migration_gold["semantic_relationship"] == "contradicts"
+    assert migration_gold["transition_disposition"] == "abstain"
+    assert migration_gold["expected_external_action"] == "clarify"
+    assert "no precedence metadata" in migration_gold["adjudication_notes"]
+    relevant_events = [migration["timeline"][0], migration["timeline"][2]]
+    assert all(item["authority"]["may_assert_user_state"] for item in relevant_events)
+    assert len({item["authority"]["reason"] for item in relevant_events}) == 1
 
 
 def test_sdui_codebase_pilot_coverage_and_action_task_semantics():

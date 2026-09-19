@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -17,6 +18,15 @@ DISPOSITIONS = {"accept", "reject_unauthorized", "reject_invalid", "abstain", "n
 
 class CorpusValidationError(ValueError):
     pass
+
+
+def _rfc3339_utc(value: str, label: str) -> datetime:
+    if not value.endswith("Z"):
+        raise CorpusValidationError(f"{label} must be an RFC3339 UTC timestamp")
+    try:
+        return datetime.fromisoformat(value[:-1] + "+00:00")
+    except ValueError as error:
+        raise CorpusValidationError(f"{label} must be an RFC3339 UTC timestamp") from error
 
 
 @lru_cache(maxsize=1)
@@ -123,7 +133,16 @@ def validate_history(history: dict[str, Any]) -> None:
             if pair_event["event_type"] != "time_advance" or valid_until is None:
                 raise CorpusValidationError(
                     "expire effect requires a time-advance pair event and explicit valid_until")
-            if valid_until > pair_event["occurred_at"]:
+            advance_to = pair_event["metadata"].get("advance_to")
+            if not isinstance(advance_to, str):
+                raise CorpusValidationError(
+                    "time-advance expiry event requires RFC3339 metadata.advance_to")
+            advance_time = _rfc3339_utc(advance_to, "metadata.advance_to")
+            expiry_time = _rfc3339_utc(valid_until, "candidate valid_until")
+            if advance_to != pair_event["occurred_at"]:
+                raise CorpusValidationError(
+                    "time-advance occurred_at must equal metadata.advance_to")
+            if expiry_time > advance_time:
                 raise CorpusValidationError("expiry checkpoint precedes candidate valid_until")
 
     task_ids = {task["task_id"] for task in history["downstream_tasks"]}
