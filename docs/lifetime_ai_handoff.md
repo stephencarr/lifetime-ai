@@ -219,6 +219,8 @@ Review especially whether the action-selection tasks in pilot-02, pilot-05, pilo
 
 The next task is **human review of the remaining eight cases**, not corpus expansion.
 
+**Authorization boundary:** the owner has already authorized the next engineer to inspect all eight pending records, perform the complete read-only co-review, run existing validation commands, and present per-case approval/revision/rejection recommendations. No additional permission is needed for that analysis. The engineer must pause only before changing labels, recording approvals, regenerating corrected records, or expanding the corpus; those writes require the owner's response to the review findings.
+
 Recommended sequence:
 
 1. Read each pending case in `evaluation/corpus/pilot-v0.1/reviews/pilot_review_packet.md` and follow its link to the underlying JSONL record.
@@ -227,9 +229,10 @@ Recommended sequence:
 4. Review state effect against checkpoint truth and historical assertions.
 5. Review external action only when an action-selection task exists.
 6. Verify evidence IDs, source status, snapshot hash, checkpoint, and downstream gold.
-7. Approve, revise, or reject each case and record the decision in generated source plus tests; do not hand-edit only the rendered packet.
-8. Rerun generation, the complete test suite, and the mock smoke harness.
-9. Record a new non-passing G3 experiment entry with the manifest hash and review count.
+7. Present a complete co-review with a proposed `approve`, `revise`, or `reject` disposition for every pending case, including any concrete correction required. Do not stop merely to ask permission to perform this review.
+8. After the owner accepts the recommendations, record approved decisions and corrections in generated source plus tests; do not hand-edit only the rendered packet.
+9. Rerun generation, the complete test suite, and the mock smoke harness.
+10. Record a new non-passing G3 experiment entry with the manifest hash and review count.
 
 Only after all 13 cases pass human review should the owner be asked for explicit authorization to generate the full 30-history/120-pair development pilot. The previous review explicitly did **not** authorize expansion.
 
@@ -306,4 +309,4 @@ Confirm that you have read:
 4. `experiments/g3/20260919-1025-partial-human-review/summary.md`;
 5. the review packet and the eight pending records.
 
-Then summarize the eight pending cases and propose a review order. Do not modify data until the owner authorizes specific corrections, and do not interpret “continue” as permission to expand the corpus or access a final holdout.
+Then proceed directly through the complete read-only co-review of all eight pending cases and present per-case recommendations. Do not ask for another authorization merely to inspect or evaluate them. Do not modify data until the owner accepts the recommendations, and do not interpret “continue” as permission to expand the corpus or access a final holdout.
