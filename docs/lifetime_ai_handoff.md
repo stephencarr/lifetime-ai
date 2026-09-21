@@ -1,9 +1,11 @@
 # Lifetime AI — Engineering Handoff
 
-**Updated:** 19 September 2026  
+**Updated:** 21 September 2026
 **Audience:** the engineer continuing architecture and evaluation work  
-**Current phase:** G3 development-pilot review  
+**Current phase:** G3 development pilot v0.7 agent review complete; prepare frozen evaluation corpus
 **Gate state:** G0, G1, and G2 passed; G3 remains open
+
+> **Current continuation note:** This general handoff contains historical pilot context. For the exact frozen-corpus v7 state and the remaining path to G3 completion, read [`docs/g3_completion_handoff.md`](g3_completion_handoff.md) first.
 
 ## 1. Read this first
 
@@ -106,7 +108,7 @@ Why this matters:
 
 ### Current automated state
 
-- Complete suite: **40 passing tests**.
+- Complete suite: **50 passing tests**.
 - SQLite schema version: 2.
 - No LLM calls, embeddings, vector storage, agent framework, production connector, or UI.
 
@@ -133,38 +135,20 @@ Design source: `docs/g3_evaluation_design_proposal.md`.
 
 ## 7. Current G3 artifacts
 
-The current development pilot contains **13 histories and 13 relationship pairs**:
+The current development pilot is `evaluation/corpus/pilot-v0.7/`: **30 histories, 120 pairs**, split across 21 development and 9 pilot-holdout histories. Two independent agent reviews passed; human signoff was waived by the project owner and is not claimed. The final holdouts for G4–G7 have not been created or accessed. Manifest status is `AGENT_REVIEWED`; G3 remains open.
 
-- 9 in `pilot_development`;
-- 4 in `pilot_holdout`;
-- 5 reviewed and approved;
-- 8 pending human review.
+Review findings and verification are recorded in `evaluation/corpus/pilot-v0.7/agent-review-record.md`. The corpus passes schema and coverage validation, all 50 tests, four mock baseline contract smokes, and 270 projection canary checks with zero leaks. The prior v0.3/v0.4 event-text accuracy tests are preserved as exploratory diagnostics, not leakage gates.
 
-`pilot_holdout` is only exercising pilot split/sealing machinery. It is **not** a final G4/G5/G6/G7 holdout and becomes development material after pilot review.
+Current artifacts:
 
-Key artifacts:
-
-- Review packet: `evaluation/corpus/pilot-v0.1/reviews/pilot_review_packet.md`
-- Development records: `evaluation/corpus/pilot-v0.1/development.jsonl`
-- Pilot holdout records: `evaluation/corpus/pilot-v0.1/holdout.jsonl`
-- Manifest: `evaluation/corpus/pilot-v0.1/manifest.json`
-- Manifest hash file: `evaluation/corpus/pilot-v0.1/manifest.sha256`
-- Generator: `scripts/generate_g3_pilot.py`
+- Review packet: `evaluation/corpus/pilot-v0.7/reviews/pilot_review_packet.md`
+- Manifest and hash: `evaluation/corpus/pilot-v0.7/manifest.json` and `manifest.sha256`
+- Generator and review recorder: `scripts/generate_g3_development_pilot_v07.py` and `scripts/record_g3_agent_review.py`
 - Smoke harness: `scripts/run_g3_pilot_smoke.py`
-- Validation: `lifetime_ai/evaluation/validation.py`
-- Projection boundary: `lifetime_ai/evaluation/projection.py`
-- Baseline contracts: `lifetime_ai/evaluation/contracts.py`
-- Evaluation tests: `tests/test_evaluation_harness.py`
-
-Current accepted build identity:
-
-- Pilot build commit: `409a430e2f135cead166b0ada0d0ab54021d00f5`
-- Partial-review record commit: `f870bb1`
-- Pilot manifest SHA-256: `23380a545bd63165f6642d8ffb794e1fb072650cfb48b2abd506f79e57df9a73`
-- Evidence record: `experiments/g3/20260919-1025-partial-human-review/`
+- Evaluation contracts and validation: `lifetime_ai/evaluation/`
 - G3 decision: `NOT_EVALUATED`
 
-## 8. Human-review decisions already made
+## 8. Earlier seed-pilot review decisions
 
 The following cases are approved in the packet and have `reviewer_status: reviewed`, pair `adjudication_status: agreed`, and dated review provenance.
 
@@ -200,50 +184,29 @@ The following cases are approved in the packet and have `reviewer_status: review
 - The broad current-state task returns both revoked Team Atlas ownership and active Team Nova ownership.
 - Reason: CODEOWNERS provides an explicit effective replacement while provenance retains the former owner historically.
 
-## 9. Cases still awaiting human review
+## 9. Completed final pilot co-review
 
-Do not silently mark these approved. Present them for review and record any corrections before requesting expansion authorization.
+An independent technical-lead co-review found weaknesses not detected by schema validation. All eight formerly pending cases were corrected and approved:
 
-- **pilot-01:** `supports / accept / reinforce / none` — preference reinforcement.
-- **pilot-02:** `contradicts / reject_unauthorized / none / silence` — unauthorized imported contradiction; deliberate silence has an action-selection task.
-- **pilot-03:** `narrows_scope / accept / add_scoped_item / none` — detailed personal-research exception beneath a general concise preference.
-- **pilot-05:** `unrelated / no_op / none / silence` — irrelevant weather with deliberate non-action explicitly evaluated.
-- **pilot-06:** `uncertain / abstain / none / clarify` — genuinely underspecified referent and scope.
-- **pilot-07:** `unrelated / accept / invalidate / none` — deletion event targets the sole supporting source and invalidates the derivative.
-- **pilot-12:** `contradicts / reject_unauthorized / none / investigate` — generated schema conflicts with authoritative source schema; investigation is explicitly evaluated.
-- **pilot-13:** `supports / accept / reinforce / none` — ADR confirms intentional duplication across platform boundaries.
+- broad current-state tasks now require proposition, scope, status, and evidence rather than a status-only answer;
+- pilot-03 uses a genuine general-to-specific scope relationship;
+- pilot-07 invalidates at the deletion event time and relies on the documented lifecycle-event exception for its independent semantic label;
+- pilot-12 asks for a system action and names the source/generated-schema discrepancy to investigate.
 
-Review especially whether the action-selection tasks in pilot-02, pilot-05, pilot-06, and pilot-12 describe a concrete decision rather than smuggling policy into semantic classification.
+Evidence: `experiments/g3/20260919-1121-complete-pilot-human-review/`.
 
 ## 10. Exact next step
 
-The next task is **human review of the remaining eight cases**, not corpus expansion.
-
-**Authorization boundary:** the owner has already authorized the next engineer to inspect all eight pending records, perform the complete read-only co-review, run existing validation commands, and present per-case approval/revision/rejection recommendations. No additional permission is needed for that analysis. The engineer must pause only before changing labels, recording approvals, regenerating corrected records, or expanding the corpus; those writes require the owner's response to the review findings.
-
-Recommended sequence:
-
-1. Read each pending case in `evaluation/corpus/pilot-v0.1/reviews/pilot_review_packet.md` and follow its link to the underlying JSONL record.
-2. Review semantic relationship independently of authority.
-3. Review disposition against explicit authority, temporal, and safety metadata.
-4. Review state effect against checkpoint truth and historical assertions.
-5. Review external action only when an action-selection task exists.
-6. Verify evidence IDs, source status, snapshot hash, checkpoint, and downstream gold.
-7. Present a complete co-review with a proposed `approve`, `revise`, or `reject` disposition for every pending case, including any concrete correction required. Do not stop merely to ask permission to perform this review.
-8. After the owner accepts the recommendations, record approved decisions and corrections in generated source plus tests; do not hand-edit only the rendered packet.
-9. Rerun generation, the complete test suite, and the mock smoke harness.
-10. Record a new non-passing G3 experiment entry with the manifest hash and review count.
-
-Only after all 13 cases pass human review should the owner be asked for explicit authorization to generate the full 30-history/120-pair development pilot. The previous review explicitly did **not** authorize expansion.
+The second freeze plan passed two independent agent reviews; see `experiments/g3/20260919-second-freeze-plan-review/summary.md`. It fixes the provisional G4 decision rule as 95% observed point precision, reported with a Wilson interval, and retains ≥100 autonomous accepts as the later observed holdout sample criterion. The approved planning size is 405 histories/1,620 pair opportunities, split by 90/45 whole families, conditional on the maximum cluster sizes, 30% planning coverage, 20% ineligibility/exclusion allowance, and family ICC ≤.30 in `docs/g3_evaluation_design_proposal.md`. Final-corpus generation, blinded gold adjudication, structural validation, and sealing may proceed under this plan. Model runs still require a G3 pass and separate G4 run authorization. “Untouched” means no model runs, predictions, threshold tuning, or model-output-informed wording changes; blinded gold adjudication and structural validation before sealing are permitted and must be recorded. Keep the v0.7 `pilot_holdout` development-only; it is not a final G4/G5/G6/G7 holdout. G3 remains `NOT_EVALUATED` until the required artifacts are frozen and hash-recorded and baseline smoke tests pass.
 
 ## 11. Commands for verification
 
 From the repository root:
 
 ```sh
-uv run --frozen python scripts/generate_g3_pilot.py
 uv run --frozen pytest -q
-uv run --frozen python scripts/run_g3_pilot_smoke.py
+uv run --frozen python scripts/run_g3_pilot_smoke.py --corpus evaluation/corpus/pilot-v0.7
+shasum -a 256 -c evaluation/corpus/pilot-v0.7/manifest.sha256
 ```
 
 In the managed sandbox, redirect the uv cache if needed:
@@ -252,23 +215,16 @@ In the managed sandbox, redirect the uv cache if needed:
 UV_CACHE_DIR=/tmp/lifetime-ai-uv-cache uv run --frozen pytest -q
 ```
 
-Expected current result: 40 tests pass; 13 cases pass schema validation; all three mock tracks run; evaluator leakage failures are zero; model calls are zero.
+Expected current result: 50 tests pass; agent-reviewed v0.7 validates; all 270 system-facing projection canary checks pass; smoke executes all mock tracks and four baseline contracts with zero model calls. The pilot is agent-reviewed, not a frozen G4 holdout; G3 remains open.
 
-## 12. Explicitly unauthorized next actions
+## 12. Phase-gated actions
 
-Until the owner says otherwise, do not:
+- **Before the second freeze review passes:** do not create or expose final G4/G5/G6/G7 holdouts.
+- **After review passes but before G3 passes:** final-corpus generation, blinded gold adjudication, structural validation, and sealing are allowed under the approved plan. Do not run models or generate predictions.
+- **After G3 passes:** model implementation/predictions and holdout evaluation still require a separate G4 run authorization. Do not tune thresholds or revise corpus/configuration in response to holdout outcomes; an inspected holdout is spent, and further evaluation requires a new holdout.
+- **At every phase:** never treat the v0.7 `pilot_holdout` as a final gate holdout. Production/proprietary connections, embeddings/vector search, or an agent framework/UI are outside the current authorization and require a separately approved scope. Claim G3 completion only after its evidence and gate record satisfy the pass criteria.
 
-- generate the 30-history/120-pair corpus;
-- create, inspect, score, or tune against any final gate holdout;
-- implement or call an LLM;
-- add embeddings or vector search;
-- implement learned models or generate model predictions;
-- connect production or proprietary systems;
-- add an agent framework or UI;
-- claim G3 completion;
-- begin G4 threshold selection.
-
-Mocks are contract tests only and are not experimental baseline results.
+Development-only sizing and freeze-plan work may proceed under the assumptions in `docs/g3_evaluation_design_proposal.md`. Mocks are contract tests only and are not experimental baseline results. The ≥100 observed-accept target and final cluster-aware size must be frozen in the second freeze review. The IID calculation is only a planning reference, not the final size decision.
 
 ## 13. Strong-baseline requirement for later work
 
@@ -295,7 +251,7 @@ Measure task success, source-anchor correctness, stale and unsupported claims, c
 
 There is an owner-driven documentation reorganization in the working tree. At the time of this handoff it includes modifications to `docs/gates.md` and `docs/lifetime_ai_roadmap_v0.2.md`, deletion/movement of `docs/lifetime_ai_roadmap_v0.1.md`, and additions under `docs/archive/`. Do not discard, overwrite, reset, or casually include those changes in another commit.
 
-Some status prose in the in-progress roadmap/gates edits still describes the pre-G0 state. Until the owner reconciles those documents, the accepted experiment records under `experiments/g0`, `experiments/g1`, and `experiments/g2` are the authoritative evidence that G0–G2 passed. The latest G3 experiment record is authoritative for the partial review count.
+Some status prose in the in-progress roadmap/gates edits still describes the pre-G0 state. Until the owner reconciles those documents, the accepted experiment records under `experiments/g0`, `experiments/g1`, and `experiments/g2` are the authoritative evidence that G0–G2 passed. The latest G3 experiment record is authoritative for the completed pilot review count.
 
 Before editing, always run `git status --short`. Stage only task-specific files.
 
@@ -306,7 +262,7 @@ Confirm that you have read:
 1. this handoff;
 2. `docs/g3_evaluation_design_proposal.md`;
 3. the G3 section of `docs/gates.md`;
-4. `experiments/g3/20260919-1025-partial-human-review/summary.md`;
-5. the review packet and the eight pending records.
+4. `evaluation/corpus/pilot-v0.7/agent-review-record.md` and its review packet;
+5. `evaluation/corpus/pilot-v0.7/projection-leakage.json`.
 
-Then proceed directly through the complete read-only co-review of all eight pending cases and present per-case recommendations. Do not ask for another authorization merely to inspect or evaluate them. Do not modify data until the owner accepts the recommendations, and do not interpret “continue” as permission to expand the corpus or access a final holdout.
+The second-freeze plan review has passed and is recorded at `experiments/g3/20260919-second-freeze-plan-review/summary.md`. The next authorized step is to generate the final corpus exactly to the approved family/size plan, conduct blinded gold review plus structural validation, and seal/hash it. Do not run models or generate predictions until G3 passes and a separate G4 run is authorized. The owner waived human signoff when independent agent review passes; record agent review truthfully and do not describe it as human review.

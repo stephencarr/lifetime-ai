@@ -1,0 +1,43 @@
+{
+  "gate": "G3",
+  "evaluation_type": "development_pilot_complete_human_review",
+  "commit": "24c662263aa773136536083ced7f018386ff24ec",
+  "working_tree_changes_present": true,
+  "status": "PILOT_HUMAN_REVIEW_COMPLETE",
+  "decision": "NOT_EVALUATED",
+  "g3_complete": false,
+  "lock_sha256": "1438f893cdae63babf1cf48af8520fcfbe84946f0f5e42c9225904eb16218861",
+  "pilot_manifest_sha256": "0285abe41251d8f19caa5b4e58688ea6229fbf797d2209cd5b6b4cf39e395375",
+  "histories": 13,
+  "pairs": 13,
+  "pilot_partitions": {
+    "pilot_development": 9,
+    "pilot_holdout": 4
+  },
+  "human_review": {
+    "required": 13,
+    "completed": 13,
+    "approved_history_ids": [
+      "pilot-01", "pilot-02", "pilot-03", "pilot-04", "pilot-05",
+      "pilot-06", "pilot-07", "pilot-08", "pilot-09", "pilot-10",
+      "pilot-11", "pilot-12", "pilot-13"
+    ],
+    "remaining": 0,
+    "status": "complete"
+  },
+  "automated_tests": {
+    "passed": 42,
+    "failed": 0
+  },
+  "evaluator_leakage_failures": 0,
+  "model_calls": 0,
+  "embeddings_or_vector_search": false,
+  "production_connections": false,
+  "final_gate_holdouts_created": false,
+  "limitations": [
+    "The 30-history and 120-pair development corpus was not generated.",
+    "No final holdout was inspected or created.",
+    "No model predictions were generated.",
+    "G3 remains open until the authorized full development pilot and remaining gate artifacts are completed."
+  ]
+}

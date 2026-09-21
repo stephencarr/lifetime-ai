@@ -7,7 +7,7 @@
   "required": ["schema_version", "dataset_version", "corpus_stage", "history_id", "family_id", "partition", "generation_origin", "reviewer_status", "difficulty_tags", "feature_tags", "timeline", "candidate_snapshots", "candidate_pools", "pair_inputs", "checkpoint_requests", "downstream_tasks", "evaluator_only"],
   "properties": {
     "schema_version": {"const": "1"},
-    "dataset_version": {"const": "pilot-v0.1"},
+    "dataset_version": {"enum": ["pilot-v0.1", "pilot-v0.2", "pilot-v0.3", "pilot-v0.4", "pilot-v0.5", "pilot-v0.6", "pilot-v0.7"]},
     "corpus_stage": {"const": "pilot"},
     "history_id": {"type": "string", "minLength": 1},
     "family_id": {"type": "string", "minLength": 1},
@@ -49,9 +49,45 @@
       }
     },
     "candidate_snapshots": {"type": "array", "minItems": 2, "items": {"$ref": "https://lifetime-ai.local/schema/candidate-snapshot-v1.json"}},
-    "candidate_pools": {"type": "array", "minItems": 1, "items": {"type": "object"}},
-    "pair_inputs": {"type": "array", "minItems": 1, "items": {"type": "object"}},
-    "checkpoint_requests": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+    "candidate_pools": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["candidate_pool_id", "captured_after_sequence", "snapshot_ids", "sha256"],
+        "properties": {
+          "candidate_pool_id": {"type": "string", "minLength": 1},
+          "captured_after_sequence": {"type": "integer", "minimum": 0},
+          "snapshot_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "pair_inputs": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["pair_id", "event_id", "candidate_item_id", "candidate_snapshot_id", "candidate_pool_id", "context_event_ids"],
+        "properties": {
+          "pair_id": {"type": "string", "minLength": 1},
+          "event_id": {"type": "string", "minLength": 1},
+          "candidate_item_id": {"type": ["string", "null"]},
+          "candidate_snapshot_id": {"type": ["string", "null"]},
+          "candidate_pool_id": {"type": "string", "minLength": 1},
+          "context_event_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+        }
+      }
+    },
+    "checkpoint_requests": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["checkpoint_id", "after_sequence"],
+        "properties": {
+          "checkpoint_id": {"type": "string", "minLength": 1},
+          "after_sequence": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
     "downstream_tasks": {"type": "array", "minItems": 1, "items": {"$ref": "https://lifetime-ai.local/schema/downstream-task-v1.json"}},
     "evaluator_only": {"$ref": "https://lifetime-ai.local/schema/evaluator-projection-v1.json"}
   }

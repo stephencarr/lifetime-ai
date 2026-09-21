@@ -1,18 +1,19 @@
 # G3 evaluation design proposal
 
-**Status:** Approved for development-pilot preparation only; final corpus remains unapproved and unfrozen  
-**Scope:** Design only. No dataset records, model outputs, thresholds selected from data, or holdout artifacts exist yet.
+**Status:** Development pilot v0.7 is agent-reviewed; the final G4 design passed the second freeze review, but the corpus is not yet generated or frozen
+
+**Scope:** The existing 30-history/120-pair pilot is development material only. No final G4 holdout exists. Recorded second-freeze approval authorizes final corpus generation and blinded review only. Learned-model predictions and threshold tuning remain unauthorized until G3 passes and a separate G4 run is authorized.
 
 ## 1. Purpose and non-goals
 
 G3 should produce an evaluation instrument capable of disproving the project's claims. It must test whether typed canonical state improves longitudinal behaviour without encoding the current implementation's assumptions into the answers.
 
-This design does not authorize dataset generation, model implementation, threshold tuning, or a G3 pass. Generation begins only after explicit approval of this document.
+This design document alone does not authorize final-corpus generation, model implementation, threshold tuning, or a G3 pass. The v0.7 pilot and its `pilot_holdout` partition are development-only; neither is a final gate holdout. The recorded second freeze review authorizes final-corpus generation and blinded review preparation. Model prediction/tuning authorization is a later, separate decision after G3 passes and before the G4 run.
 
 Corpus work has two deliberately separate stages:
 
 - **Development pilot:** 30 histories and at least 120 labelled pairs. This validates schema, annotation, coverage, baseline plumbing, and reviewer workload. It is not the frozen G4 benchmark and cannot support the G4 thesis claim.
-- **Frozen G4 corpus:** proposed minimum of 120 histories and 720 labelled pairs, split as 80 development histories and 40 untouched holdout histories. The holdout therefore contains one third of histories and at least 240 pairs. Each relationship class should have at least 30 holdout pairs from at least 10 independent families.
+- **Frozen G4 corpus:** proposed 405 histories and 1,620 pair opportunities, split by whole family as 270 development histories/1,080 pairs and 135 untouched holdout histories/540 pairs. This is 90 development families and 45 holdout families, three histories and four pair opportunities per family. Each relationship class must have at least 30 holdout pairs from at least 10 independent holdout families. This planning size is conditional on the cluster/eligibility assumptions in §18.
 
 The frozen size is still a POC corpus, not evidence of broad generality. Before G4, a power/precision review must assess whether the realized autonomous-decision count can support the 95% precision claim with useful uncertainty bounds. If not, the corpus must grow before the holdout is run—not after its results are seen.
 
@@ -81,9 +82,11 @@ history:
       after_sequence: integer
   downstream_tasks:
     - task_id: string
+      pair_id: string                    # exact triggering pair
       checkpoint_id: string
       task_type: current_state_query | commitment_query | provenance_query | deletion_query | context_compilation | action_selection
       request: object
+      target_scope: object               # explicit semantic-item or pair scope
       maximum_context_budget: integer | null
       scale_family_id: string | null
       irrelevant_history_target: integer | null
@@ -93,7 +96,7 @@ history:
         semantic_relationship: supports | contradicts | narrows_scope | supersedes | unrelated | uncertain
         transition_disposition: accept | reject_unauthorized | reject_invalid | abstain | no_op
         expected_state_effect:
-          effect: reinforce | preserve_conflict | add_scoped_item | close_and_replace | invalidate | expire | none
+          effect: reinforce | preserve_conflict | add_scoped_item | close_and_replace | resolve | invalidate | expire | none
           affected_item_ids: [string]
           expected_new_item_ids: [string]
         expected_external_action: none | clarify | investigate | outreach_candidate | silence
@@ -149,6 +152,7 @@ history:
 - Deletion changes source availability and may invalidate derivatives; it does not rewrite the fact that an event once occupied a sequence position.
 - Authority is explicit metadata supplied by the scenario, not inferred from imperative wording.
 - `evaluator_only` is removed before any system input is constructed. Systems never receive it directly, through retrieval indexes, prompts, logs, caches, or derived features. Only the scoring harness may read it.
+- Every downstream task names its triggering pair and an explicit target scope. Broad current-state gold is therefore either exhaustive for that declared scope or rejected as ambiguous.
 
 ## 4. Relationship-label definitions
 
@@ -188,6 +192,8 @@ Do not label a bare incompatible assertion as `supersedes` solely because it is 
 
 Use when the event provides no material semantic evidence about the candidate proposition, its scope, validity, or lifecycle. Lexical overlap alone is insufficient.
 
+Ordered lifecycle-control events are an explicit exception because the semantic label describes asserted meaning, while lifecycle effects are scored independently. A `deletion`, `redaction`, or `time_advance` event that makes no proposition-level assertion is labelled `unrelated` on the semantic dimension even when its validated state effect is `invalidate` or `expire`. Its lifecycle target, authority, disposition, and state effect must still be explicit and independently scored.
+
 ### `uncertain`
 
 Use when the available semantic evidence does not justify exactly one of the other five labels. This is a legitimate gold answer, not a failure bucket. Typical reasons include unresolved pronouns, missing temporal scope, plausible but unstated scope distinctions, corrupted/redacted evidence, or genuine annotator underdetermination.
@@ -217,13 +223,14 @@ Each pair has four separately adjudicated targets:
 
 1. **Semantic relationship** describes only the meaning of the new event relative to the immutable candidate snapshot.
 2. **Transition disposition** applies authority, permissions, schema rules, temporal rules, and safety policy: `accept`, `reject_unauthorized`, `reject_invalid`, `abstain`, or `no_op`.
-3. **Expected state effect** describes the canonical consequence if disposition permits it: reinforce, preserve conflict, add a scoped item, close and replace, or none.
+3. **Expected state effect** describes the canonical consequence if disposition permits it: reinforce, preserve conflict, add a scoped item, close and replace, resolve a commitment, invalidate, expire, or none.
 4. **Expected external action** describes user-facing or operational behaviour: none, clarify, investigate, outreach candidate, or silence.
 
 For action scoring, `none` means no action decision is in scope at that checkpoint; `silence` means action selection is in scope and the correct deliberate choice is not to interrupt or emit an outbox item. `investigate` is internal work, while `outreach_candidate` only creates a reviewable outbox proposal and never sends externally.
 
 These targets must never be inferred from each other mechanically. Examples:
 
+- A record that a previously committed change is complete is compatible supporting evidence for the commitment (`supports`); the independent state effect may be `resolve`. Completion is not `supersedes` unless the event also establishes a successor proposition for a later period.
 - An unauthorized sentence can semantically `contradict`, be `reject_unauthorized`, have state effect `none`, and external action `silence`.
 - An authorized but semantically `uncertain` event can produce disposition `abstain`, state effect `none`, and action `clarify`.
 - An authorized `supersedes` event can be accepted with `close_and_replace` while external action remains `none`.
@@ -253,6 +260,8 @@ A candidate snapshot is the exact state item presented to a classifier. It inclu
 3. At least ten difficult development cases receive independent second review with written reasoning.
 4. Disagreements are resolved against the definitions above. The adjudicator may choose `uncertain`, record acceptable alternatives, revise the event wording, or reject the case.
 5. Holdout labels are sealed after review and before any semantic implementation or threshold selection.
+
+Review approval is bound to a SHA-256 hash of the substantive history, pair, checkpoint, task, and gold content. Reviewer status, notes, and provenance are excluded from the hash itself. Any substantive content change invalidates the stored approval hash and returns the record to review.
 
 The same person or model may help draft cases, but draft provenance must be recorded. Generated text is never accepted without human inspection.
 
@@ -296,6 +305,7 @@ No metric may award credit for retrieving an obsolete assertion when the task as
 - Every derivative declares source dependencies. If all adequate support is deleted, it becomes `invalidated`; if independent support remains, it may stay current with its remaining evidence.
 - Deleted-canary strings must be unique and must not occur in instructions, identifiers, or metadata visible after deletion.
 - The harness creates the post-deletion projection once and supplies that identical projection to every non-oracle system.
+- Candidate snapshots whose supporting content is fully deleted or redacted are projected as tombstones. Their original proposition, canonical payload, and content hash are unavailable to non-oracle retrieval and pair-classification systems at and after the lifecycle event.
 
 ### Expiry
 
@@ -381,9 +391,11 @@ At least six histories must be declared in advance as likely to favour a simpler
 
 ### Frozen G4 split
 
-- Development: at least 80 of 120 histories.
-- Holdout: at least 40 of 120 histories (one third).
-- Minimum labelled pairs: 720 overall and 240 in holdout.
+- Development: 90 whole families, 270 histories, and 1,080 pair opportunities.
+- Holdout: 45 whole families, 135 histories, and 540 pair opportunities (one third of families/histories/opportunities).
+- Total: 135 whole families, 405 histories, and 1,620 pair opportunities.
+- Each of the six relationship classes: at least 30 holdout pairs from at least 10 independent holdout families.
+- Preserve the sizing assumptions: no family exceeds 3 histories; no history exceeds 4 eligible pair opportunities. Any increase in cluster size or reduction in opportunities requires resizing before generation.
 - Split unit: `family_id`, never event pairs.
 - All paraphrases, continuations, counterfactual variants, shared templates, and generated siblings remain in one partition.
 
@@ -391,7 +403,9 @@ At least six histories must be declared in advance as likely to favour a simpler
 
 Before random assignment, group histories by dominant relationship, feature tags, difficulty, expected-favour category, deletion presence, and ambiguity presence. Assign whole families to preserve required coverage in both partitions. Record the deterministic seed and assignment algorithm, but do not use seed shopping to improve balance.
 
-After assignment, only aggregate holdout validation is allowed before freezing: counts, schema validity, missing fields, and class/feature presence. Do not inspect holdout model results, tune wording from predictions, or move difficult cases between partitions.
+The generator must run a deterministic coverage checker before accepting the 30-history pilot. It rejects any corpus that misses the 21/9 history split, 120-pair minimum, per-class pair and family minima, declared feature minima, hostile-case count, or independent disposition/effect/action coverage in both partitions.
+
+After family assignment, the holdout is still unexposed to any model. Before sealing, blinded reviewers may inspect every holdout history and pair to adjudicate content and gold labels; independent structural validation may check counts, schema validity, missing fields, class/feature presence, and family minima. “Untouched” means no model runs, predictions, threshold tuning, or wording changes informed by model outputs. Do not move difficult cases between partitions to improve results. Record all pre-seal review and validation; seal and hash only after corrections and review are complete.
 
 ### Freezing
 
@@ -413,13 +427,21 @@ Each history has two projections constructed by a schema-validated harness:
 
 ### System projection
 
-This is the only history representation available to systems. It contains ordered event fields permitted at that sequence, the simulated clock, tombstones for deleted/redacted sources, checkpoint requests, and declared resource budgets. For pair classification it additionally contains exactly one immutable candidate snapshot and its hash.
+This is the only history representation available to systems. It contains ordered event fields permitted at that sequence, the simulated clock, tombstones for deleted/redacted sources, checkpoint requests, and declared resource budgets. Sequence-limited views exclude future checkpoints and tasks.
+
+Pair classification uses a narrower projection containing only the evaluated semantic event fields, explicitly permitted prior context events, and exactly one immutable candidate snapshot. It excludes actor and authority metadata, downstream tasks, action wording, future events, and evaluator fields. A deleted candidate is supplied only as a tombstone.
 
 ### Evaluator projection
 
 This contains semantic labels, transition dispositions, expected state effects, expected external actions, acceptable alternatives, evidence requirements, forbidden/deleted content, gold checkpoints, downstream gold responses, relevant dependency IDs, severity, expected-favour tags, generation provenance, and adjudication notes.
 
 The projection builder is allowlist-based: system inputs are constructed from approved fields rather than by deleting known gold fields. It must recursively reject unknown fields, emit a projection hash, and test that no evaluator-only canary appears in serialized system input, retrieval indexes, prompts, caches, or logs. Systems can never request the evaluator projection.
+
+### Leakage validation protocol
+
+The hard leakage gate checks evaluator-only canaries against the actual system-history, candidate-retrieval, and pair-classification projections. Every projection must have zero evaluator-only canary matches. This tests the prohibited path directly.
+
+Statistical event-text-only accuracy is an exploratory shortcut diagnostic, not a leakage gate. Semantic relationship is relational to the candidate snapshot, and transition disposition is decided from structured authority, validity, and policy inputs; neither can be validly judged from event prose alone. High text-only accuracy may reflect legitimate semantic content or synthetic wording and does not establish evaluator-label leakage. Report it separately if useful, with its input limitations and class baselines. Do not tune prose or thresholds solely to make that diagnostic pass.
 
 The oracle baseline receives a separately defined **oracle projection** containing only the gold transitions and invalidations necessary for its diagnostic role. It does not receive reviewer notes, expected-favour tags, hidden deleted content, or gold task answers.
 
@@ -544,7 +566,26 @@ Before the first holdout run, freeze:
 
 The G4 provisional thresholds in `gates.md` should remain provisional until development-corpus review, then be frozen without viewing holdout results.
 
-The 120-history/720-pair proposal is a floor, not a guaranteed sufficient sample. After the pilot, use observed development-set class frequency and autonomous coverage to predeclare the frozen size. The frozen holdout should yield at least 100 autonomous decisions at the selected threshold; otherwise increase corpus size before sealing. Report exact binomial or Wilson confidence intervals alongside point precision, and do not describe a point estimate based on a small accepted subset as stable.
+The 120-history/720-pair proposal is a floor, not a sufficient sample at the planning boundary. Retain at least 100 autonomous holdout decisions as the minimum observed G4 sample criterion and use 30% conditional coverage as the conservative planning assumption. Because learned-model predictions are not authorized before G3, do not train a model or estimate coverage from pilot predictions; this coverage is an explicit design assumption, not an empirical estimate. At a one-third holdout split, 120/720 yields 240 holdout pairs. At 30% independent-pair coverage, that produces 72 accepts on average; the probability of at least 100 is only about 0.008%.
+
+The independent-pair reference requires 381 eligible decisions. For a family-cluster sensitivity analysis, use the existing pilot's structural template as the planned maximum cluster: 3 histories per family × 4 pair opportunities per history = 12 opportunities/family; one third of whole families are holdout. This is a proposed design cap, not an observed correlation estimate. Let a family's conditional acceptance propensity be `theta ~ Beta(alpha, beta)`, with mean `mu=.30` and ICC `rho` (for `rho>0`, `alpha=mu*(1-rho)/rho`, `beta=(1-mu)*(1-rho)/rho`; at `rho=0`, use fixed `theta=mu`). Each of the 12 opportunities is independently eligible with probability `q`, then accepted with probability `theta` if eligible. For `m` opportunities in a family and `k` accepted outcomes, compute `P(K=k)=sum_e Binomial(m,e;q)*BetaBinomial(k;e,alpha,beta)`; convolve this family distribution across independent families and choose the smallest family count with `P(total accepts>=100)>=.95`. This is exact discrete convolution, not a fitted model or a simulation using holdout data. Sensitivity grid: `rho` in {0, .05, .10, .20, .30}, `q` in {.90, .80}. The q=.80, ICC=.30 scenario is the design case; it includes 20% ineligibility/exclusion headroom. Freeze a minimum of 45 holdout families (135 holdout histories, 540 pair opportunities) and 90 development families, 270 histories/1,080 pairs, for 135 families total: 405 histories and 1,620 pair opportunities. This is a planning design conditional on the stated cluster and propensity assumptions, not empirical evidence; exceeding the cap of three histories or four decisions per history requires resizing before generation.
+
+| Eligibility probability q | Family ICC | Holdout families | Holdout histories | Holdout pair opportunities | P(≥100 accepts) |
+|---:|---:|---:|---:|---:|---:|
+| .90 | .00 | 36 | 108 | 432 | .970 |
+| .90 | .05 | 37 | 111 | 444 | .966 |
+| .90 | .10 | 38 | 114 | 456 | .966 |
+| .90 | .20 | 39 | 117 | 468 | .953 |
+| .90 | .30 | 41 | 123 | 492 | .962 |
+| .80 | .00 | 40 | 120 | 480 | .955 |
+| .80 | .05 | 41 | 123 | 492 | .954 |
+| .80 | .10 | 42 | 126 | 504 | .955 |
+| .80 | .20 | 44 | 132 | 528 | .960 |
+| .80 | .30 | **45** | **135** | **540** | **.953** |
+
+The final proposed allocation is 135 whole-family clusters: 90 development and 45 holdout. At 3 histories and 4 pair opportunities per family this is 270/135 histories and 1,080/540 pair opportunities, respectively (405 histories/1,620 total). Each relationship class must have at least 30 holdout pairs from at least 10 distinct holdout families; keep family partitions disjoint and report all class/family counts. These counts assume each opportunity is eligible except for the modeled q attrition; if generation, adjudication, or prespecified exclusion checks reduce available opportunities further, add families before freeze rather than removing cases after results.
+
+For this plan, the G4 precision criterion is a 95% observed point-precision rule; report its two-sided 95% Wilson interval as uncertainty, not as a confidence-bound pass requirement. At 95/100 observed precision, the Wilson interval is approximately 88.8%–97.8%, so this does not establish that true precision is at least 95%. Keep the ≥100 accepted decisions as the minimum observed G4 sample criterion; the proposed 405-history/1,620-opportunity corpus yields at least a 95% planning probability of reaching it under the stated cluster and exclusion assumptions. Freeze the rule and assumptions before the second freeze review. Never inspect final-holdout labels or results to choose size, threshold, or exclusions.
 
 ## 19. Proposed experiment directory structure
 
@@ -604,7 +645,7 @@ experiments/
   g5/<run-id>/
 ```
 
-Nothing under `evaluation/corpus/` should be created until this design is approved. Pilot completion does not authorize creation or evaluation of the frozen G4 holdout without a second freeze review.
+The development pilot exists under the approved pilot-generation scope. Pilot completion does not authorize creation or evaluation of the frozen G4 corpus/holdout without a second freeze review of the finalized scale, split, thresholds, projections, configuration, and sealing procedure. Review approval must be recorded before the holdout is generated or made available to any system.
 
 ## 20. Leakage risks
 
@@ -653,7 +694,7 @@ The response should be better annotation, explicit `uncertain`, or case rejectio
 
 The dataset card must report friendly versus hostile cases, and results must retain every failure.
 
-## 23. Human approval checklist
+## 23. Second freeze review checklist
 
 Before generation, approve or revise:
 
@@ -663,16 +704,16 @@ Before generation, approve or revise:
 4. The separate representations of historical assertion, current state, inference, and operating assumption.
 5. The single event-ingestion path for deletion and derivative invalidation semantics.
 6. The allowlist-based system projection and sealed evaluator projection.
-7. The 21/9 pilot split, proposed 80/40 frozen split, and family grouping policy.
+7. The 21/9 pilot split, proposed 90/45-family frozen split, and family grouping policy.
 8. Minimum class, disposition, action, state-effect, and scenario coverage.
 9. Separate retrieval, pair-classification, and end-to-end tracks.
 10. G5/G6 downstream task records and scale-family construction.
 11. Full probability vectors and harness-calculated lifecycle costs.
 12. Inspection of every generated history and pair, with independent review of at least ten difficult pilot-development cases.
 13. Baseline input parity and the hostile-history families.
-14. Holdout sealing, hashing, access logging, confidence-bound review, and spent-holdout policy.
+14. Holdout sealing, hashing, access logging, Wilson-interval reporting, and spent-holdout policy.
 
-Approval of this design authorizes corpus generation and review preparation only. G3 passes later, when reviewed artifacts, frozen hashes, fair baseline smoke tests, and a complete gate record exist.
+Recorded approval of the finalized scale/split/threshold/sealing plan at the second freeze review authorizes final-corpus generation and blinded review preparation only. General approval of this design document does not authorize generation. Model runs and threshold tuning require G3 to pass and a separate G4 run authorization. G3 passes later, when reviewed artifacts, frozen hashes, fair baseline smoke tests, and a complete gate record exist.
 
 ## 24. Revision change log
 
@@ -692,7 +733,7 @@ Approval of this design authorizes corpus generation and review preparation only
 
 G4, G5, G6, and G7 use disjoint final holdout families and separately hashed manifests. A history family may contribute to only one final gate holdout. Development material may be shared only when the frozen configuration declares that reuse. Looking at G4 holdout outcomes must not spend or expose G5–G7 holdouts.
 
-The development pilot has no final gate holdout. Its `pilot_holdout` partition exists solely to exercise split and sealing machinery and becomes ordinary development material after human review.
+The development pilot has no final gate holdout. Its `pilot_holdout` partition exists solely to exercise split and sealing machinery and becomes ordinary development material after review under the documented, project-owner-approved review policy.
 
 ### Isolated retrieval candidate pools
 

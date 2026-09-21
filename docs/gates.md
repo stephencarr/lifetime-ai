@@ -308,6 +308,8 @@ Gold checkpoints distinguish:
 
 These quantities are POC minimums, not claims of statistical generality.
 
+The 30-history/120-pair development pilot validates annotation, schema, split, projections, and baseline plumbing; it does **not** satisfy G3 exit or provide G4 evidence. The current proposed final G4 plan is 405 histories/1,620 pair opportunities: 270 histories/1,080 pairs in development and 135 histories/540 pairs in holdout, split by 90/45 whole families. This planning size assumes no more than three histories/family, four pair opportunities/history, 30% conditional coverage, up to 20% ineligibility/exclusion, and family ICC no greater than .30; see the exact sensitivity model in `docs/g3_evaluation_design_proposal.md`. It requires second freeze review approval before generation. The ≥100 autonomous accepts is a later observed G4 criterion, not a quantity checked before the holdout run.
+
 ### Required baselines
 
 - Rolling summary plus retrieval.
@@ -321,7 +323,7 @@ These quantities are POC minimums, not claims of statistical generality.
 - Development and holdout partitions are frozen and hash-recorded.
 - Every baseline consumes comparable inputs and emits a comparable contract.
 - Metrics, thresholds, and exclusion rules for the next gate are frozen.
-- At least ten difficult cases receive documented manual review.
+- At least ten difficult cases receive documented independent review. Independent agent review may substitute for human signoff when explicitly authorized by the project owner; record reviewer identities, scope, findings, disposition, and content hashes. Do not describe agent review as human review.
 - The corpus contains cases expected to favour the simpler baselines.
 
 ### Automatic failure conditions
@@ -367,6 +369,7 @@ Freeze these values before the first holdout run. Change them beforehand if corp
 
 - At least 95% precision among decisions allowed to proceed without LLM escalation.
 - At least 30% autonomous coverage of eligible relationship decisions.
+- At least 100 autonomous decisions in the untouched holdout (minimum observed G4 sample criterion; freeze before the final holdout run).
 - Zero unauthorized mutations or high-severity errors in the holdout.
 - Expected calibration error no greater than 0.10.
 - At least 25% fewer generative semantic-decision calls than Baseline C.
@@ -613,10 +616,10 @@ Maintain this table in pull requests or update it directly when evidence is acce
 
 | Gate | Status | Evidence | Decision notes |
 |---|---|---|---|
-| G0 | Passed | `experiments/g0/20260917-2120-reproducible-foundation/` | Two clean locked environments; all tests passed |
-| G1 | Passed | `experiments/g1/20260917-2140-durable-state/` | All eight scenarios pass; restart and replay digests match |
-| G2 | Passed | `experiments/g2/20260917-2200-typed-pipeline/` | Six relationships and adversarial validator paths pass |
-| G3 | In progress | `experiments/g3/20260918-1337-pilot-review-revision/` | Thirteen revised pilot histories await human review; no final gate holdout exists |
+| G0 | Not passed | Initial skeleton used Python 3.9; pytest unavailable | Establish Python 3.12+ environment and run twice |
+| G1 | In progress | Persistence code and unexecuted tests exist | Audit after G0 |
+| G2 | Not started | — | Manual typed relationship first |
+| G3 | Not started | — | Freeze corpus before learned model work |
 | G4 | Not started | — | Thresholds provisional |
 | G5 | Not started | — | — |
 | G6 | Not started | — | — |

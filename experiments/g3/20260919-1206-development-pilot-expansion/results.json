@@ -1,0 +1,57 @@
+{
+  "gate": "G3",
+  "evaluation_type": "development_pilot_expansion",
+  "commit": "24c662263aa773136536083ced7f018386ff24ec",
+  "working_tree_changes_present": true,
+  "status": "DEVELOPMENT_PILOT_GENERATED_AWAITING_REVIEW",
+  "decision": "NOT_EVALUATED",
+  "g3_complete": false,
+  "lock_sha256": "1438f893cdae63babf1cf48af8520fcfbe84946f0f5e42c9225904eb16218861",
+  "pilot_manifest_sha256": "7c50f6e0bbfa417eecec62817e5d7ee352b6e156325bc477a69f7d48e6b1a128",
+  "histories": 30,
+  "pairs": 120,
+  "partitions": {
+    "pilot_development": 21,
+    "pilot_holdout": 9
+  },
+  "human_review": {
+    "histories_approved": 0,
+    "pairs_approved": 0,
+    "histories_pending": 30,
+    "pairs_pending": 120
+  },
+  "automated_tests": {
+    "passed": 50,
+    "failed": 0
+  },
+  "coverage": {
+    "relationships": "20 per class",
+    "template_families": 10,
+    "whole_family_split": "PASS",
+    "declared_feature_coverage": "PASS",
+    "pair_feature_union_matches_history_tags": "PASS"
+  },
+  "baseline_contract_cases": {
+    "baseline-a-mock-rolling-summary": 30,
+    "baseline-b-mock-scheduler": 30,
+    "baseline-c-mock-general-llm": 30,
+    "baseline-d-mock-oracle": 30
+  },
+  "evaluator_leakage_failures": 0,
+  "model_calls": 0,
+  "embeddings_or_vector_search": false,
+  "production_connections": false,
+  "final_gate_holdouts_created": false,
+  "gtl_reassessment": {
+    "status": "UNAVAILABLE",
+    "reason": "The requested read-only reassessment could not run because the GTL agent reached its usage limit.",
+    "treated_as_approval": false
+  },
+  "limitations": [
+    "All 120 pair decisions and all 30 history/checkpoint decisions remain pending human review.",
+    "The corpus uses synthetic prose and mechanically balanced relationship classes.",
+    "Expected-favor labels are prospective judgments with rationales, not experimental results.",
+    "No final G4, G5, G6, or G7 holdout was inspected or created.",
+    "No model predictions were generated."
+  ]
+}

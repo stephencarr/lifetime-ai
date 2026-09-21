@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifetime-ai.local/schema/frozen-g4-blueprint-v1.json",
+  "title": "Declarative frozen G4 family blueprint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "blueprint_version", "family_id", "generation_origin",
+    "primary_relationship", "feature_tags", "difficulty_tags",
+    "expected_favors", "deletion_presence", "ambiguity_presence", "histories"
+  ],
+  "properties": {
+    "blueprint_version": {"const": "1"},
+    "family_id": {"type": "string", "minLength": 1},
+    "generation_origin": {"enum": ["human", "generated_then_reviewed", "adapted"]},
+    "primary_relationship": {
+      "enum": ["supports", "contradicts", "narrows_scope", "supersedes", "unrelated", "uncertain"]
+    },
+    "feature_tags": {
+      "type": "array", "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "difficulty_tags": {
+      "type": "array", "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_favors": {
+      "type": "array", "uniqueItems": true, "minItems": 1,
+      "items": {"enum": ["architecture", "baseline_a", "baseline_b", "baseline_c", "neutral"]}
+    },
+    "deletion_presence": {"type": "boolean"},
+    "ambiguity_presence": {"type": "boolean"},
+    "histories": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {"$ref": "#/$defs/history_template"}
+    }
+  },
+  "$defs": {
+    "history_template": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "history_id", "difficulty_tags", "feature_tags", "timeline",
+        "candidate_snapshots", "candidate_pools", "pair_inputs",
+        "checkpoint_requests", "downstream_tasks", "evaluator_only"
+      ],
+      "properties": {
+        "history_id": {"type": "string", "minLength": 1},
+        "difficulty_tags": {"$ref": "https://lifetime-ai.local/schema/frozen-g4-history-v1.json#/properties/difficulty_tags"},
+        "feature_tags": {"$ref": "https://lifetime-ai.local/schema/frozen-g4-history-v1.json#/properties/feature_tags"},
+        "timeline": {"$ref": "https://lifetime-ai.local/schema/frozen-g4-history-v1.json#/properties/timeline"},
+        "candidate_snapshots": {"$ref": "https://lifetime-ai.local/schema/frozen-g4-history-v1.json#/properties/candidate_snapshots"},
+        "candidate_pools": {"$ref": "https://lifetime-ai.local/schema/frozen-g4-history-v1.json#/properties/candidate_pools"},
+        "pair_inputs": {"$ref": "https://lifetime-ai.local/schema/frozen-g4-history-v1.json#/properties/pair_inputs"},
+        "checkpoint_requests": {"$ref": "https://lifetime-ai.local/schema/frozen-g4-history-v1.json#/properties/checkpoint_requests"},
+        "downstream_tasks": {"$ref": "https://lifetime-ai.local/schema/frozen-g4-history-v1.json#/properties/downstream_tasks"},
+        "evaluator_only": {"$ref": "https://lifetime-ai.local/schema/evaluator-projection-v1.json"}
+      }
+    }
+  }
+}

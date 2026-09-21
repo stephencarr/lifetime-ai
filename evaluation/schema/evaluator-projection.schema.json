@@ -6,11 +6,121 @@
   "additionalProperties": false,
   "required": ["pair_gold", "checkpoint_gold", "downstream_task_gold", "deleted_source_content", "expected_favors", "generation_and_review_provenance"],
   "properties": {
-    "pair_gold": {"type": "array", "items": {"type": "object"}},
-    "checkpoint_gold": {"type": "array", "items": {"type": "object"}},
-    "downstream_task_gold": {"type": "array", "items": {"type": "object"}},
+    "pair_gold": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["pair_id", "semantic_relationship", "transition_disposition", "expected_state_effect", "expected_external_action", "acceptable_alternatives", "ambiguity_reason", "required_evidence_ids", "forbidden_evidence_ids", "severity_if_wrong", "adjudication_status", "adjudication_notes"],
+        "properties": {
+          "pair_id": {"type": "string"},
+          "semantic_relationship": {"enum": ["supports", "contradicts", "narrows_scope", "supersedes", "unrelated", "uncertain"]},
+          "transition_disposition": {"enum": ["accept", "reject_unauthorized", "reject_invalid", "abstain", "no_op"]},
+            "expected_state_effect": {
+              "type": "object", "additionalProperties": false,
+              "required": ["effect", "affected_item_ids", "expected_new_item_ids"],
+              "properties": {
+              "effect": {"enum": ["reinforce", "preserve_conflict", "add_scoped_item", "close_and_replace", "resolve", "invalidate", "expire", "none"]},
+                "affected_item_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+                "affected_derivative_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+                "expected_new_item_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+            }
+          },
+          "expected_external_action": {"enum": ["none", "clarify", "investigate", "outreach_candidate", "silence"]},
+          "acceptable_alternatives": {"type": "array", "items": {"enum": ["supports", "contradicts", "narrows_scope", "supersedes", "unrelated", "uncertain"]}, "uniqueItems": true},
+          "ambiguity_reason": {"type": ["string", "null"]},
+          "required_evidence_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "forbidden_evidence_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "severity_if_wrong": {"enum": ["low", "medium", "high"]},
+          "adjudication_status": {"enum": ["pending", "agreed", "adjudicated"]},
+          "adjudication_notes": {"type": "string"},
+          "feature_tags": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+        }
+      }
+    },
+    "checkpoint_gold": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["checkpoint_id", "historical_assertions", "current_state", "inferences", "operating_assumptions", "invalidated_derivatives"],
+        "properties": {
+          "checkpoint_id": {"type": "string"},
+          "historical_assertions": {
+            "type": "array",
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["assertion_id", "proposition", "asserted_at", "source_event_ids", "source_status"],
+              "properties": {
+                "assertion_id": {"type": "string"},
+                "proposition": {"type": "string"},
+                "asserted_at": {"type": "string", "pattern": "Z$"},
+                "source_event_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+                "source_status": {"enum": ["present", "deleted", "redacted"]}
+              }
+            }
+          },
+          "current_state": {
+            "type": "array",
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["semantic_item_ref", "kind", "proposition", "scope", "status", "valid_from", "valid_until", "evidence_ids", "counterevidence_ids", "epistemic_basis", "sensitivity"],
+              "properties": {
+                "semantic_item_ref": {"type": "string"},
+                "kind": {"enum": ["fact", "preference", "commitment", "unresolved_thread", "prospect"]},
+                "proposition": {"type": "string"},
+                "scope": {"type": "object"},
+                "status": {"enum": ["active", "resolved", "expired", "revoked", "invalidated", "disputed"]},
+                "valid_from": {"type": ["string", "null"]},
+                "valid_until": {"type": ["string", "null"]},
+                "evidence_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+                "counterevidence_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+                "epistemic_basis": {"enum": ["asserted", "inferred", "operating_assumption"]},
+                "sensitivity": {"enum": ["normal", "sensitive", "highly_sensitive"]}
+              }
+            }
+          },
+          "inferences": {"type": "array", "items": {"type": "object"}},
+          "operating_assumptions": {"type": "array", "items": {"type": "object"}},
+          "invalidated_derivatives": {
+            "type": "array",
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["derivative_id", "invalidated_by_event_id", "reason"],
+              "properties": {
+                "derivative_id": {"type": "string"},
+                "invalidated_by_event_id": {"type": "string"},
+                "reason": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "downstream_task_gold": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["task_id", "gold_response", "relevant_dependency_ids", "counterevidence_ids", "primary_metric"],
+        "properties": {
+          "task_id": {"type": "string"},
+          "gold_response": {"type": "object"},
+          "relevant_dependency_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "counterevidence_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "primary_metric": {"type": "string"}
+        }
+      }
+    },
     "deleted_source_content": {"type": "object"},
     "expected_favors": {"enum": ["architecture", "baseline_a", "baseline_b", "baseline_c", "neutral"]},
-    "generation_and_review_provenance": {"type": "object"}
+    "expected_favors_rationale": {"type": "string", "minLength": 1},
+    "generation_and_review_provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["generator", "human_review", "canary", "reviewed_content_sha256"],
+      "properties": {
+        "generator": {"type": "string"},
+        "human_review": {"type": "string"},
+        "canary": {"type": "string"},
+        "reviewed_content_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
   }
 }

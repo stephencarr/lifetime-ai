@@ -23,9 +23,15 @@ DEFAULT_CORPUS = ROOT / "evaluation" / "corpus" / "pilot-v0.1"
 
 def run(corpus: Path) -> dict:
     histories = read_jsonl(corpus / "development.jsonl") + read_jsonl(corpus / "holdout.jsonl")
+    manifest = strict_json_loads((corpus / "manifest.json").read_text(encoding="utf-8"))
     validate_corpus(histories)
     retrieval_cases = pair_cases = end_to_end_cases = 0
     leakage_failures = 0
+    baseline_case_counts = {
+        baseline.system_id: 0 for baseline in (
+            MockRollingSummaryBaseline(), MockSchedulerBaseline(),
+            MockGeneralLLMBaseline(), MockOracleBaseline())
+    }
     for history in histories:
         canaries = {history["evaluator_only"]["generation_and_review_provenance"]["canary"]}
         end_projection = build_system_history_projection(history)
@@ -37,6 +43,15 @@ def run(corpus: Path) -> dict:
         for checkpoint in end_projection["checkpoint_requests"]:
             system.checkpoint(checkpoint)
         end_to_end_cases += 1
+        for baseline in (
+                MockRollingSummaryBaseline(), MockSchedulerBaseline(),
+                MockGeneralLLMBaseline(), MockOracleBaseline()):
+            baseline.reset(history["history_id"], {})
+            for event in end_projection["timeline"]:
+                baseline.ingest(event)
+            for checkpoint in end_projection["checkpoint_requests"]:
+                baseline.checkpoint(checkpoint)
+            baseline_case_counts[baseline.system_id] += 1
         for pair in history["pair_inputs"]:
             retrieval_projection = build_retrieval_projection(history, pair["pair_id"])
             classification_projection = build_pair_classification_projection(history, pair["pair_id"])
@@ -49,7 +64,7 @@ def run(corpus: Path) -> dict:
     price_path = ROOT / "evaluation" / "config" / "pilot-price-table.json"
     price_table = strict_json_loads(price_path.read_text(encoding="utf-8"))
     result = {
-        "status": "PILOT_READY_FOR_HUMAN_REVIEW",
+        "status": manifest["status"],
         "g3_complete": False,
         "history_count": len(histories),
         "pair_count": sum(len(history["pair_inputs"]) for history in histories),
@@ -59,10 +74,9 @@ def run(corpus: Path) -> dict:
             "end_to_end_mock_cases": end_to_end_cases,
         },
         "baseline_contract_smokes": {
-            baseline.system_id: "PASS" for baseline in (
-                MockRollingSummaryBaseline(), MockSchedulerBaseline(),
-                MockGeneralLLMBaseline(), MockOracleBaseline())
+            system_id: "PASS" for system_id in baseline_case_counts
         },
+        "baseline_contract_cases": baseline_case_counts,
         "schema_validation": "PASS",
         "evaluator_leakage_failures": leakage_failures,
         "model_calls": 0,

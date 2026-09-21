@@ -1,0 +1,80 @@
+{
+  "config_version": "1",
+  "dataset_version": "frozen-g4-v0.1",
+  "corpus_stage": "frozen_g4",
+  "random_seed": "lifetime-ai-frozen-g4-v0.1-2026-09-19",
+  "split": {
+    "unit": "family_id",
+    "algorithm": "predeclared-multilabel-stratified-whole-family-assignment-v1",
+    "families_total": 135,
+    "development_families": 90,
+    "holdout_families": 45,
+    "histories_per_family": 3,
+    "pair_opportunities_per_history": 4,
+    "partition_names": ["development", "holdout"],
+    "stratify_by": [
+      "primary_relationship", "feature_tags", "difficulty_tags",
+      "expected_favors", "deletion_presence", "ambiguity_presence"
+    ],
+    "maximum_holdout_count_deviation_by_dimension": {
+      "relationship": 3,
+      "feature": 3,
+      "difficulty": 3,
+      "expected_favors": 3,
+      "deletion_presence": 3,
+      "ambiguity_presence": 3
+    }
+  },
+  "planning_assumptions": {
+    "conditional_autonomous_coverage": 0.3,
+    "eligibility_probabilities_sensitivity": [0.9, 0.8],
+    "family_icc_sensitivity": [0.0, 0.05, 0.1, 0.2, 0.3],
+    "minimum_holdout_autonomous_accepts": 100,
+    "planning_probability": 0.95
+  },
+  "coverage": {
+    "relationships": ["supports", "contradicts", "narrows_scope", "supersedes", "unrelated", "uncertain"],
+    "minimum_relationship_pairs_per_partition": 30,
+    "minimum_holdout_relationship_families": 10,
+    "dispositions_per_partition": ["accept", "reject_unauthorized", "reject_invalid", "abstain", "no_op"],
+    "effects_per_partition": ["reinforce", "preserve_conflict", "add_scoped_item", "close_and_replace", "resolve", "invalidate", "expire", "none"],
+    "actions_per_partition": ["none", "clarify", "investigate", "outreach_candidate", "silence"],
+    "minimum_baseline_favoring_histories_total": 6,
+    "baseline_favoring_histories_in_each_partition": true,
+    "feature_minimum_histories": {
+      "preference_reinforcement": 4,
+      "direct_correction": 4,
+      "scope_narrowing": 4,
+      "temporal_supersession": 4,
+      "explicit_expiry": 4,
+      "commitment_resolution": 4,
+      "commitment_failure": 3,
+      "contradiction_without_repair": 4,
+      "genuine_ambiguity": 4,
+      "irrelevant_noise": 6,
+      "source_deletion": 3,
+      "derivative_invalidation": 3,
+      "independent_support_survives": 2,
+      "unauthorized_injection_text": 4,
+      "silence_is_correct": 4,
+      "late_or_retroactive_report": 3,
+      "sensitive_state": 3
+    },
+    "feature_coverage_in_each_partition": true
+  },
+  "review_and_sealing": {
+    "review_all_histories_and_pairs_blind_to_model_predictions": true,
+    "near_duplicate_adjudication_artifact_required": true,
+    "near_duplicate_adjudication_method": "all-rendered-string-trigrams-jaccard-v1",
+    "reviewer_signoff_policy": "independent-agent-review-may-substitute-for-human-signoff-with-owner-waiver",
+    "seal_only_after_review_and_structural_validation": true,
+    "model_runs_before_g3_pass": false,
+    "holdout_model_access_requires_separate_g4_authorization": true
+  },
+  "family_integrity": {
+    "reject_exact_cross_family_content_duplicates": true,
+    "near_duplicate_review_threshold_jaccard": 0.9,
+    "near_duplicate_minimum_tokens": 20,
+    "expected_family_spec_registry_sha256": "f0d4789d83e6b42b451b071fb7bd2606f3d163816dde761e82ccbcee5d25ac24"
+  }
+}

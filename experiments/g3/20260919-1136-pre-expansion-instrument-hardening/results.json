@@ -1,0 +1,43 @@
+{
+  "gate": "G3",
+  "evaluation_type": "pre_expansion_instrument_hardening",
+  "commit": "24c662263aa773136536083ced7f018386ff24ec",
+  "working_tree_changes_present": true,
+  "status": "PILOT_INSTRUMENT_HARDENED",
+  "decision": "NOT_EVALUATED",
+  "g3_complete": false,
+  "lock_sha256": "1438f893cdae63babf1cf48af8520fcfbe84946f0f5e42c9225904eb16218861",
+  "pilot_manifest_sha256": "b581094c17fd2f873aa5a027921680a65cc0f4fc0e9360a7595cf3e428e5ac4b",
+  "histories": 13,
+  "pairs": 13,
+  "acceptance_criteria": {
+    "authority_free_pair_projection": "PASS",
+    "deleted_content_absent_from_non_oracle_projections": "PASS",
+    "multi_pair_mixed_action_history": "PASS",
+    "strict_schema_cross_reference_and_temporal_validation": "PASS",
+    "content_hash_bound_review_approval": "PASS",
+    "stratified_split_and_coverage_gate": "PASS",
+    "explicit_downstream_target_scope": "PASS"
+  },
+  "automated_tests": {
+    "passed": 47,
+    "failed": 0
+  },
+  "baseline_contract_cases": {
+    "baseline-a-mock-rolling-summary": 13,
+    "baseline-b-mock-scheduler": 13,
+    "baseline-c-mock-general-llm": 13,
+    "baseline-d-mock-oracle": 13
+  },
+  "evaluator_leakage_failures": 0,
+  "model_calls": 0,
+  "embeddings_or_vector_search": false,
+  "production_connections": false,
+  "final_gate_holdouts_created": false,
+  "limitations": [
+    "The 30-history and 120-pair development corpus was not generated.",
+    "Coverage enforcement is implemented but cannot pass until the full development pilot exists.",
+    "No final holdout was inspected or created.",
+    "No model predictions were generated."
+  ]
+}

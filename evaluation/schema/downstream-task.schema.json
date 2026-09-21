@@ -4,12 +4,41 @@
   "title": "System-visible downstream task input",
   "type": "object",
   "additionalProperties": false,
-  "required": ["task_id", "checkpoint_id", "task_type", "request", "maximum_context_budget", "scale_family_id", "irrelevant_history_target"],
+  "required": ["task_id", "pair_id", "checkpoint_id", "task_type", "request", "target_scope", "maximum_context_budget", "scale_family_id", "irrelevant_history_target"],
   "properties": {
     "task_id": {"type": "string"},
+    "pair_id": {"type": "string"},
     "checkpoint_id": {"type": "string"},
     "task_type": {"enum": ["current_state_query", "commitment_query", "provenance_query", "deletion_query", "context_compilation", "action_selection"]},
-    "request": {"type": "object"},
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question"],
+      "properties": {"question": {"type": "string", "minLength": 1}}
+    },
+    "target_scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "semantic_item_refs"],
+          "properties": {
+            "mode": {"const": "semantic_items"},
+            "semantic_item_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+            "derivative_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "pair_id"],
+          "properties": {
+            "mode": {"const": "pair"},
+            "pair_id": {"type": "string"}
+          }
+        }
+      ]
+    },
     "maximum_context_budget": {"type": ["integer", "null"], "minimum": 0},
     "scale_family_id": {"type": ["string", "null"]},
     "irrelevant_history_target": {"type": ["integer", "null"], "minimum": 0}

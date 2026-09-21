@@ -13,6 +13,9 @@ dev = [
     "jsonschema==4.25.1",
     "pytest==8.4.2",
 ]
+evaluation = [
+    "scikit-learn>=1.6,<2",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

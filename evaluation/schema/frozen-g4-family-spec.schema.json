@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifetime-ai.local/schema/frozen-g4-family-spec-v1.json",
+  "title": "Predeclared family metadata for frozen G4 assignment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["family_id", "primary_relationship", "feature_tags", "difficulty_tags", "expected_favors", "deletion_presence", "ambiguity_presence", "rendered_histories"],
+  "properties": {
+    "family_id": {"type": "string", "minLength": 1},
+    "primary_relationship": {
+      "enum": ["supports", "contradicts", "narrows_scope", "supersedes", "unrelated", "uncertain"]
+    },
+    "feature_tags": {
+      "type": "array", "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "difficulty_tags": {
+      "type": "array", "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_favors": {
+      "type": "array", "uniqueItems": true, "minItems": 1,
+      "items": {"enum": ["architecture", "baseline_a", "baseline_b", "baseline_c", "neutral"]}
+    },
+    "deletion_presence": {"type": "boolean"},
+    "ambiguity_presence": {"type": "boolean"},
+    "rendered_histories": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["history_id", "content_sha256"],
+        "properties": {
+          "history_id": {"type": "string", "minLength": 1},
+          "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    }
+  }
+}

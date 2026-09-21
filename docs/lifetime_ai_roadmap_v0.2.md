@@ -47,7 +47,7 @@ The proof of concept will not claim to demonstrate:
 
 | Dimension | Constraint |
 |---|---|
-| Primary hardware | MacBook Air with Apple M4 and 16 GB unified memory |
+| Primary hardware | Base 2026 M5 MacBook Air |
 | Memory | 16 GB unified memory |
 | Storage | 512 GB internal SSD |
 | Monthly spend | Maximum CAD $100 |
@@ -353,11 +353,11 @@ Thresholds may be marked provisional while designing an experiment, but they mus
 As of 18 September 2026:
 
 - A small model-free persistence skeleton has been generated.
-- Python 3.13.11 and locked dependencies reproduce the test result in two clean environments.
-- G0 has **passed** with evidence under `experiments/g0/`.
-- G1 has **passed** with evidence under `experiments/g1/`.
+- Its tests have not yet been executed because the active interpreter was Python 3.9 and pytest was unavailable.
+- G0 is therefore **not yet passed**.
+- G1 is **in progress**, not complete.
 
-The typed transition pipeline in M2/G2 has passed. M3/G3 pilot preparation now has schemas, projections, mock baseline contracts, and eight generated histories awaiting human review. G3 has not passed; no final gate holdout exists. The next action is human review and revision of the pilot before expansion.
+The next action is to reproduce the project under Python 3.12+, run the complete test suite, audit the persistence invariants in G1, and record the evidence.
 
 ## 16. North star
 

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifetime-ai.local/schema/frozen-g4-duplicate-adjudication-v1.json",
+  "title": "Blind family near-duplicate adjudication artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "blind_to_model_predictions", "similarity_method", "threshold_jaccard_milli", "reviewed_family_pairs", "artifact_sha256"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "blind_to_model_predictions": {"const": true},
+    "similarity_method": {"const": "all-rendered-string-trigrams-jaccard-v1"},
+    "threshold_jaccard_milli": {"type": "integer", "minimum": 0, "maximum": 1000},
+    "reviewed_family_pairs": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["family_ids", "similarity_jaccard_milli", "disposition", "rationale", "reviewer_id", "blind_to_model_predictions"],
+        "properties": {
+          "family_ids": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "similarity_jaccard_milli": {"type": "integer", "minimum": 0, "maximum": 1000},
+          "disposition": {"enum": ["distinct", "duplicate"]},
+          "rationale": {"type": "string", "minLength": 10},
+          "reviewer_id": {"type": "string", "minLength": 1},
+          "blind_to_model_predictions": {"const": true}
+        }
+      }
+    },
+    "artifact_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

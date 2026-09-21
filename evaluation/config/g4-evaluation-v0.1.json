@@ -1,0 +1,173 @@
+{
+  "config_version": "g4-evaluation-v0.1",
+  "canonical_profile": "lifetime-ai-canonical-json-v1",
+  "status": "PROVISIONAL_PRE_G3_CORPUS_REVIEW",
+  "authorization": {
+    "model_predictions_authorized": false,
+    "threshold_tuning_authorized": false,
+    "holdout_evaluation_authorized": false,
+    "separate_g4_run_authorization_required": true
+  },
+  "approved_gate_thresholds": {
+    "autonomous_precision_minimum": "0.95",
+    "precision_pass_rule": "observed_point_precision",
+    "autonomous_coverage_minimum": "0.30",
+    "minimum_untouched_holdout_autonomous_decisions": 100,
+    "unauthorized_mutations_maximum": 0,
+    "high_severity_errors_maximum": 0,
+    "expected_calibration_error_maximum": "0.10",
+    "generative_semantic_decision_call_reduction_vs_baseline_c_minimum": "0.25",
+    "local_median_decision_latency_rule": "strictly_less_than_baseline_c_median"
+  },
+  "reporting": {
+    "relationship_metrics": [
+      "accuracy",
+      "per_class_precision",
+      "per_class_recall",
+      "multiclass_brier_score",
+      "expected_calibration_error"
+    ],
+    "operating_metrics": [
+      "autonomous_coverage",
+      "escalation_rate",
+      "median_latency_ms",
+      "p95_latency_ms",
+      "generative_calls",
+      "lifecycle_cost_cad"
+    ],
+    "longitudinal_metrics": [
+      "current_state_quality",
+      "commitment_tracking",
+      "temporal_scope",
+      "provenance",
+      "unauthorized_mutations",
+      "deletion_behavior"
+    ],
+    "tracks_reported_separately": [
+      "candidate_retrieval",
+      "pair_classification",
+      "end_to_end_longitudinal"
+    ],
+    "blend_tracks_into_headline_score": false,
+    "errors_and_abstentions_reported_by_class_and_severity": true,
+    "complete_error_inventory_required": true,
+    "confidence_interval": {
+      "metric": "autonomous_precision",
+      "method": "wilson_score_interval",
+      "confidence_level": "0.95",
+      "sidedness": "two_sided",
+      "used_as_pass_threshold": false
+    }
+  },
+  "decision_policy": {
+    "autonomous_acceptance_threshold": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "escalation_policy": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "eligible_decision_definition": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "calibration_procedure": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "probability_sum_tolerance": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "must_be_fixed_and_deterministic_before_holdout": true
+  },
+  "severity_policy": {
+    "gold_levels": ["low", "medium", "high"],
+    "level_definitions": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "unauthorized_mutation_is_zero_tolerance": true,
+    "high_severity_error_is_zero_tolerance": true
+  },
+  "semantic_state_matching": {
+    "status": "PROVISIONAL_PILOT_CANDIDATE_NOT_FROZEN",
+    "source": "evaluation/config/pilot-evaluation-config.json",
+    "algorithm": "deterministic_greedy_pilot_only",
+    "assignment_algorithm": "deterministic_greedy",
+    "tie_handling": "predicted_index_then_gold_index",
+    "normalization": {
+      "proposition": "unicode_word_tokens_casefolded_set_jaccard",
+      "scope": "exact_object_equality",
+      "evidence": "exact_id_set_jaccard"
+    },
+    "threshold": 70,
+    "temporal_tolerance_seconds": 0,
+    "weights": {
+      "kind": 20,
+      "proposition": 30,
+      "scope": 15,
+      "status": 10,
+      "validity": 10,
+      "epistemic_basis": 5,
+      "sensitivity": 5,
+      "evidence": 5
+    },
+    "exact_runtime_id_equality_is_primary_metric": false,
+    "requires_post_corpus_review_before_holdout": true
+  },
+  "acceptable_alternatives": {
+    "scoring_rule": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "recommended_primary_for_genuine_multi_label_ambiguity": "uncertain",
+    "must_be_frozen_before_holdout": true
+  },
+  "unsupported_baseline_fields": {
+    "policy": "explicit_empty_or_unsupported_result",
+    "silent_omission_allowed": false
+  },
+  "failure_handling": {
+    "timeout_seconds": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "timeout_scoring": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "provider_failure_scoring": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "malformed_output_scoring": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "retry_limit": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW"
+  },
+  "exclusions": {
+    "prespecified_rules": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "post_holdout_outcome_driven_exclusions_allowed": false,
+    "failed_examples_retained_in_reports": true,
+    "exclusion_justification_required_before_recomputation": true,
+    "rejected_case_after_holdout_requires_replacement_holdout": true,
+    "maximum_planning_ineligibility_fraction": "0.20"
+  },
+  "reproducibility": {
+    "random_seeds": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "confidence_intervals_other_than_precision": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "corpus_split_seed_source": "evaluation/config/frozen-g4-v0.1.json"
+  },
+  "lifecycle_accounting": {
+    "currency": "CAD",
+    "calculated_by_harness": true,
+    "systems_may_self_report_monetary_score": false,
+    "phases_reported_separately": [
+      "ingestion",
+      "retrieval",
+      "consolidation",
+      "classification",
+      "escalation",
+      "repair",
+      "final_response"
+    ],
+    "all_retries_count": true,
+    "cache_fills_count": true,
+    "cache_hit_treatment": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "token_counting_policy": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "local_compute_reported_separately": true,
+    "provider_usage_records_required_for_provider_cost": true,
+    "price_table": {
+      "status": "PROVISIONAL_MOCK_ONLY_NOT_VALID_FOR_G4_COST_COMPARISON",
+      "path": "evaluation/config/pilot-price-table.json",
+      "file_sha256": "239f9e3e2823b68990d3f2026242d25bb7c0f83fd4582d3cc113ebe049904082",
+      "canonical_value_sha256": "c860703e67a5928811989335d223b710bdd3d4e80963d9bf5b78f04b9deb79fc",
+      "replacement_required_before_g3_pass": true
+    }
+  },
+  "baseline_parity": {
+    "ordinary_systems_receive_same_ordered_system_projection_and_simulated_clock": true,
+    "oracle_receives_only_limited_oracle_projection": true,
+    "same_checkpoint_contract": true,
+    "same_six_class_probability_contract": true,
+    "same_raw_lifecycle_usage_contract": true,
+    "gold_labels_or_answers_available_to_ordinary_baselines": false
+  },
+  "freeze_blockers": [
+    "development-corpus review has not selected the autonomous threshold and escalation policy",
+    "calibration, eligibility, severity, timeout, failure, malformed-output, exclusion, and alternative-label procedures are not frozen",
+    "the pilot semantic matcher has not been accepted as the final matcher",
+    "a non-mock G4 price table and exact token/cache/retry accounting policy are not frozen",
+    "random seeds and remaining confidence-interval procedures are not frozen"
+  ]
+}
