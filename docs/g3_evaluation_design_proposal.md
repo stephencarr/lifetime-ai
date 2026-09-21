@@ -1,6 +1,6 @@
 # G3 evaluation design proposal
 
-**Status:** Development pilot v0.7 is agent-reviewed; the final G4 design passed the second freeze review, but the corpus is not yet generated or frozen
+**Status:** Frozen G4 corpus v0.1 is sealed and G3 passed model-free on 21 September 2026; G4 model execution remains separately unauthorized
 
 **Scope:** The existing 30-history/120-pair pilot is development material only. No final G4 holdout exists. Recorded second-freeze approval authorizes final corpus generation and blinded review only. Learned-model predictions and threshold tuning remain unauthorized until G3 passes and a separate G4 run is authorized.
 

@@ -10,6 +10,7 @@ import pytest
 from lifetime_ai.evaluation.canonical import (
     canonical_bytes,
     file_manifest_entry,
+    read_jsonl,
     sha256_bytes,
     sha256_value,
 )
@@ -595,28 +596,49 @@ def test_sealer_rejects_non_artifact_staging_blockers(tmp_path):
         )
 
 
-def test_verify_sealed_corpus_checks_staging_link_and_sources(tmp_path):
-    sealed = tmp_path / "sealed"
-    _write_payloads(sealed, SEALED_PAYLOAD_PATHS)
-    embedded = {
-        "manifest_version": "1",
-        "state": "STAGED_NOT_SEALED",
-        "source_files": [],
+def test_stage_review_seal_verify_integration(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    staging = tmp_path / "staging"
+    stage_manifest = stage_blueprint_registry(
+        root / "evaluation" / "blueprints" / "frozen-g4-v0.1" / "registry-v15",
+        root / "evaluation" / "blueprints" / "frozen-g4-v0.1" / "authoring-matrix.json",
+        staging,
+    )
+    assert stage_manifest["sealing_blockers"] == [REVIEW_BLOCKER, ADJUDICATION_BLOCKER]
+
+    histories = read_jsonl(staging / "development.jsonl") + read_jsonl(
+        staging / "holdout.jsonl"
+    )
+    review = _complete_review_record(histories)
+    review_path = tmp_path / "review-record.json"
+    review_path.write_bytes(canonical_bytes(review) + b"\n")
+
+    candidates = json.loads(
+        (staging / "near-duplicate-candidates.json").read_text(encoding="utf-8")
+    )
+    adjudication = {
+        "schema_version": "1",
+        "blind_to_model_predictions": True,
+        "similarity_method": candidates["similarity_method"],
+        "threshold_jaccard_milli": candidates["threshold_jaccard_milli"],
+        "reviewed_family_pairs": [],
     }
-    embedded["manifest_sha256"] = sha256_value(embedded)
-    (sealed / "staging-manifest.json").write_bytes(canonical_bytes(embedded) + b"\n")
-    manifest = _write_directory_manifest(
-        sealed,
-        state="SEALED",
-        payload_names=SEALED_PAYLOAD_PATHS,
-        staging_manifest_sha256=embedded["manifest_sha256"],
+    assert candidates["candidate_family_pairs"] == []
+    adjudication["artifact_sha256"] = sha256_value(adjudication)
+    adjudication_path = tmp_path / "near-duplicate-adjudication.json"
+    adjudication_path.write_bytes(canonical_bytes(adjudication) + b"\n")
+
+    sealed = tmp_path / "sealed"
+    manifest = seal_staged_corpus(
+        staging, review_path, adjudication_path, sealed
     )
     assert verify_sealed_corpus(sealed) == manifest
 
-    manifest.pop("manifest_sha256")
-    manifest["staging_manifest_sha256"] = "0" * 64
-    manifest["manifest_sha256"] = sha256_value(manifest)
-    content = canonical_bytes(manifest) + b"\n"
+    tampered = dict(manifest)
+    tampered.pop("manifest_sha256")
+    tampered["staging_manifest_sha256"] = "0" * 64
+    tampered["manifest_sha256"] = sha256_value(tampered)
+    content = canonical_bytes(tampered) + b"\n"
     (sealed / "manifest.json").write_bytes(content)
     (sealed / "manifest.sha256").write_text(
         f"{sha256_bytes(content)}  manifest.json\n", encoding="utf-8"

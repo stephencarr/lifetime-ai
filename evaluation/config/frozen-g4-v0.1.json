@@ -75,6 +75,6 @@
     "reject_exact_cross_family_content_duplicates": true,
     "near_duplicate_review_threshold_jaccard": 0.9,
     "near_duplicate_minimum_tokens": 20,
-    "expected_family_spec_registry_sha256": "f0d4789d83e6b42b451b071fb7bd2606f3d163816dde761e82ccbcee5d25ac24"
+    "expected_family_spec_registry_sha256": "2dc3138ae52ae7355fc81ece6cfa0ea286f3e35c5ac0a3e57dbc830e0502b159"
   }
 }

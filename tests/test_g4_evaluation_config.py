@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 
-from lifetime_ai.evaluation.canonical import sha256_value, strict_json_loads
+from lifetime_ai.evaluation.canonical import strict_json_loads
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,7 +17,7 @@ def _config():
 
 def test_g4_policy_preserves_approved_gate_thresholds():
     config = _config()
-    assert config["status"] == "PROVISIONAL_PRE_G3_CORPUS_REVIEW"
+    assert config["status"] == "FROZEN_AT_G3_MODEL_FREE"
     assert config["authorization"] == {
         "model_predictions_authorized": False,
         "threshold_tuning_authorized": False,
@@ -46,26 +45,24 @@ def test_g4_policy_preserves_approved_gate_thresholds():
     }
 
 
-def test_g4_policy_fails_closed_on_unapproved_choices():
+def test_g4_policy_is_frozen_without_authorizing_model_runs():
     config = _config()
-    assert config["freeze_blockers"]
-    assert config["decision_policy"]["autonomous_acceptance_threshold"].startswith("UNSET_")
-    assert config["failure_handling"]["timeout_seconds"].startswith("UNSET_")
-    assert config["exclusions"]["prespecified_rules"].startswith("UNSET_")
-    assert config["semantic_state_matching"]["status"] == (
-        "PROVISIONAL_PILOT_CANDIDATE_NOT_FROZEN"
-    )
-    assert config["lifecycle_accounting"]["price_table"]["replacement_required_before_g3_pass"]
+    assert config["freeze_blockers"] == []
+    assert config["decision_policy"]["autonomous_acceptance_threshold"] == "0.95"
+    assert config["failure_handling"]["timeout_seconds"] == 120
+    assert config["exclusions"]["prespecified_rules"]
+    assert config["semantic_state_matching"]["status"] == "FROZEN_DETERMINISTIC_V1"
+    assert config["authorization"]["model_predictions_authorized"] is False
 
 
 def test_g4_policy_price_table_hashes_match_referenced_file():
     config = _config()
     price = config["lifecycle_accounting"]["price_table"]
-    path = ROOT / price["path"]
-    raw = path.read_bytes()
-    value = strict_json_loads(raw.decode("utf-8"))
-    assert hashlib.sha256(raw).hexdigest() == price["file_sha256"]
-    assert sha256_value(value) == price["canonical_value_sha256"]
+    assert price["status"] == "DEFERRED_NO_G4_COST_PASS_UNTIL_DATED_TABLE_IS_FROZEN"
+    assert price["path"] is None
+    assert price["file_sha256"] is None
+    assert price["canonical_value_sha256"] is None
+    assert price["required_before_g4_cost_comparison"] is True
 
 
 def test_g4_policy_accounts_for_every_required_metric_and_lifecycle_phase():

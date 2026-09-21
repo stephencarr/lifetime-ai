@@ -21,10 +21,13 @@ from lifetime_ai.evaluation.contracts import (
     calculate_cost_cad,
 )
 from lifetime_ai.evaluation.frozen_g4 import validate_frozen_g4_coverage
+from lifetime_ai.evaluation.frozen_g4_pipeline import verify_sealed_corpus
 from lifetime_ai.evaluation.projection import (
+    build_limited_oracle_projection,
     build_pair_classification_projection,
     build_retrieval_projection,
     build_system_history_projection,
+    contains_forbidden_projection_key,
     contains_evaluator_only_material,
 )
 from lifetime_ai.evaluation.validation import CorpusValidationError
@@ -41,9 +44,7 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def run(corpus: Path) -> dict[str, Any]:
-    manifest = _load_json(corpus / "manifest.json")
-    if manifest.get("state") != "SEALED":
-        raise CorpusValidationError("frozen G3 smoke requires a sealed corpus")
+    manifest = verify_sealed_corpus(corpus)
     if manifest.get("model_predictions_present") is not False:
         raise CorpusValidationError("sealed manifest must attest that model predictions are absent")
     histories = read_jsonl(corpus / "development.jsonl") + read_jsonl(corpus / "holdout.jsonl")
@@ -75,20 +76,35 @@ def run(corpus: Path) -> dict[str, Any]:
         canary = history["evaluator_only"]["generation_and_review_provenance"]["canary"]
         end_projection = build_system_history_projection(history)
         leakage_failures += int(contains_evaluator_only_material(end_projection, {canary}))
+        leakage_failures += int(contains_forbidden_projection_key(end_projection))
         system = MockEvaluationSystem()
         system.reset(history["history_id"], {})
-        for event in end_projection["timeline"]:
-            system.ingest(event)
-        for checkpoint in end_projection["checkpoint_requests"]:
+        baselines = [baseline_type() for baseline_type in baseline_types]
+        maximum = max(event["sequence"] for event in history["timeline"])
+        oracle_projection = build_limited_oracle_projection(history, sequence=maximum)
+        for baseline in baselines:
+            configuration = (
+                {"limited_oracle_projection": oracle_projection}
+                if isinstance(baseline, MockOracleBaseline) else {}
+            )
+            baseline.reset(history["history_id"], configuration)
+        next_event_index = 0
+        ordered_events = sorted(end_projection["timeline"], key=lambda item: item["sequence"])
+        for checkpoint in sorted(
+            end_projection["checkpoint_requests"], key=lambda item: item["after_sequence"]
+        ):
+            while (next_event_index < len(ordered_events)
+                   and ordered_events[next_event_index]["sequence"] <= checkpoint["after_sequence"]):
+                event = ordered_events[next_event_index]
+                system.ingest(event)
+                for baseline in baselines:
+                    baseline.ingest(event)
+                next_event_index += 1
             system.checkpoint(checkpoint)
-        end_to_end_cases += 1
-        for baseline_type in baseline_types:
-            baseline = baseline_type()
-            baseline.reset(history["history_id"], {})
-            for event in end_projection["timeline"]:
-                baseline.ingest(event)
-            for checkpoint in end_projection["checkpoint_requests"]:
+            for baseline in baselines:
                 baseline.checkpoint(checkpoint)
+        end_to_end_cases += 1
+        for baseline in baselines:
             baseline_case_counts[baseline.system_id] += 1
         for pair in history["pair_inputs"]:
             pair_id = pair["pair_id"]
@@ -100,6 +116,8 @@ def run(corpus: Path) -> dict[str, Any]:
             leakage_failures += int(
                 contains_evaluator_only_material(classification_projection, {canary})
             )
+            leakage_failures += int(contains_forbidden_projection_key(retrieval_projection))
+            leakage_failures += int(contains_forbidden_projection_key(classification_projection))
             MockCandidateRetriever().rank(retrieval_projection, limit=2)
             # Contract-only deterministic fixture. This is not a learned model
             # and its output is not scored or written to the corpus.
