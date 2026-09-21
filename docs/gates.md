@@ -616,10 +616,10 @@ Maintain this table in pull requests or update it directly when evidence is acce
 
 | Gate | Status | Evidence | Decision notes |
 |---|---|---|---|
-| G0 | Not passed | Initial skeleton used Python 3.9; pytest unavailable | Establish Python 3.12+ environment and run twice |
-| G1 | In progress | Persistence code and unexecuted tests exist | Audit after G0 |
-| G2 | Not started | — | Manual typed relationship first |
-| G3 | Not started | — | Freeze corpus before learned model work |
+| G0 | Passed | `experiments/g0/` accepted record | Environment and deterministic test prerequisites established |
+| G1 | Passed | `experiments/g1/` accepted record | Persistence gate accepted |
+| G2 | Passed | `experiments/g2/` accepted record | Typed relationship pipeline accepted |
+| G3 | Passed | `experiments/g3/20260921-1207-frozen-g4-v16/` | Model-free corpus, policies, reviews, seal, and baseline smoke accepted |
 | G4 | Not started | — | Thresholds provisional |
 | G5 | Not started | — | — |
 | G6 | Not started | — | — |

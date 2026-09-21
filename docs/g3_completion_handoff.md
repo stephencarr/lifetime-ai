@@ -6,12 +6,13 @@
 
 ## Final frozen candidate
 
-The accepted corpus is v15. It is sealed, hash-bound, and independently verified.
+The accepted corpus content is the reviewed v15 candidate. Its corrected v16
+seal uses the reviewers' actual Codex task identities and is independently verified.
 
 - Blueprint registry: `evaluation/blueprints/frozen-g4-v0.1/registry-v15/`
 - Authoring matrix: `evaluation/blueprints/frozen-g4-v0.1/authoring-matrix.json`
 - Staging corpus: `evaluation/corpus/frozen-g4-v0.1-staging-v15/`
-- Sealed corpus: `evaluation/corpus/frozen-g4-v0.1-sealed-v15/`
+- Sealed corpus: `evaluation/corpus/frozen-g4-v0.1-sealed-v16/`
 - Size: 135 families, 405 histories, 1,620 pair opportunities
 - Split: 90/45 whole families, producing 270/135 histories and 1,080/540 pairs
 - Model predictions: absent
@@ -21,18 +22,18 @@ Exact bindings:
 
 ```text
 staging manifest: 4b5e236f6bc8aff2b61ec597c97cdc5e27d680eda7cc3848c5779f98f674d3e0
-sealed manifest:  7580933121b2f9c016c151aa0c08159eef46b8f50a6b59146847a51eb9d81866
+sealed manifest:  f6f41c49faab07240b174a1bb7ef9c13838e2caeebbb08101ff75ed81cb25fe6
 registry:         2dc3138ae52ae7355fc81ece6cfa0ea286f3e35c5ac0a3e57dbc830e0502b159
 assignment:       a4024e6ac5e7fa8cc3b706af40cdabfffbf7dcef41e2478cae7448e403ac5e50
 ```
 
 ## Independent review
 
-Two independent blind reviewer reports passed against the exact v15 candidate. Each report covers all 405 histories and all 1,620 pair opportunities, uses canonical substantive-content hashes, and records no findings. All 45 histories tagged `difficult` are assigned both reviewer IDs in the final review record with written second-review rationale. No human review or approval is claimed; the project-owner waiver applies to the genuine independent agent reviews.
+Two independent blind reviewer reports passed against the exact v15 candidate. Each report covers all 405 histories and all 1,620 pair opportunities, uses canonical substantive-content hashes, and records no findings. The v16 review record identifies the reviewers by their actual Codex task IDs. All 45 histories tagged `difficult` are assigned both reviewer IDs with written second-review rationale. No human review or approval is claimed; the project-owner waiver applies to the genuine independent agent reviews.
 
 Review and evidence packet:
 
-`experiments/g3/20260921-1157-frozen-g4-v15/`
+`experiments/g3/20260921-1207-frozen-g4-v16/`
 
 The packet contains the reviewer reports, review record, difficult-history review, empty near-duplicate adjudication, holdout access log, projection manifest, class/feature/joint-target summaries, friendly/hostile planning report, configuration/source hashes, commands, environment, smoke output, and criterion-level gate record.
 
@@ -53,9 +54,9 @@ The evaluation policy is frozen without learned predictions or threshold tuning.
 
 ## Post-G3 constraints
 
-1. Preserve `evaluation/corpus/frozen-g4-v0.1-sealed-v15/` as immutable evidence.
+1. Preserve `evaluation/corpus/frozen-g4-v0.1-sealed-v16/` as immutable evidence.
 2. Do not run learned evaluation, threshold tuning, or holdout model access until a separate G4 authorization is recorded.
-3. If corpus content or source dependencies change, create a new stage and obtain new reviews; v15 approvals cannot be reused.
+3. If corpus content or source dependencies change, create a new stage and obtain new reviews; v15-content approvals and the v16 seal cannot be reused.
 4. Freeze and hash a dated price table before making any G4 cost-comparison claim.
 
 ## Workspace cautions
