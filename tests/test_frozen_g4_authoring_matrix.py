@@ -44,7 +44,7 @@ def test_authoring_matrix_balances_relationships_and_covers_targets():
         "resolve", "invalidate", "expire", "none",
     }
     assert {value for item in families for value in item["planned_actions"]} >= {
-        "none", "clarify", "investigate", "outreach_candidate", "silence"
+        "none", "clarify", "investigate", "silence"
     }
     assert {value for item in families for value in item["expected_favors"]} == {
         "architecture", "baseline_a", "baseline_b", "baseline_c", "neutral"

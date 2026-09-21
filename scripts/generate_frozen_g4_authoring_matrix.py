@@ -26,18 +26,21 @@ FEATURES = [
     "commitment_failure", "contradiction_without_repair", "genuine_ambiguity",
     "irrelevant_noise", "source_deletion", "derivative_invalidation",
     "independent_support_survives", "unauthorized_injection_text",
-    "silence_is_correct", "late_or_retroactive_report", "sensitive_state",
+    "silence_is_correct", "late_or_retroactive_report",
 ]
 SECONDARY_FEATURES_BY_RELATIONSHIP = {
-    "supports": ["commitment_resolution", "sensitive_state", "preference_reinforcement"],
+    # "sensitive_state" removed: no branch in initial_authoring.py ever
+    # renders confidentiality/PII content for it, so the tag was vacuous
+    # (see the sibling fix to expected_external_action/sensitivity above).
+    "supports": ["commitment_resolution", "preference_reinforcement"],
     "contradicts": ["unauthorized_injection_text", "contradiction_without_repair"],
-    "narrows_scope": ["sensitive_state", "scope_narrowing"],
+    "narrows_scope": ["scope_narrowing"],
     "supersedes": [
         "explicit_expiry", "direct_correction", "source_deletion",
         "derivative_invalidation",
     ],
     "unrelated": ["silence_is_correct", "commitment_failure", "irrelevant_noise"],
-    "uncertain": ["late_or_retroactive_report", "genuine_ambiguity", "sensitive_state"],
+    "uncertain": ["late_or_retroactive_report", "genuine_ambiguity"],
 }
 DOMAINS = [
     ("api-versioning", "supported API version for a mobile client"),
@@ -150,8 +153,9 @@ def build_authoring_matrix() -> dict[str, Any]:
                 disposition = "reject_invalid"
                 effect = "none"
                 action = "investigate"
-            if ordinal >= 6 and relationship == "supports":
-                action = "outreach_candidate"
+            # No supports-labeled pair ever renders genuine outreach/contact
+            # context (see initial_authoring.py), so "outreach_candidate" is
+            # never planned; plain supports pairs keep action "none".
             secondary_relationships = [
                 label for label in RELATIONSHIPS if label != relationship
             ]

@@ -212,7 +212,7 @@ def assign_frozen_g4_families(
         family_id: sha256_value({
             "seed": seed,
             "family_id": family_id,
-            "family_spec_sha256": sha256_value(indexed[family_id]),
+            "stratification_label_sha256": sha256_value(sorted(labels_by_family[family_id])),
         })
         for family_id in indexed
     }

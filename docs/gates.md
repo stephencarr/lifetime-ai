@@ -619,7 +619,7 @@ Maintain this table in pull requests or update it directly when evidence is acce
 | G0 | Passed | `experiments/g0/` accepted record | Environment and deterministic test prerequisites established |
 | G1 | Passed | `experiments/g1/` accepted record | Persistence gate accepted |
 | G2 | Passed | `experiments/g2/` accepted record | Typed relationship pipeline accepted |
-| G3 | Passed | `experiments/g3/20260921-1207-frozen-g4-v16/` | Model-free corpus, policies, reviews, seal, and baseline smoke accepted |
+| G3 | Passed | `experiments/g3/20260921-1600-frozen-g4-v20-remediated/` | v16/v17 sealed corpus superseded: adversarial review found 3 fabricated-content defects (outreach_candidate, sensitivity, sensitive_state) plus a holdout-assignment instability; all fixed, resealed as v20, independently reverified. Do not cite the v16 record as current evidence. |
 | G4 | Not started | — | Thresholds provisional |
 | G5 | Not started | — | — |
 | G6 | Not started | — | — |

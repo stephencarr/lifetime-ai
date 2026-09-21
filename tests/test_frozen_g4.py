@@ -600,7 +600,10 @@ def test_stage_review_seal_verify_integration(tmp_path):
     root = Path(__file__).resolve().parents[1]
     staging = tmp_path / "staging"
     stage_manifest = stage_blueprint_registry(
-        root / "evaluation" / "blueprints" / "frozen-g4-v0.1" / "registry-v15",
+        # Must be the registry whose hash is pinned in
+        # evaluation/config/frozen-g4-v0.1.json; staging any other version
+        # leaves the registry-pin sealing blocker set and cannot be sealed.
+        root / "evaluation" / "blueprints" / "frozen-g4-v0.1" / "registry-v20",
         root / "evaluation" / "blueprints" / "frozen-g4-v0.1" / "authoring-matrix.json",
         staging,
     )

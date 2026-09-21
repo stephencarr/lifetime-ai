@@ -356,7 +356,7 @@ def build_initial_history(
                               "independent_support_survives",
                           } else "asserted"
                       ),
-                      "sensitivity": "sensitive" if "sensitive_state" in plan["required_features"] else "normal"})
+                      "sensitivity": "normal"})  # rendered event text never carries confidentiality/PII language
     if "independent_support_survives" in supplemental_features:
         support_event = _event(
             f"{hid}-independent-support", 5,
@@ -371,7 +371,7 @@ def build_initial_history(
             "status": "active", "valid_from": support_event["occurred_at"],
             "valid_until": None, "evidence_ids": [support_event["event_id"]],
             "counterevidence_ids": [], "epistemic_basis": "asserted",
-            "sensitivity": "sensitive" if "sensitive_state" in plan["required_features"] else "normal",
+            "sensitivity": "normal",  # rendered event text never carries confidentiality/PII language
         })
     baseline_sequence = len(events)
     snapshots, pools, inputs, golds, tasks, task_gold = [], [], [], [], [], []
@@ -456,9 +456,10 @@ def build_initial_history(
                     "reason": "Imported text has no delegated state-transition authority.",
                 },
             })
-        if ("outreach_candidate" in plan["planned_actions"]
-                and label == "supports"):
-            action = "outreach_candidate"
+        # No supports-labeled event in this generator ever carries genuine
+        # outreach/contact context in its rendered text, so the mechanical
+        # "outreach_candidate" override is removed rather than exempting
+        # archetypes one at a time. Pairs keep their default "none" action.
         if special == "late_or_retroactive_report":
             event["occurred_at"] = "2026-09-18T12:00:00Z"
             event["recorded_at"] = "2026-09-20T13:00:00Z"
