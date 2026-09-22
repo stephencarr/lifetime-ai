@@ -1,0 +1,16 @@
+{
+  "authorization_version": "g4-final-run-authorization-v1",
+  "status": "ABORTED_CONSUMED",
+  "owner": "explicit EM approval recorded in task conversation",
+  "approved_at": "2026-09-22",
+  "repository_commit": "92a0ce441b0e1ecd356ac04c32886500ca7e0278",
+  "candidate_artifact_sha256": "c5c83907a763c1763dd27afe97315ef56f9b52e2487912e01c1e99bcc12056a0",
+  "run_nonce": "g4-poc-20260922-tfidf-01",
+  "exact_command": "scripts/run_g4_final_evaluation.py --corpus evaluation/corpus/frozen-g4-v0.1-sealed-v21 --output /private/tmp/lifetime-ai-g4-final-20260922 --model structured_tfidf_logistic",
+  "output_directory": "/private/tmp/lifetime-ai-g4-final-20260922",
+  "corpus_manifest_sha256": "9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3",
+  "holdout_context_confirmation": true,
+  "single_run_confirmation": true,
+  "policy_change_authorized": false,
+  "threshold_change_authorized": false
+}
