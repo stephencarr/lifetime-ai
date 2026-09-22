@@ -89,6 +89,23 @@ def _assert_staged_candidate(
     return manifest, histories
 
 
+def _validate_review_findings(findings: Any) -> None:
+    """Reject unresolved findings and closed findings without a recorded rationale."""
+    if not isinstance(findings, list):
+        raise ValueError("review findings must be a list")
+    for finding in findings:
+        if not isinstance(finding, dict):
+            raise ValueError("each review finding must be an object")
+        status = finding.get("status")
+        if status not in {"resolved", "rejected"}:
+            raise ValueError(f"passing review report has unresolved finding: {finding}")
+        rationale = finding.get("summary")
+        if not isinstance(rationale, str) or not rationale.strip():
+            raise ValueError(
+                "resolved or rejected review findings require a non-empty summary rationale"
+            )
+
+
 def build_review_artifacts(
     staging: Path,
     reviewer_paths: list[Path],
@@ -119,18 +136,10 @@ def build_review_artifacts(
             raise ValueError("reviewer report is not blind to model predictions")
         if report.get("disposition") != "pass":
             raise ValueError("only passing independent reviews may be sealed")
-        # A report may carry findings as long as each is either resolved (the
-        # underlying defect was fixed and reviewed content reflects the fix)
-        # or explicitly rejected with a recorded rationale. An open finding
-        # blocks sealing; a report with no findings key at all is also fine.
-        open_findings = [
-            finding for finding in report.get("findings", [])
-            if finding.get("status") not in {"resolved", "rejected"}
-        ]
-        if open_findings:
-            raise ValueError(
-                f"passing review report has unresolved findings: {open_findings}"
-            )
+        # A report may carry findings only when each is closed with a recorded
+        # rationale. An open finding, malformed finding, or an unsupported
+        # unsubstantiated status blocks sealing.
+        _validate_review_findings(report.get("findings", []))
         for key, expected in (
             ("manifest_sha256", expected_manifest),
             ("family_spec_registry_sha256", expected_registry),
@@ -586,7 +595,7 @@ def build_evidence(
         "dataset_version": sealed_manifest["dataset_version"],
         "corpus": {
             "sealed_manifest_sha256": sealed_manifest["manifest_sha256"],
-            "staging_manifest_sha256": EXPECTED_MANIFEST,
+            "staging_manifest_sha256": expected_manifest,
             "family_spec_registry_sha256": expected_registry,
             "assignment_sha256": expected_assignment,
             "histories": len(histories),

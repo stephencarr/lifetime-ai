@@ -3,6 +3,7 @@
 **Updated:** 22 September 2026 (superseding the 21 September version)
 **Gate state:** G0-G3 passed (`PASS`, model-free readiness)
 **Current sealed corpus:** `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` (manifest `9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3`). This document's body still refers to `-sealed-v20/` throughout; that content is accurate for corpus/review history, but v20 was superseded one day later by v21 for evaluation-*tooling* bugs only (an oracle-baseline temporal leak, stale evidence-builder pins, and a probability-tolerance policy mismatch — none of which touch corpus content, family assignment, or partitions). Read `experiments/g3/20260921-1600-frozen-g4-v20-remediated/g3-gate-record.md`'s addendum for the full list. Use v21 as current evidence.
+**Evidence-builder remediation:** `experiments/g3/20260922-1351-v21-evidence-builder-remediation/` records the post-v21 fixes for the evidence builder itself: caller-supplied staged-manifest hashes are now retained in the generated gate record, and closed review findings require a non-empty recorded rationale. The remediation re-ran the full suite, sealed-corpus verification, and model-free smoke. It does not claim a new corpus-content review: the v21 payload and review record remain byte-identical to v20.
 **Next authorization:** G4 model execution and holdout evaluation require a separate explicit authorization.
 
 ## Read this first: the v16 seal was defective and is superseded
