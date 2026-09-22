@@ -50,7 +50,7 @@ def _candidate_digest(model: str) -> str:
     spec = {
         "model": model,
         "sentence_encoder": {"name": MODEL_NAME, "revision": MODEL_REVISION},
-        "threshold": FIXED_THRESHOLD,
+        "threshold": "0.95",
         "policy": _load_object(POLICY_PATH)["config_version"],
     }
     return sha256(canonical_bytes(spec)).hexdigest()
