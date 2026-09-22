@@ -1,0 +1,15 @@
+{
+  "authorization_version": "g4-final-run-authorization-v1",
+  "status": "NOT_AUTHORIZED",
+  "owner": null,
+  "approved_at": null,
+  "repository_commit": null,
+  "candidate_artifact_sha256": null,
+  "run_nonce": null,
+  "exact_command": null,
+  "output_directory": null,
+  "holdout_context_confirmation": false,
+  "single_run_confirmation": false,
+  "policy_change_authorized": false,
+  "threshold_change_authorized": false
+}

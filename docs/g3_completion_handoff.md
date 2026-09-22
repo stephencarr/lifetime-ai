@@ -86,6 +86,8 @@ The sealed evaluation policy (`evaluation/config/g4-evaluation-v0.1.json`) remai
 
 ## Workspace cautions
 
-The current branch is `codex/complete-g3` at the committed v21 remediation state. Earlier registries and staging/sealed directories are audit history documenting the defect-discovery process; do not reset, delete, or overwrite them without explicit owner direction.
+The frozen handoff state is commit `4fbc16bca9c752ede0142e40b5a597ab0eab76ab` (`Freeze G4 development candidate for clean-agent handoff`). The checkout may be detached; do not infer branch identity from this document. Earlier registries and staging/sealed directories are audit history documenting the defect-discovery process; do not reset, delete, or overwrite them without explicit owner direction.
+
+For any later owner-authorized final run, use `docs/g4_final_run_runbook.md` and complete `evaluation/config/g4-final-run-authorization-template.json`. The template is intentionally non-authorizing and must remain false until the owner creates a run-specific approval.
 
 G3 is complete: the corpus is reviewed, pinned, sealed, and independently verifiable, including a genuine second look that caught and fixed real defects the first pass missed; evaluation and baseline policies are frozen; ordinary/oracle projections and holdout access are controlled; the full suite and model-free smoke pass; and the reproducible experiment record declares `PASS` with three lower-severity items explicitly deferred rather than hidden.
