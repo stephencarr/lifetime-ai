@@ -5,7 +5,7 @@
 **Current phase:** G3 passed (frozen-G4 v0.1 corpus, sealed v21); G4 model-run authorization is the next decision
 **Gate state:** G0-G3 passed. See `docs/g3_completion_handoff.md` for the full remediation record: the v16/v17 seal was found defective by adversarial content review and superseded by v20, which was itself superseded by v21 for unrelated evaluation-tooling fixes (no corpus content change). Do not cite `experiments/g3/20260921-1207-frozen-g4-v16/` as current evidence.
 
-> **Current continuation note:** This general handoff contains historical pilot context (sections 1-9) that remains accurate. For the current G3 PASS evidence, the v16/v17 defect-and-remediation record, and the exact path to a G4 authorization decision, read [`docs/g3_completion_handoff.md`](g3_completion_handoff.md) first.
+> **Current continuation note:** This general handoff contains historical pilot context (sections 1-9) that remains accurate. Three newer, more targeted documents now exist and should be read alongside or instead of chasing detail in this file: [`docs/repo_map.md`](repo_map.md) (what exists on disk and its trust level — read this first if you're new to the repo), [`docs/g3_completion_handoff.md`](g3_completion_handoff.md) (the full G3 defect-and-remediation narrative), and [`docs/g4_readiness_handoff.md`](g4_readiness_handoff.md) (exactly what's needed before G4 work can safely start — read this before writing any G4 code).
 
 ## 1. Read this first
 
