@@ -80,14 +80,8 @@ def run(corpus: Path) -> dict[str, Any]:
         system = MockEvaluationSystem()
         system.reset(history["history_id"], {})
         baselines = [baseline_type() for baseline_type in baseline_types]
-        maximum = max(event["sequence"] for event in history["timeline"])
-        oracle_projection = build_limited_oracle_projection(history, sequence=maximum)
         for baseline in baselines:
-            configuration = (
-                {"limited_oracle_projection": oracle_projection}
-                if isinstance(baseline, MockOracleBaseline) else {}
-            )
-            baseline.reset(history["history_id"], configuration)
+            baseline.reset(history["history_id"], {})
         next_event_index = 0
         ordered_events = sorted(end_projection["timeline"], key=lambda item: item["sequence"])
         for checkpoint in sorted(
@@ -102,6 +96,12 @@ def run(corpus: Path) -> dict[str, Any]:
                 next_event_index += 1
             system.checkpoint(checkpoint)
             for baseline in baselines:
+                if isinstance(baseline, MockOracleBaseline):
+                    baseline.configuration["limited_oracle_projection"] = (
+                        build_limited_oracle_projection(
+                            history, sequence=checkpoint["after_sequence"]
+                        )
+                    )
                 baseline.checkpoint(checkpoint)
         end_to_end_cases += 1
         for baseline in baselines:

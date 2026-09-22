@@ -1,5 +1,13 @@
 # Gate evaluation: G3 — 20260921-1600-frozen-g4-v20-remediated
 
+## Addendum: superseded by sealed-v21 (evaluation-tooling fixes, no corpus content change)
+
+An external PR review (Gemini) found three real bugs in the evaluation *tooling* around this corpus, unrelated to the corpus content itself: (1) `scripts/run_g3_frozen_smoke.py` built the limited-oracle baseline projection once at each history's final event sequence and reused it at every earlier checkpoint, leaking future gold transitions into early checkpoints; (2) `scripts/build_g3_frozen_evidence.py` remained hardcoded to the superseded v15 manifest/registry/assignment hashes and command strings; (3) `evaluation/config/g4-evaluation-v0.1.json` declared a `probability_sum_tolerance` that `PredictedRelationship.validate()` in `lifetime_ai/evaluation/contracts.py` did not implement (it required exact equality).
+
+All three fixed. Because fix (1) and (3) touch `lifetime_ai/evaluation/contracts.py` and `scripts/run_g3_frozen_smoke.py`, both tracked in the sealed manifest's `source_files`, the corpus was re-staged and resealed as `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` (manifest `9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3`). Corpus content, family assignment, and partitions are byte-identical to v20 — verified directly (0 histories with content or partition changes) — so the existing v20 review record was reused as-is; no new review was required. `verify_sealed_corpus`, the model-free smoke, and the full test suite (102/102, including a new regression test for the oracle fix) all independently re-pass against v21.
+
+Use `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` as the current evidence going forward; this record's v20 references below remain historically accurate for the content/review work but the sealed directory itself is superseded.
+
 ## Claim
 
 The evaluation corpus and baselines can fairly test the thesis.

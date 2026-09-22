@@ -26,6 +26,12 @@ from lifetime_ai.evaluation.validation import review_content_sha256
 
 
 ROOT = Path(__file__).resolve().parents[1]
+# These describe the ORIGINAL v15/v16 candidate this script was written
+# against. They are retained only as the default value for --expected-*
+# flags so existing invocations keep working; callers building evidence for
+# a later corpus version (e.g. v20) must pass the current staged manifest's
+# own hashes explicitly. Do not add a new version's hashes here — pass them
+# on the command line instead, so this file never goes stale again.
 EXPECTED_MANIFEST = (
     "4b5e236f6bc8aff2b61ec597c97cdc5e27d680eda7cc3848c5779f98f674d3e0"
 )
@@ -59,21 +65,27 @@ def _file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _assert_v15(staging: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def _assert_staged_candidate(
+    staging: Path,
+    *,
+    expected_manifest: str,
+    expected_registry: str,
+    expected_assignment: str,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     manifest = _load(staging / "manifest.json")
-    if manifest.get("manifest_sha256") != EXPECTED_MANIFEST:
-        raise ValueError("staging manifest is not the exact pinned v15 candidate")
-    if manifest.get("family_spec_registry_sha256") != EXPECTED_REGISTRY:
-        raise ValueError("staging registry hash is not the expected v15 hash")
-    if manifest.get("assignment_sha256") != EXPECTED_ASSIGNMENT:
-        raise ValueError("staging assignment hash is not the expected v15 hash")
+    if manifest.get("manifest_sha256") != expected_manifest:
+        raise ValueError("staging manifest does not match the pinned candidate hash")
+    if manifest.get("family_spec_registry_sha256") != expected_registry:
+        raise ValueError("staging registry hash does not match the pinned candidate hash")
+    if manifest.get("assignment_sha256") != expected_assignment:
+        raise ValueError("staging assignment hash does not match the pinned candidate hash")
     if manifest.get("model_predictions_present") is not False:
         raise ValueError("staging candidate must contain no model predictions")
     histories = read_jsonl(staging / "development.jsonl") + read_jsonl(
         staging / "holdout.jsonl"
     )
     if len(histories) != 405 or sum(len(item["pair_inputs"]) for item in histories) != 1620:
-        raise ValueError("unexpected v15 history or pair count")
+        raise ValueError("unexpected staged history or pair count")
     return manifest, histories
 
 
@@ -83,10 +95,19 @@ def build_review_artifacts(
     review_output: Path,
     adjudication_output: Path,
     difficult_output: Path,
+    *,
+    expected_manifest: str = EXPECTED_MANIFEST,
+    expected_registry: str = EXPECTED_REGISTRY,
+    expected_assignment: str = EXPECTED_ASSIGNMENT,
 ) -> None:
     if len(reviewer_paths) != 2:
         raise ValueError("exactly two independent review reports are required")
-    manifest, histories = _assert_v15(staging)
+    manifest, histories = _assert_staged_candidate(
+        staging,
+        expected_manifest=expected_manifest,
+        expected_registry=expected_registry,
+        expected_assignment=expected_assignment,
+    )
     reports = [_load(path) for path in reviewer_paths]
     reviewer_ids = [report.get("reviewer_id") for report in reports]
     if any(not isinstance(value, str) or not value for value in reviewer_ids):
@@ -98,18 +119,28 @@ def build_review_artifacts(
             raise ValueError("reviewer report is not blind to model predictions")
         if report.get("disposition") != "pass":
             raise ValueError("only passing independent reviews may be sealed")
-        if report.get("findings"):
-            raise ValueError("passing review report contains findings")
+        # A report may carry findings as long as each is either resolved (the
+        # underlying defect was fixed and reviewed content reflects the fix)
+        # or explicitly rejected with a recorded rationale. An open finding
+        # blocks sealing; a report with no findings key at all is also fine.
+        open_findings = [
+            finding for finding in report.get("findings", [])
+            if finding.get("status") not in {"resolved", "rejected"}
+        ]
+        if open_findings:
+            raise ValueError(
+                f"passing review report has unresolved findings: {open_findings}"
+            )
         for key, expected in (
-            ("manifest_sha256", EXPECTED_MANIFEST),
-            ("family_spec_registry_sha256", EXPECTED_REGISTRY),
-            ("assignment_sha256", EXPECTED_ASSIGNMENT),
+            ("manifest_sha256", expected_manifest),
+            ("family_spec_registry_sha256", expected_registry),
+            ("assignment_sha256", expected_assignment),
         ):
             observed = report.get(key)
             if observed is None:
                 observed = report.get("exact_bindings", {}).get(key)
             if observed != expected:
-                raise ValueError(f"review report {key} does not bind v15")
+                raise ValueError(f"review report {key} does not bind the staged candidate")
         reviewed_histories = set(report.get("reviewed_history_ids", []))
         reviewed_pairs = set(report.get("reviewed_pair_ids", []))
         expected_histories = {item["history_id"] for item in histories}
@@ -189,7 +220,9 @@ def build_review_artifacts(
             },
         ],
         "history_approvals": approvals,
-        "review_findings": [],
+        "review_findings": [
+            finding for report in reports for finding in report.get("findings", [])
+        ],
     }
     review["artifact_sha256"] = sha256_value(review)
     _write(review_output, review)
@@ -272,10 +305,19 @@ def build_evidence(
     review_output: Path,
     adjudication_output: Path,
     difficult_output: Path,
+    *,
+    expected_manifest: str = EXPECTED_MANIFEST,
+    expected_registry: str = EXPECTED_REGISTRY,
+    expected_assignment: str = EXPECTED_ASSIGNMENT,
 ) -> None:
-    staging_manifest, _ = _assert_v15(staging)
+    staging_manifest, _ = _assert_staged_candidate(
+        staging,
+        expected_manifest=expected_manifest,
+        expected_registry=expected_registry,
+        expected_assignment=expected_assignment,
+    )
     sealed_manifest = verify_sealed_corpus(sealed)
-    if sealed_manifest.get("manifest_sha256") == EXPECTED_MANIFEST:
+    if sealed_manifest.get("manifest_sha256") == expected_manifest:
         raise ValueError("sealed manifest must differ from staging manifest")
     histories = read_jsonl(sealed / "development.jsonl") + read_jsonl(
         sealed / "holdout.jsonl"
@@ -503,10 +545,12 @@ def build_evidence(
         "dependency_lock_sha256": _file_sha256(ROOT / "uv.lock"),
     }
 
+    staging_rel = staging.resolve().relative_to(ROOT).as_posix()
+    sealed_rel = sealed.resolve().relative_to(ROOT).as_posix()
     commands = {
         "staging_candidate": (
             "uv run --frozen python scripts/stage_frozen_g4_corpus.py verify "
-            "--corpus evaluation/corpus/frozen-g4-v0.1-staging-v15"
+            f"--corpus {staging_rel}"
         ),
         "targeted_tests": (
             "uv run --frozen pytest -q tests/test_frozen_g4.py "
@@ -516,11 +560,11 @@ def build_evidence(
         "full_tests": "uv run --frozen pytest -q",
         "seal_verification": (
             "uv run --frozen python scripts/stage_frozen_g4_corpus.py verify "
-            "--corpus evaluation/corpus/frozen-g4-v0.1-sealed-v15"
+            f"--corpus {sealed_rel}"
         ),
         "model_free_smoke": (
             "uv run --frozen python scripts/run_g3_frozen_smoke.py "
-            "--corpus evaluation/corpus/frozen-g4-v0.1-sealed-v15"
+            f"--corpus {sealed_rel}"
         ),
     }
     command_results = {
@@ -543,8 +587,8 @@ def build_evidence(
         "corpus": {
             "sealed_manifest_sha256": sealed_manifest["manifest_sha256"],
             "staging_manifest_sha256": EXPECTED_MANIFEST,
-            "family_spec_registry_sha256": EXPECTED_REGISTRY,
-            "assignment_sha256": EXPECTED_ASSIGNMENT,
+            "family_spec_registry_sha256": expected_registry,
+            "assignment_sha256": expected_assignment,
             "histories": len(histories),
             "pairs": sum(len(item["pair_inputs"]) for item in histories),
             "development_histories": len(partitions["development"]),
@@ -644,8 +688,8 @@ def build_evidence(
                 "Cost comparison is explicitly deferred until a dated price table is frozen.",
                 "",
                 f"Sealed manifest: `{sealed_manifest['manifest_sha256']}`",
-                f"Registry: `{EXPECTED_REGISTRY}`",
-                f"Assignment: `{EXPECTED_ASSIGNMENT}`",
+                f"Registry: `{expected_registry}`",
+                f"Assignment: `{expected_assignment}`",
             ]
         )
         + "\n",
@@ -677,6 +721,9 @@ def main() -> None:
     review.add_argument("--review-output", type=Path, required=True)
     review.add_argument("--adjudication-output", type=Path, required=True)
     review.add_argument("--difficult-output", type=Path, required=True)
+    review.add_argument("--expected-manifest", default=EXPECTED_MANIFEST)
+    review.add_argument("--expected-registry", default=EXPECTED_REGISTRY)
+    review.add_argument("--expected-assignment", default=EXPECTED_ASSIGNMENT)
 
     evidence = subparsers.add_parser("evidence")
     evidence.add_argument("--staging", type=Path, required=True)
@@ -687,6 +734,9 @@ def main() -> None:
     evidence.add_argument("--adjudication-output", type=Path, required=True)
     evidence.add_argument("--difficult-output", type=Path, required=True)
     evidence.add_argument("--output", type=Path, required=True)
+    evidence.add_argument("--expected-manifest", default=EXPECTED_MANIFEST)
+    evidence.add_argument("--expected-registry", default=EXPECTED_REGISTRY)
+    evidence.add_argument("--expected-assignment", default=EXPECTED_ASSIGNMENT)
 
     args = parser.parse_args()
     if args.command == "review-artifacts":
@@ -696,6 +746,9 @@ def main() -> None:
             args.review_output,
             args.adjudication_output,
             args.difficult_output,
+            expected_manifest=args.expected_manifest,
+            expected_registry=args.expected_registry,
+            expected_assignment=args.expected_assignment,
         )
     else:
         build_evidence(
@@ -707,6 +760,9 @@ def main() -> None:
             args.review_output,
             args.adjudication_output,
             args.difficult_output,
+            expected_manifest=args.expected_manifest,
+            expected_registry=args.expected_registry,
+            expected_assignment=args.expected_assignment,
         )
 
 

@@ -1,9 +1,9 @@
 # Lifetime AI — Engineering Handoff
 
-**Updated:** 21 September 2026
+**Updated:** 22 September 2026
 **Audience:** the engineer continuing architecture and evaluation work  
-**Current phase:** G3 passed (frozen-G4 v0.1 corpus, sealed v20); G4 model-run authorization is the next decision
-**Gate state:** G0-G3 passed. See `docs/g3_completion_handoff.md` for the full remediation record: the v16/v17 seal was found defective by adversarial content review and superseded by the v20 seal. Do not cite `experiments/g3/20260921-1207-frozen-g4-v16/` as current evidence.
+**Current phase:** G3 passed (frozen-G4 v0.1 corpus, sealed v21); G4 model-run authorization is the next decision
+**Gate state:** G0-G3 passed. See `docs/g3_completion_handoff.md` for the full remediation record: the v16/v17 seal was found defective by adversarial content review and superseded by v20, which was itself superseded by v21 for unrelated evaluation-tooling fixes (no corpus content change). Do not cite `experiments/g3/20260921-1207-frozen-g4-v16/` as current evidence.
 
 > **Current continuation note:** This general handoff contains historical pilot context (sections 1-9) that remains accurate. For the current G3 PASS evidence, the v16/v17 defect-and-remediation record, and the exact path to a G4 authorization decision, read [`docs/g3_completion_handoff.md`](g3_completion_handoff.md) first.
 
@@ -199,11 +199,11 @@ Evidence: `experiments/g3/20260919-1121-complete-pilot-human-review/`.
 
 ## 10. Exact next step
 
-G3 has passed. The frozen-G4 v0.1 corpus is sealed at `evaluation/corpus/frozen-g4-v0.1-sealed-v20/` (405 histories, 1,620 pair opportunities, 270/135 whole-family split), superseding an earlier v16/v17 seal that adversarial content review found defective (see `docs/g3_completion_handoff.md` for the full defect-and-fix record: three fabricated-content bugs and one holdout-assignment instability, all fixed and independently reverified).
+G3 has passed. The frozen-G4 v0.1 corpus is sealed at `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` (405 histories, 1,620 pair opportunities, 270/135 whole-family split), superseding an earlier v16/v17 seal that adversarial content review found defective (see `docs/g3_completion_handoff.md` for the full defect-and-fix record: three fabricated-content bugs and one holdout-assignment instability, all fixed and independently reverified). The v20 seal that resulted from that remediation was itself superseded one day later by v21: an external PR review found three evaluation-*tooling* bugs (an oracle-baseline temporal leak in the smoke harness, stale v15-pinned evidence-builder constants, and a probability-tolerance policy mismatch) that were fixed and required a reseal, but did not change any corpus content, family assignment, or partition — the existing v20 review record was reused as-is.
 
 The evaluation policy (`evaluation/config/g4-evaluation-v0.1.json`) fixes the provisional G4 decision rule at 95% observed point precision, reported with a Wilson interval, and retains ≥100 autonomous accepts as the later observed holdout sample criterion, per the approved second-freeze plan. It remains `FROZEN_AT_G3_MODEL_FREE` with `model_predictions_authorized: false`.
 
-The next step is a decision, not more corpus work: the project owner must separately authorize a G4 run before any model call is made against `frozen-g4-v0.1-sealed-v20`. Until that authorization is recorded, do not run models, generate predictions, or tune thresholds against this corpus. “Untouched” holdout means exactly that; an inspected holdout is spent per the governing rule in `docs/gates.md`, and further evaluation requires a new holdout.
+The next step is a decision, not more corpus work: the project owner must separately authorize a G4 run before any model call is made against `frozen-g4-v0.1-sealed-v21`. Until that authorization is recorded, do not run models, generate predictions, or tune thresholds against this corpus. “Untouched” holdout means exactly that; an inspected holdout is spent per the governing rule in `docs/gates.md`, and further evaluation requires a new holdout.
 
 ## 11. Commands for verification
 
@@ -211,9 +211,9 @@ From the repository root:
 
 ```sh
 uv run --frozen pytest -q
-uv run --frozen python scripts/stage_frozen_g4_corpus.py verify --corpus evaluation/corpus/frozen-g4-v0.1-sealed-v20
-uv run --frozen python scripts/run_g3_frozen_smoke.py --corpus evaluation/corpus/frozen-g4-v0.1-sealed-v20
-shasum -a 256 -c evaluation/corpus/frozen-g4-v0.1-sealed-v20/manifest.sha256
+uv run --frozen python scripts/stage_frozen_g4_corpus.py verify --corpus evaluation/corpus/frozen-g4-v0.1-sealed-v21
+uv run --frozen python scripts/run_g3_frozen_smoke.py --corpus evaluation/corpus/frozen-g4-v0.1-sealed-v21
+shasum -a 256 -c evaluation/corpus/frozen-g4-v0.1-sealed-v21/manifest.sha256
 ```
 
 In the managed sandbox, redirect the uv cache if needed:
@@ -222,7 +222,7 @@ In the managed sandbox, redirect the uv cache if needed:
 UV_CACHE_DIR=/tmp/lifetime-ai-uv-cache uv run --frozen pytest -q
 ```
 
-Expected current result: 101 tests pass; `verify_sealed_corpus()` reports the manifest hash `30310fcd9d36e37d0584f60d640164e9d5ec1b893ebaaad13b16bc8ed2834f12`; the model-free smoke reports `status: PASS` with 0 evaluator leakage failures and 0 learned model calls across all four baseline contracts. The prior `pilot-v0.7` development pilot remains development-only and was never a final gate holdout; it is superseded for G3 purposes by the frozen-G4 corpus above.
+Expected current result: 102 tests pass; `verify_sealed_corpus()` reports the manifest hash `9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3`; the model-free smoke reports `status: PASS` with 0 evaluator leakage failures and 0 learned model calls across all four baseline contracts. The prior `pilot-v0.7` development pilot remains development-only and was never a final gate holdout; it is superseded for G3 purposes by the frozen-G4 corpus above.
 
 ## 12. Phase-gated actions
 
@@ -271,6 +271,6 @@ Confirm that you have read:
 2. `docs/g3_completion_handoff.md` (the full v16-defect/v20-remediation record — read this before trusting any prior "G3 passed" claim);
 3. the G3 section of `docs/gates.md`;
 4. `experiments/g3/20260921-1600-frozen-g4-v20-remediated/g3-gate-record.md`;
-5. `evaluation/corpus/frozen-g4-v0.1-sealed-v20/review-record.json`'s `review_findings` array (the three consciously-accepted lower-severity items).
+5. `evaluation/corpus/frozen-g4-v0.1-sealed-v21/review-record.json`'s `review_findings` array (the three consciously-accepted lower-severity items).
 
-G3 has passed against `evaluation/corpus/frozen-g4-v0.1-sealed-v20/`. Do not run models or generate predictions against it until a separate G4 run is explicitly authorized by the project owner — the evaluation policy config already reflects `model_predictions_authorized: false`. If asked to extend or re-review this corpus, budget for genuine adversarial reading of event/gold content, not only structural/schema/hash validation: that weaker method is what let the original v16/v17 defects through undetected.
+G3 has passed against `evaluation/corpus/frozen-g4-v0.1-sealed-v21/`. Do not run models or generate predictions against it until a separate G4 run is explicitly authorized by the project owner — the evaluation policy config already reflects `model_predictions_authorized: false`. If asked to extend or re-review this corpus, budget for genuine adversarial reading of event/gold content, not only structural/schema/hash validation: that weaker method is what let the original v16/v17 defects through undetected.

@@ -27,14 +27,27 @@ class PredictedRelationship:
     confidence: str
     escalate: bool
 
-    def validate(self) -> None:
+    def validate(self, *, probability_sum_tolerance: str = "0.000001") -> None:
+        """Validate the prediction contract.
+
+        `probability_sum_tolerance` must match the frozen value in
+        `evaluation/config/g4-evaluation-v0.1.json`'s `decision_policy`
+        (currently "0.000001"), which exists so rounded provider
+        probabilities are not rejected for a sum of e.g. 0.9999999 or
+        1.0000001. The default here mirrors that frozen policy; pass the
+        loaded config value explicitly if the policy is ever re-frozen to a
+        different number, rather than special-casing exact equality.
+        """
         if set(self.probabilities) != RELATIONSHIPS:
             raise ValueError("probability vector must contain exactly six relationship classes")
         values = [Decimal(value) for value in self.probabilities.values()]
         if any(value < 0 or value > 1 for value in values):
             raise ValueError("probabilities must be in [0,1]")
-        if sum(values) != Decimal("1"):
-            raise ValueError("probabilities must sum exactly to 1")
+        tolerance = Decimal(probability_sum_tolerance)
+        if abs(sum(values) - Decimal("1")) > tolerance:
+            raise ValueError(
+                f"probabilities must sum to 1 within tolerance {tolerance}"
+            )
         if self.decision not in RELATIONSHIPS:
             raise ValueError("unknown relationship decision")
         if Decimal(self.confidence) != Decimal(self.probabilities[self.decision]):
