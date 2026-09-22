@@ -28,7 +28,7 @@ pair-classification evidence only and deliberately reports
 `full_g4_gate_decision: NOT_EVALUATED` until transition-validator metrics are
 integrated.
 
-No exploratory search, interactive inspection, threshold adjustment, retry beyond the frozen retry limit, or second holdout run is permitted.
+No exploratory search, interactive inspection, threshold adjustment, or second completed holdout evaluation is permitted. A dependency or harness failure before any predictions or result metrics exist is an aborted attempt, not a completed evaluation; preserve its log and require a fresh run-specific owner authorization and clean evaluator before one replacement attempt. Do not reuse the consumed nonce or output directory.
 
 ## Immediate abort conditions
 
