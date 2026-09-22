@@ -185,6 +185,10 @@ def validate_history(
             if not set(snapshot["source_event_ids"]).intersection(pair_event["deletion_target_ids"]):
                 raise CorpusValidationError("deletion must target a candidate source event")
         if pair_event["event_type"] in {"deletion", "redaction"}:
+            if gold["semantic_relationship"] != "unrelated":
+                raise CorpusValidationError(
+                    "lifecycle control events must be semantically unrelated"
+                )
             if any(target not in events for target in pair_event["deletion_target_ids"]):
                 raise CorpusValidationError("lifecycle event references an unknown deletion target")
             event_time = _rfc3339_utc(pair_event["occurred_at"], "lifecycle occurred_at")
@@ -192,6 +196,10 @@ def validate_history(
                    for target in pair_event["deletion_target_ids"]):
                 raise CorpusValidationError("lifecycle event cannot predate its target source")
         if effect == "expire":
+            if gold["semantic_relationship"] != "unrelated":
+                raise CorpusValidationError(
+                    "time-advance expiry events must be semantically unrelated"
+                )
             valid_until = snapshot["canonical_payload"]["valid_until"]
             if pair_event["event_type"] != "time_advance" or valid_until is None:
                 raise CorpusValidationError(

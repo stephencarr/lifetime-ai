@@ -7,8 +7,11 @@ from .canonical import sha256_value
 
 
 SYSTEM_HISTORY_FIELDS = {
-    "schema_version", "dataset_version", "corpus_stage", "history_id", "family_id",
-    "partition", "timeline", "checkpoint_requests", "downstream_tasks",
+    "schema_version", "history_id", "timeline", "checkpoint_requests", "downstream_tasks",
+}
+PROJECTION_FORBIDDEN_KEYS = {
+    "evaluator_only", "partition", "dataset_version", "corpus_stage", "family_id",
+    "reviewer_status", "difficulty_tags", "feature_tags", "generation_origin",
 }
 SEMANTIC_EVENT_FIELDS = {
     "event_id", "sequence", "occurred_at", "recorded_at", "event_type", "content",
@@ -124,6 +127,34 @@ def build_pair_classification_projection(history: dict[str, Any], pair_id: str) 
     return projection
 
 
+def build_limited_oracle_projection(history: dict[str, Any], *, sequence: int) -> dict[str, Any]:
+    """Expose only transition/effect gold needed by the diagnostic oracle."""
+    events = {event["event_id"]: event for event in history["timeline"]}
+    pairs = {pair["pair_id"]: pair for pair in history["pair_inputs"]}
+    visible_pair_ids = {
+        pair_id for pair_id, pair in pairs.items()
+        if events[pair["event_id"]]["sequence"] <= sequence
+    }
+    gold_transitions = []
+    gold_invalidations = []
+    for gold in history["evaluator_only"]["pair_gold"]:
+        if gold["pair_id"] not in visible_pair_ids:
+            continue
+        transition = {
+            "pair_id": gold["pair_id"],
+            "transition_disposition": gold["transition_disposition"],
+            "expected_state_effect": deepcopy(gold["expected_state_effect"]),
+        }
+        gold_transitions.append(transition)
+        if gold["expected_state_effect"]["effect"] == "invalidate":
+            gold_invalidations.append(deepcopy(transition))
+    return {
+        "history_id": history["history_id"],
+        "gold_transitions": gold_transitions,
+        "gold_invalidations": gold_invalidations,
+    }
+
+
 def contains_evaluator_only_material(value: Any, canaries: set[str]) -> bool:
     if isinstance(value, str):
         return any(canary in value for canary in canaries)
@@ -133,4 +164,14 @@ def contains_evaluator_only_material(value: Any, canaries: set[str]) -> bool:
         if "evaluator_only" in value:
             return True
         return any(contains_evaluator_only_material(item, canaries) for item in value.values())
+    return False
+
+
+def contains_forbidden_projection_key(value: Any) -> bool:
+    if isinstance(value, list):
+        return any(contains_forbidden_projection_key(item) for item in value)
+    if isinstance(value, dict):
+        if set(value) & PROJECTION_FORBIDDEN_KEYS:
+            return True
+        return any(contains_forbidden_projection_key(item) for item in value.values())
     return False

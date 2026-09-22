@@ -1,207 +1,89 @@
 # Lifetime AI — G3 Completion Handoff
 
-**Updated:** 21 September 2026
-**Gate state:** G0–G2 passed; G3 remains open (`NOT_EVALUATED`)
-**Immediate objective:** finish review, freeze policy/contracts, seal the frozen-G4 corpus, and record a reproducible G3 decision
-**Budget constraint:** do not use Atlas/Astra. Work locally and use the cheapest available peer only where independent review is mandatory.
+**Updated:** 22 September 2026 (superseding the 21 September version)
+**Gate state:** G0-G3 passed (`PASS`, model-free readiness)
+**Current sealed corpus:** `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` (manifest `9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3`). This document's body still refers to `-sealed-v20/` throughout; that content is accurate for corpus/review history, but v20 was superseded one day later by v21 for evaluation-*tooling* bugs only (an oracle-baseline temporal leak, stale evidence-builder pins, and a probability-tolerance policy mismatch — none of which touch corpus content, family assignment, or partitions). Read `experiments/g3/20260921-1600-frozen-g4-v20-remediated/g3-gate-record.md`'s addendum for the full list. Use v21 as current evidence.
+**Evidence-builder remediation:** `experiments/g3/20260922-1351-v21-evidence-builder-remediation/` records the post-v21 fixes for the evidence builder itself: caller-supplied staged-manifest hashes are now retained in the generated gate record, and closed review findings require a non-empty recorded rationale. The remediation re-ran the full suite, sealed-corpus verification, and model-free smoke. It does not claim a new corpus-content review: the v21 payload and review record remain byte-identical to v20.
+**Next authorization:** G4 model execution and holdout evaluation require a separate explicit authorization.
 
-## Read this first
+## Read this first: the v16 seal was defective and is superseded
 
-The final planned corpus now exists and is structurally valid, but it is not sealed and G3 has not passed. Do not run learned models, generate predictions, tune thresholds from model output, or expose the final holdout to a model. G4 execution still requires a separate authorization after G3 passes.
+An earlier version of this document (and the `docs/gates.md` status table) declared G3 passed against the v15/v16 sealed corpus, citing `experiments/g3/20260921-1207-frozen-g4-v16/` with two independent reviewer reports recording "no findings" across all 405 histories.
 
-The current accepted working draft is v7:
+**That evidence was wrong.** An independent adversarial audit — deliberately reading history content rather than only re-running structural/algorithmic validators — found three real, corpus-wide fabricated-content defects that the prior "no findings" reviews missed entirely, plus one structural defect in the holdout-assignment algorithm discovered while fixing the first three. All four are fixed and independently reverified; see below. **Do not cite `experiments/g3/20260921-1207-frozen-g4-v16/`, the v16/v17 sealed directories, or their manifest hashes as current G3 evidence.** The authoritative record is now `experiments/g3/20260921-1600-frozen-g4-v20-remediated/`.
 
-- Blueprint registry: `evaluation/blueprints/frozen-g4-v0.1/registry-v7/`
-- Authoring matrix: `evaluation/blueprints/frozen-g4-v0.1/authoring-matrix.json`
-- Staging corpus: `evaluation/corpus/frozen-g4-v0.1-staging-v7/`
+This is left in the handoff deliberately: the prior reviews' method (schema/hash/coverage validation plus templated "reasoning" text) is a materially weaker check than reading actual event/gold content, even when it reports zero findings. Any future review of this corpus, or of similarly-generated corpora, should budget for genuine adversarial content reading, not just structural validation.
+
+## Final frozen candidate
+
+- Blueprint registry: `evaluation/blueprints/frozen-g4-v0.1/registry-v20/`
+- Authoring matrix: `evaluation/blueprints/frozen-g4-v0.1/authoring-matrix.json` (regenerated; byte-identical to pre-fix version except `outreach_candidate` removed from 22 families' `planned_actions` and `sensitive_state` removed from all `required_features`/`SECONDARY_FEATURES_BY_RELATIONSHIP` entries)
+- Staging corpus: `evaluation/corpus/frozen-g4-v0.1-staging-v20b/` (the `b` suffix reflects a restage after a config-file edit landed after the first v20 stage; content is byte-identical to `-v20`)
+- Sealed corpus: `evaluation/corpus/frozen-g4-v0.1-sealed-v20/`
 - Size: 135 families, 405 histories, 1,620 pair opportunities
-- Split: 90/45 whole families, producing 270/135 histories and 1,080/540 pairs
+- Split: 90/45 whole families, producing 270/135 histories and 1,080/540 pairs (numerically identical to the prior split; the underlying family membership changed — see "Defects found and fixed" below)
 - Model predictions: absent
-- Near-duplicate candidate set: empty in prior structurally equivalent stages; verify again on the final stage
+- Near-duplicate candidates: zero; empty adjudication artifact is hashed and sealed
 
-Staging v7 is not the final seal. Its registry hash is:
+Exact bindings:
 
 ```text
-af14746be1b8d5c9a5655f264d9bec6f1a468aef17c1cd10054fc656156eee46
+staging manifest (family_spec_registry_sha256): cc95e911353bf43fdb73e2e409570c77f0638a4fb2f1a9b9c4d5cb96941a7413
+sealed manifest:                                30310fcd9d36e37d0584f60d640164e9d5ec1b893ebaaad13b16bc8ed2834f12
 ```
 
-The production config still contains the earlier v4 registry pin, so v7 correctly reports the registry-pin blocker. Do not update the pin until all remaining source and corpus changes are finished; then restage once and pin that final hash.
+## Defects found and fixed this session
 
-## What happened in this work session
+Three real content-fabrication defects, all sharing one root shape (a feature tag mechanically flips a gold-label or metadata field, but the generator never writes event content that would justify the flip):
 
-The frozen-G4 pipeline, schemas, generator, matrix binding, review contracts, lifecycle validation, deletion-query derivative scope, staging/sealing manifests, and model-free smoke harness were implemented or hardened.
+1. **`expected_external_action: "outreach_candidate"`** on `commitment_resolution` and `preference_reinforcement` pairs. 67 instances corpus-wide; 0 had any distinguishing outreach/contact content — every instance used the identical templated "confirms... without introducing a replacement" note that appears verbatim on 228 other `none`-labeled pairs. Root cause: an unconditional override in `lifetime_ai/evaluation/initial_authoring.py` (and its mirror in `scripts/generate_frozen_g4_authoring_matrix.py`) fired on any `supports`-labeled pair whenever the family's `planned_actions` included `outreach_candidate`, regardless of content. Fix: the override mechanism was removed entirely (not patched per-archetype); `outreach_candidate` was also removed from the `actions_per_partition` coverage requirement in `evaluation/config/frozen-g4-v0.1.json`, since the generator has no way to produce it with genuine supporting content.
 
-The first complete corpus was not rubber-stamped:
+2. **`canonical_payload.sensitivity: "sensitive"`** fabricated purely from family-level `sensitive_state` feature-tag membership, never from event content. 0 of 1,437 corpus-wide instances were grounded in any source event containing confidentiality/PII/restriction language. Fix: `sensitivity` is unconditionally `"normal"` now (two call sites in `initial_authoring.py`).
 
-- v4 passed structural validators but independent peer review rejected it for systematic domain drift, invented successor state, incorrect expiry rationales, identifier leakage in deletion prose, unestablished derivatives, false independent-support claims, and commitments without obligations.
-- v6 repaired most defects but a low-cost peer rejected it for three remaining issues: derivatives marked asserted rather than inferred, scope conditions that did not match cited event text, and ordinary configuration facts typed as commitments.
-- v7 repaired those issues. A low-cost focused peer review passed the full affected sets: 30 derivative candidates, 84 scope-narrowing pairs, and 21 commitment-failure pairs. It also rechecked all 1,620 structural pair references and found no broken contexts or deletion targets.
+3. **The `sensitive_state` feature tag itself was never implemented.** Unlike every other feature (`commitment_resolution`, `explicit_expiry`, `source_deletion`, etc.), which has a dedicated content-generating branch, `sensitive_state` had none — it only ever drove the two mechanical field-flips above. Fix, an explicit POC-scope trade-off rather than a claim the feature is unimplementable: removed entirely from the corpus vocabulary (`FEATURES` list, `SECONDARY_FEATURES_BY_RELATIONSHIP`, `feature_minimum_histories` coverage requirement). If a future engineering phase wants a genuine sensitivity dimension, it needs real confidentiality/PII language authored into source events, not a tag-only revival.
 
-This v7 review proves the named repairs. It is not a substitute for the final two-reviewer, exact-hash approval record required by the sealing contract.
+One structural defect, found while investigating why fixing (1) unexpectedly moved unrelated families into/out of holdout:
 
-## Current verification state
+4. **Holdout-assignment tie-break was sensitive to opaque rendered content.** `assign_frozen_g4_families` (`lifetime_ai/evaluation/frozen_g4.py`) broke ties using `sha256(full family spec dict)`, which includes each history's `content_sha256` — so correcting a gold label anywhere in a family (even without changing its *declared* stratification labels) could cascade into other, unrelated families moving between development and holdout via the tie-break/swap-optimization logic. Fix: the tie-break rank now hashes only the declared stratification labels (`labels_by_family`, already computed for the primary selection logic), not the full spec. Verified empirically: partitions are now provably stable across further legitimate content corrections that don't change declared labels, and correctly still respond when declared labels genuinely change (as they did when families lost the `sensitive_state` feature tag in fix 3).
 
-Known passing checks:
+## Findings triaged and consciously accepted for this POC (not fixed)
 
-- All 135 v7 blueprints build and validate.
-- The focused authoring/matrix suite passes: 6 tests.
-- Staging has previously validated exact family/history/pair counts, target coverage, lifecycle semantics, and whole-family assignment.
-- Prior staging manifest verification and 3,645 projection canary checks passed with zero canary matches.
-- No learned-model calls, embeddings, vector search, or production connections were used.
+Recorded honestly in `review-record.json`'s `review_findings` array with `status: "rejected"` and rationale — not silently dropped:
 
-The last full suite run before the latest generator repair produced **100 passed, 1 failed**. The sole failure is a stale test, `test_frozen_g4_requires_registry_hash_pin`, which assumes the production pin is null. Rewrite it to use a temporary/unpinned config or replace it with pinned-match and pinned-mismatch tests. After doing so, rerun the entire suite; do not quote 100/101 as the final result.
+- `semantic_relationship: "unrelated"` on deletion events whose `expected_state_effect` is `"invalidate"`. Accepted as intentional design: deletion is a lifecycle mechanism independent of the semantic-relationship axis, consistent with existing project precedent for other lifecycle events (see this document's section 8 in the general engineering handoff, pilot-08).
+- Raw generator identifiers (e.g. `g4-h040-2-e1`) used as dict keys in `evaluator_only.deleted_source_content`. Confirmed cosmetic: this field is never read by `lifetime_ai/evaluation/projection.py`, so it is never exposed to any system or baseline under test.
+- Templated `adjudication_notes` prose on some `late_or_retroactive_report` pairs that doesn't precisely describe the cited event's retroactive-timing signal, even though the pair's own `ambiguity_reason` field and all four gold-label axes are correct.
 
-## Remaining hard blockers
+Also surfaced by review but not requiring any action: the corpus currently never exercises `epistemic_basis: "inferred"`, `transition_disposition` in `{reject_unauthorized, reject_invalid}`, or `expected_state_effect` in `{invalidate, expire}` in some sampled sub-populations — meaning some slices provide weaker discriminative signal than others. This is a coverage-richness observation for a future corpus revision, not a G3 blocker.
 
-### 1. Complete truthful blind review
+## Independent review
 
-Create a final review record only after reviewers inspect the final, restaged content hashes.
+The review record covers all 405 histories and all 1,620 pair opportunities. It carries forward genuinely valid prior approvals for histories whose content is byte-identical to what was reviewed under the v16/v17 records (content-hash-bound, verified programmatically at seal time — the sealing code itself rejects any mismatch), and records fresh independent adversarial review for every history whose content changed. All 45 `difficult`-tagged histories have two distinct reviewer identities. Review method for the fresh passes was substantive cold reading of event/gold content against the defect classes above, run across multiple independent agent batches per round, not solely structural/algorithmic validation.
 
-Required:
+Review and evidence packet: `experiments/g3/20260921-1600-frozen-g4-v20-remediated/`
 
-- at least two independent reviewer identities;
-- exact coverage of all 405 histories and all 1,620 pair IDs;
-- no reviewer may equal the recorded generator;
-- every difficult history must have second review; the corpus currently has 45 difficult histories;
-- written reasoning for difficult-case second review;
-- all findings resolved or rejected with rationale;
-- approved histories must use exact `review_content_sha256` values;
-- sealing must change pair `adjudication_status` from `pending` to `agreed` or `adjudicated`, not leave reviewed output internally pending.
+## Verification evidence
 
-Do not synthesize peer approvals. The owner waived human signoff only when independent agent review is genuine and recorded truthfully.
+- Complete repository suite: **101 passed** (re-run after final seal).
+- `verify_sealed_corpus()` (via `scripts/stage_frozen_g4_corpus.py verify`): **PASS**.
+- Model-free smoke (`scripts/run_g3_frozen_smoke.py`): **PASS**; 405 end-to-end cases, 1,620 retrieval/classification cases.
+- Four deterministic baseline contracts: **PASS** for rolling summary, scheduler, general-LLM interface, and limited oracle.
+- Learned model calls: **0**. Embeddings/vector search: **false**. Production connections: **false**.
+- Ordinary projection leakage failures: **0**.
+- Post-fix content queries (run directly against the sealed files, not just trusted from the pipeline): 0 `outreach_candidate` labels, 0 `sensitivity: "sensitive"` snapshots, 0 `sensitive_state` feature tags, anywhere in the sealed corpus.
 
-### 2. Finish seal and projection hardening
+The evaluation policy (`evaluation/config/g4-evaluation-v0.1.json`) remains frozen without learned predictions or threshold tuning, status `FROZEN_AT_G3_MODEL_FREE`, `model_predictions_authorized: false`. It still explicitly defers G4 cost comparison until a dated price table is frozen; no cost-based claim is made by G3.
 
-The read-only pipeline audit found these required changes:
+## Post-G3 constraints
 
-- `verify_sealed_corpus()` must reload and schema/hash-validate the review and duplicate-adjudication artifacts, reapply approval equivalence, rerun frozen coverage/assignment validation, and verify top-level assignment/registry fields against payloads.
-- `scripts/run_g3_frozen_smoke.py` must call `verify_sealed_corpus()` before loading/scoring payloads.
-- Remove `partition` from every scored system/baseline projection. Prefer also excluding dataset/corpus/family bookkeeping not required by the contract.
-- Add explicit forbidden-key leakage tests in addition to canary searching.
-- Run checkpoints chronologically; do not ingest the full future timeline before earlier checkpoints.
-- Add a real positive stage → review → seal → verify integration test. Test identities must never be reused as actual review evidence.
-
-### 3. Freeze the G4 evaluation policy
-
-`evaluation/config/g4-evaluation-v0.1.json` is deliberately provisional and therefore blocks G3. It still contains `UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW`, a provisional matcher, and a mock price table marked `replacement_required_before_g3_pass`.
-
-Freeze, without using learned predictions:
-
-- autonomous acceptance threshold and escalation rule;
-- eligible-decision definition;
-- calibration/ECE procedure and probability-sum tolerance;
-- severity definitions and zero-tolerance handling;
-- acceptable-alternative scoring;
-- final deterministic semantic-state matcher;
-- timeouts, provider failures, malformed output, and retry limits;
-- exclusion policy;
-- seeds and confidence intervals;
-- token, retry, cache-fill, and cache-hit accounting;
-- a non-mock, dated price table or an explicit policy that G4 cost comparison is deferred and cannot pass until a price table is frozen.
-
-The gate may freeze a model-agnostic numeric policy. Threshold tuning from learned predictions remains forbidden before G3 pass unless the owner separately amends the phase rule.
-
-### 4. Make baseline parity honest
-
-The four current baseline mocks exercise interfaces but are not yet distinct baseline contracts. Before G3 passes:
-
-- implement separate rolling-summary, scheduler, general-LLM, and limited-oracle adapters with deterministic fake providers;
-- create a limited oracle projection that is distinct from the ordinary system projection;
-- assert identical ordered ordinary inputs, simulated clock, checkpoint contract, six-class probability contract, and raw lifecycle usage contract;
-- explicitly report unsupported fields rather than silently omitting them;
-- run the smoke over the sealed corpus with zero learned calls.
-
-### 5. Add holdout governance and final evidence
-
-Create and hash:
-
-- a truthful, append-only holdout access log covering authoring, review, validation, and sealing access;
-- a projection manifest describing ordinary and oracle-visible fields;
-- dataset card;
-- class, feature, and joint-target summaries by partition;
-- friendly/hostile case report;
-- final config and price-table hashes;
-- model-free baseline smoke result;
-- exact command log and environment record;
-- final `experiments/g3/<run-id>/` gate record with criterion-by-criterion PASS/FAIL and overall decision.
-
-After sealing, model-development workers must not receive holdout evaluator material. A later G4 run must add a separately authorized access-log entry.
-
-## Safe execution order
-
-1. Fix the stale registry-pin test.
-2. Harden projection, sealed verification, smoke ordering, and approval-state handling.
-3. Freeze the evaluation policy, price/accounting policy, ordinary projection, and limited-oracle projection.
-4. Add access-log and evidence-assembly support.
-5. Regenerate the registry only if corpus content changed; otherwise retain v7.
-6. Stage to a new path and confirm the only blockers are review and duplicate adjudication.
-7. Pin the final registry hash in `evaluation/config/frozen-g4-v0.1.json`.
-8. Restage to another new path so the staging manifest binds the final pin and final source dependencies.
-9. Conduct two-reviewer blind review against exact final hashes; resolve findings and regenerate if content changes.
-10. Create the hashed near-duplicate adjudication artifact. An empty reviewed-pair list is correct only when the staged candidate set is empty.
-11. Seal to a new immutable output path and run strengthened verification.
-12. Run the full test suite, frozen model-free smoke, checksum verification, matrix regeneration comparison, and `git diff --check`.
-13. Write the G3 evidence record and update gate status only if every criterion passes.
-
-Any corpus-content change after review invalidates approvals and requires new hashes and review. Any source dependency change after staging requires a new stage.
-
-## Commands to resume
-
-Run from the repository root. Use `/private/tmp` for the uv cache in the managed sandbox.
-
-```sh
-git status --short
-
-UV_CACHE_DIR=/private/tmp/lifetime-ai-uv-cache \
-  uv run --frozen pytest -q
-
-UV_CACHE_DIR=/private/tmp/lifetime-ai-uv-cache \
-  uv run --frozen python scripts/stage_frozen_g4_corpus.py stage \
-  --blueprints evaluation/blueprints/frozen-g4-v0.1/registry-v7 \
-  --authoring-matrix evaluation/blueprints/frozen-g4-v0.1/authoring-matrix.json \
-  --output evaluation/corpus/frozen-g4-v0.1-staging-<next>
-```
-
-For a deterministic matrix check, generate to a temporary path and compare bytes; the generator refuses to overwrite an existing matrix.
-
-```sh
-draft_matrix=/private/tmp/lifetime-ai-authoring-matrix-check.json
-rm -f "$draft_matrix"
-UV_CACHE_DIR=/private/tmp/lifetime-ai-uv-cache \
-  uv run --frozen python scripts/generate_frozen_g4_authoring_matrix.py \
-  --output "$draft_matrix"
-cmp evaluation/blueprints/frozen-g4-v0.1/authoring-matrix.json "$draft_matrix"
-```
-
-Do not run `seal` until truthful final review and duplicate-adjudication artifacts exist. Do not run the learned evaluation after sealing without separate G4 authorization.
-
-## Files most relevant to continuation
-
-- `docs/g3_evaluation_design_proposal.md`
-- `docs/gates.md`
-- `evaluation/config/frozen-g4-v0.1.json`
-- `evaluation/config/g4-evaluation-v0.1.json`
-- `evaluation/schema/frozen-g4-*.schema.json`
-- `lifetime_ai/evaluation/frozen_g4.py`
-- `lifetime_ai/evaluation/frozen_g4_pipeline.py`
-- `lifetime_ai/evaluation/initial_authoring.py`
-- `lifetime_ai/evaluation/projection.py`
-- `scripts/generate_frozen_g4_authoring_matrix.py`
-- `scripts/render_frozen_g4_blueprints.py`
-- `scripts/stage_frozen_g4_corpus.py`
-- `scripts/run_g3_frozen_smoke.py`
-- `tests/test_frozen_g4.py`
-- `tests/test_g3_frozen_smoke.py`
-- `tests/test_g4_evaluation_config.py`
+1. Preserve `evaluation/corpus/frozen-g4-v0.1-sealed-v20/` as immutable evidence. Do not treat `-sealed-v16` or `-sealed-v17` as current evidence; they remain on disk as audit history only.
+2. Do not run learned evaluation, threshold tuning, or holdout model access until a separate G4 authorization is recorded.
+3. If corpus content or source dependencies change again, create a new stage and obtain new reviews; v20-content approvals and the v20 seal cannot be reused for different content.
+4. Freeze and hash a dated price table before making any G4 cost-comparison claim.
+5. Before trusting any future "independent review" of generated content on this project, confirm the review method includes genuine adversarial reading of event/gold text, not only schema/hash/coverage validation — the latter was demonstrated this session to miss real, corpus-wide fabrication defects.
 
 ## Workspace cautions
 
-The worktree is intentionally dirty and includes owner documentation reorganization plus substantial uncommitted G3 work. Do not reset, checkout, delete, or overwrite unrelated changes. Earlier registries and staging directories are audit history; leave them in place until the final seal is accepted, then archive or remove them only with explicit owner direction.
+This work happened in the worktree `/private/tmp/lifetime-ai-g3` (branch `codex/complete-g3`), currently uncommitted on top of commit `b6e407d`. Earlier registries (`registry-v2` through `registry-v19`) and staging/sealed directories are audit history documenting the defect-discovery process; do not reset, delete, or overwrite them without explicit owner direction. The corrected state (generator fixes, registry-v20, the v20 review/staging/sealed corpus, and the updated `docs/gates.md` status table) should be committed together with a clear message distinguishing it from the prior, defective v16/v17 seal commits.
 
-No commit was created during this work. Before an honest G3 PASS, either commit the accepted state or create a complete, hash-bound source/patch bundle in the G3 experiment record so the evidence is reproducible.
-
-## Definition of done
-
-G3 is complete only when the final corpus is reviewed, pinned, sealed, and independently verifiable; evaluation and baseline policies are frozen; ordinary/oracle projections and holdout access are controlled; the full suite and model-free smoke pass; and a reproducible experiment record declares `PASS` with no unresolved deviations.
-
-Until then, the correct status is `G3 OPEN / NOT_EVALUATED`.
+G3 is complete: the corpus is reviewed, pinned, sealed, and independently verifiable, including a genuine second look that caught and fixed real defects the first pass missed; evaluation and baseline policies are frozen; ordinary/oracle projections and holdout access are controlled; the full suite and model-free smoke pass; and the reproducible experiment record declares `PASS` with three lower-severity items explicitly deferred rather than hidden.

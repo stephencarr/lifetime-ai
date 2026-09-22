@@ -352,12 +352,16 @@ def stage_blueprint_registry(
     schema_paths = sorted((ROOT / "evaluation" / "schema").glob("*.schema.json"))
     source_paths = [
         CONFIG_PATH,
+        ROOT / "evaluation" / "config" / "g4-evaluation-v0.1.json",
         authoring_matrix_path,
         *schema_paths,
         ROOT / "lifetime_ai" / "evaluation" / "canonical.py",
         ROOT / "lifetime_ai" / "evaluation" / "frozen_g4.py",
         ROOT / "lifetime_ai" / "evaluation" / "frozen_g4_pipeline.py",
+        ROOT / "lifetime_ai" / "evaluation" / "contracts.py",
+        ROOT / "lifetime_ai" / "evaluation" / "projection.py",
         ROOT / "lifetime_ai" / "evaluation" / "validation.py",
+        ROOT / "scripts" / "run_g3_frozen_smoke.py",
         ROOT / "uv.lock",
         *blueprint_paths,
     ]
@@ -551,6 +555,50 @@ def verify_sealed_corpus(directory: Path) -> dict[str, Any]:
         raise CorpusValidationError("sealed manifest staging link mismatch")
     if manifest.get("source_files") != staging_manifest.get("source_files"):
         raise CorpusValidationError("sealed source dependencies differ from staging manifest")
+    review = _load_hashed_artifact(directory / "review-record.json", REVIEW_RECORD_SCHEMA)
+    duplicate_schema = ROOT / "evaluation" / "schema" / "frozen-g4-duplicate-adjudication.schema.json"
+    adjudication = _load_hashed_artifact(
+        directory / "near-duplicate-adjudication.json", duplicate_schema
+    )
+    histories = read_jsonl(directory / "development.jsonl") + read_jsonl(
+        directory / "holdout.jsonl"
+    )
+    family_specs = read_jsonl(directory / "family-specs.jsonl")
+    assignment = strict_json_loads(
+        (directory / "assignment-manifest.json").read_text(encoding="utf-8")
+    )
+    if not isinstance(assignment, dict):
+        raise CorpusValidationError("sealed assignment manifest is not an object")
+    if manifest.get("family_spec_registry_sha256") != assignment.get(
+        "family_spec_registry_sha256"
+    ):
+        raise CorpusValidationError("sealed registry field differs from assignment payload")
+    if manifest.get("assignment_sha256") != assignment.get("assignment_sha256"):
+        raise CorpusValidationError("sealed assignment field differs from assignment payload")
+    if staging_manifest.get("family_spec_registry_sha256") != assignment.get(
+        "family_spec_registry_sha256"
+    ) or staging_manifest.get("assignment_sha256") != assignment.get("assignment_sha256"):
+        raise CorpusValidationError("embedded staging assignment fields differ from payload")
+    unreviewed = deepcopy(histories)
+    for history in unreviewed:
+        history["reviewer_status"] = "pending"
+        history["evaluator_only"]["generation_and_review_provenance"][
+            "reviewed_content_sha256"
+        ] = None
+        for gold in history["evaluator_only"]["pair_gold"]:
+            gold["adjudication_status"] = "pending"
+    reapplied = _apply_blind_review(unreviewed, review)
+    if canonical_jsonl_bytes(sorted(reapplied, key=lambda item: item["history_id"])) != canonical_jsonl_bytes(
+        sorted(histories, key=lambda item: item["history_id"])
+    ):
+        raise CorpusValidationError("sealed histories differ from re-applied review approvals")
+    validate_frozen_g4_coverage(
+        histories,
+        family_specs=family_specs,
+        assignment_manifest=assignment,
+        near_duplicate_adjudication=adjudication,
+        require_sealing_artifacts=True,
+    )
     return manifest
 
 
@@ -618,6 +666,8 @@ def _apply_blind_review(
         history["evaluator_only"]["generation_and_review_provenance"][
             "reviewed_content_sha256"
         ] = content_hash
+        for gold in history["evaluator_only"]["pair_gold"]:
+            gold["adjudication_status"] = "agreed"
         reviewed.append(history)
     expected_pairs = (
         _FROZEN_CONFIG["split"]["families_total"]

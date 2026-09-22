@@ -27,14 +27,27 @@ class PredictedRelationship:
     confidence: str
     escalate: bool
 
-    def validate(self) -> None:
+    def validate(self, *, probability_sum_tolerance: str = "0.000001") -> None:
+        """Validate the prediction contract.
+
+        `probability_sum_tolerance` must match the frozen value in
+        `evaluation/config/g4-evaluation-v0.1.json`'s `decision_policy`
+        (currently "0.000001"), which exists so rounded provider
+        probabilities are not rejected for a sum of e.g. 0.9999999 or
+        1.0000001. The default here mirrors that frozen policy; pass the
+        loaded config value explicitly if the policy is ever re-frozen to a
+        different number, rather than special-casing exact equality.
+        """
         if set(self.probabilities) != RELATIONSHIPS:
             raise ValueError("probability vector must contain exactly six relationship classes")
         values = [Decimal(value) for value in self.probabilities.values()]
         if any(value < 0 or value > 1 for value in values):
             raise ValueError("probabilities must be in [0,1]")
-        if sum(values) != Decimal("1"):
-            raise ValueError("probabilities must sum exactly to 1")
+        tolerance = Decimal(probability_sum_tolerance)
+        if abs(sum(values) - Decimal("1")) > tolerance:
+            raise ValueError(
+                f"probabilities must sum to 1 within tolerance {tolerance}"
+            )
         if self.decision not in RELATIONSHIPS:
             raise ValueError("unknown relationship decision")
         if Decimal(self.confidence) != Decimal(self.probabilities[self.decision]):
@@ -107,9 +120,11 @@ class MockPairClassifier:
 class MockEvaluationSystem:
     system_id: str = "mock-end-to-end"
     events_seen: int = 0
+    configuration: Mapping[str, Any] = field(default_factory=dict)
 
     def reset(self, history_id: str, configuration: Mapping[str, Any]) -> None:
         self.events_seen = 0
+        self.configuration = dict(configuration)
 
     def ingest(self, event: Mapping[str, Any]) -> Mapping[str, Any]:
         self.events_seen += 1
@@ -127,11 +142,42 @@ class MockEvaluationSystem:
 @dataclass
 class MockRollingSummaryBaseline(MockEvaluationSystem):
     system_id: str = "baseline-a-mock-rolling-summary"
+    summary: list[str] = field(default_factory=list)
+
+    def reset(self, history_id: str, configuration: Mapping[str, Any]) -> None:
+        super().reset(history_id, configuration)
+        self.summary = []
+
+    def ingest(self, event: Mapping[str, Any]) -> Mapping[str, Any]:
+        super().ingest(event)
+        content = event.get("content")
+        if isinstance(content, str):
+            self.summary = [*self.summary[-3:], content]
+        return {"accepted": True, "summary_entries": len(self.summary)}
+
+    def checkpoint(self, request: Mapping[str, Any]) -> Mapping[str, Any]:
+        return {**super().checkpoint(request), "rolling_summary": list(self.summary),
+                "unsupported_fields": ["relationship_probabilities"]}
 
 
 @dataclass
 class MockSchedulerBaseline(MockEvaluationSystem):
     system_id: str = "baseline-b-mock-scheduler"
+    scheduled_events: list[str] = field(default_factory=list)
+
+    def reset(self, history_id: str, configuration: Mapping[str, Any]) -> None:
+        super().reset(history_id, configuration)
+        self.scheduled_events = []
+
+    def ingest(self, event: Mapping[str, Any]) -> Mapping[str, Any]:
+        super().ingest(event)
+        if event.get("event_type") == "time_advance" or event.get("metadata", {}).get("valid_until"):
+            self.scheduled_events.append(str(event["event_id"]))
+        return {"accepted": True, "scheduled_events": len(self.scheduled_events)}
+
+    def checkpoint(self, request: Mapping[str, Any]) -> Mapping[str, Any]:
+        return {**super().checkpoint(request), "scheduled_events": list(self.scheduled_events),
+                "unsupported_fields": ["semantic_relationship", "current_state"]}
 
 
 @dataclass
@@ -140,10 +186,21 @@ class MockGeneralLLMBaseline(MockEvaluationSystem):
 
     system_id: str = "baseline-c-mock-general-llm"
 
+    def checkpoint(self, request: Mapping[str, Any]) -> Mapping[str, Any]:
+        return {**super().checkpoint(request), "fake_provider_response": "abstain",
+                "unsupported_fields": []}
+
 
 @dataclass
 class MockOracleBaseline(MockEvaluationSystem):
     system_id: str = "baseline-d-mock-oracle"
+
+    def checkpoint(self, request: Mapping[str, Any]) -> Mapping[str, Any]:
+        projection = self.configuration.get("limited_oracle_projection", {})
+        return {**super().checkpoint(request),
+                "gold_transitions": projection.get("gold_transitions", []),
+                "gold_invalidations": projection.get("gold_invalidations", []),
+                "unsupported_fields": []}
 
 
 def calculate_cost_cad(usage: RawLifecycleUsage, price_table: Mapping[str, str]) -> Decimal:

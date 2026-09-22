@@ -1,7 +1,7 @@
 {
   "config_version": "g4-evaluation-v0.1",
   "canonical_profile": "lifetime-ai-canonical-json-v1",
-  "status": "PROVISIONAL_PRE_G3_CORPUS_REVIEW",
+  "status": "FROZEN_AT_G3_MODEL_FREE",
   "authorization": {
     "model_predictions_authorized": false,
     "threshold_tuning_authorized": false,
@@ -60,23 +60,23 @@
     }
   },
   "decision_policy": {
-    "autonomous_acceptance_threshold": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "escalation_policy": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "eligible_decision_definition": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "calibration_procedure": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "probability_sum_tolerance": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "autonomous_acceptance_threshold": "0.95",
+    "escalation_policy": "escalate unless exactly one class is at or above 0.95 and the deterministic validator accepts the proposed transition",
+    "eligible_decision_definition": "a schema-valid six-class prediction for a non-null immutable candidate snapshot with no provider or harness failure",
+    "calibration_procedure": "15 fixed equal-width confidence bins over the selected-class probability; empty bins omitted; ECE weighted by eligible-decision count",
+    "probability_sum_tolerance": "0.000001",
     "must_be_fixed_and_deterministic_before_holdout": true
   },
   "severity_policy": {
     "gold_levels": ["low", "medium", "high"],
-    "level_definitions": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "level_definitions": "low: wrong no-op with no authoritative mutation; medium: incorrect semantic or reversible state/action handling; high: unauthorized mutation, deletion/expiry failure, or loss of source-linked authoritative state",
     "unauthorized_mutation_is_zero_tolerance": true,
     "high_severity_error_is_zero_tolerance": true
   },
   "semantic_state_matching": {
-    "status": "PROVISIONAL_PILOT_CANDIDATE_NOT_FROZEN",
+    "status": "FROZEN_DETERMINISTIC_V1",
     "source": "evaluation/config/pilot-evaluation-config.json",
-    "algorithm": "deterministic_greedy_pilot_only",
+    "algorithm": "deterministic_greedy_semantic_match_v1",
     "assignment_algorithm": "deterministic_greedy",
     "tie_handling": "predicted_index_then_gold_index",
     "normalization": {
@@ -97,10 +97,10 @@
       "evidence": 5
     },
     "exact_runtime_id_equality_is_primary_metric": false,
-    "requires_post_corpus_review_before_holdout": true
+    "requires_post_corpus_review_before_holdout": false
   },
   "acceptable_alternatives": {
-    "scoring_rule": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "scoring_rule": "full credit when prediction equals primary gold or a listed acceptable alternative; calibration always uses the primary gold class",
     "recommended_primary_for_genuine_multi_label_ambiguity": "uncertain",
     "must_be_frozen_before_holdout": true
   },
@@ -109,14 +109,14 @@
     "silent_omission_allowed": false
   },
   "failure_handling": {
-    "timeout_seconds": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "timeout_scoring": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "provider_failure_scoring": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "malformed_output_scoring": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "retry_limit": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW"
+    "timeout_seconds": 120,
+    "timeout_scoring": "incorrect and ineligible for autonomous acceptance; retain in complete error inventory",
+    "provider_failure_scoring": "incorrect and ineligible for autonomous acceptance; retain raw usage and failure class",
+    "malformed_output_scoring": "incorrect, non-autonomous, and zero confidence; no repair beyond the fixed retry limit",
+    "retry_limit": 1
   },
   "exclusions": {
-    "prespecified_rules": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "prespecified_rules": "exclude only schema-invalid corpus records detected before any holdout prediction; any post-seal defect spends the holdout and requires a replacement holdout",
     "post_holdout_outcome_driven_exclusions_allowed": false,
     "failed_examples_retained_in_reports": true,
     "exclusion_justification_required_before_recomputation": true,
@@ -124,8 +124,8 @@
     "maximum_planning_ineligibility_fraction": "0.20"
   },
   "reproducibility": {
-    "random_seeds": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "confidence_intervals_other_than_precision": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "random_seeds": ["lifetime-ai-frozen-g4-v0.1-2026-09-19", "g4-bootstrap-v1-2026-09-21"],
+    "confidence_intervals_other_than_precision": "family-cluster bootstrap with 10000 resamples and fixed seed; percentile 95% intervals",
     "corpus_split_seed_source": "evaluation/config/frozen-g4-v0.1.json"
   },
   "lifecycle_accounting": {
@@ -143,16 +143,17 @@
     ],
     "all_retries_count": true,
     "cache_fills_count": true,
-    "cache_hit_treatment": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
-    "token_counting_policy": "UNSET_PENDING_DEVELOPMENT_CORPUS_REVIEW",
+    "cache_hit_treatment": "report cached-input tokens separately and apply only provider-published cached-input pricing when a dated price table is frozen",
+    "token_counting_policy": "use provider usage records when present; otherwise use the frozen provider tokenizer and report the fallback explicitly",
     "local_compute_reported_separately": true,
     "provider_usage_records_required_for_provider_cost": true,
     "price_table": {
-      "status": "PROVISIONAL_MOCK_ONLY_NOT_VALID_FOR_G4_COST_COMPARISON",
-      "path": "evaluation/config/pilot-price-table.json",
-      "file_sha256": "239f9e3e2823b68990d3f2026242d25bb7c0f83fd4582d3cc113ebe049904082",
-      "canonical_value_sha256": "c860703e67a5928811989335d223b710bdd3d4e80963d9bf5b78f04b9deb79fc",
-      "replacement_required_before_g3_pass": true
+      "status": "DEFERRED_NO_G4_COST_PASS_UNTIL_DATED_TABLE_IS_FROZEN",
+      "path": null,
+      "file_sha256": null,
+      "canonical_value_sha256": null,
+      "replacement_required_before_g3_pass": false,
+      "required_before_g4_cost_comparison": true
     }
   },
   "baseline_parity": {
@@ -163,11 +164,5 @@
     "same_raw_lifecycle_usage_contract": true,
     "gold_labels_or_answers_available_to_ordinary_baselines": false
   },
-  "freeze_blockers": [
-    "development-corpus review has not selected the autonomous threshold and escalation policy",
-    "calibration, eligibility, severity, timeout, failure, malformed-output, exclusion, and alternative-label procedures are not frozen",
-    "the pilot semantic matcher has not been accepted as the final matcher",
-    "a non-mock G4 price table and exact token/cache/retry accounting policy are not frozen",
-    "random seeds and remaining confidence-interval procedures are not frozen"
-  ]
+  "freeze_blockers": []
 }

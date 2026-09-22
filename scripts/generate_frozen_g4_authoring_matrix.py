@@ -26,18 +26,21 @@ FEATURES = [
     "commitment_failure", "contradiction_without_repair", "genuine_ambiguity",
     "irrelevant_noise", "source_deletion", "derivative_invalidation",
     "independent_support_survives", "unauthorized_injection_text",
-    "silence_is_correct", "late_or_retroactive_report", "sensitive_state",
+    "silence_is_correct", "late_or_retroactive_report",
 ]
 SECONDARY_FEATURES_BY_RELATIONSHIP = {
-    "supports": ["commitment_resolution", "sensitive_state", "preference_reinforcement"],
+    # "sensitive_state" removed: no branch in initial_authoring.py ever
+    # renders confidentiality/PII content for it, so the tag was vacuous
+    # (see the sibling fix to expected_external_action/sensitivity above).
+    "supports": ["commitment_resolution", "preference_reinforcement"],
     "contradicts": ["unauthorized_injection_text", "contradiction_without_repair"],
-    "narrows_scope": ["sensitive_state", "scope_narrowing"],
+    "narrows_scope": ["scope_narrowing"],
     "supersedes": [
         "explicit_expiry", "direct_correction", "source_deletion",
         "derivative_invalidation",
     ],
     "unrelated": ["silence_is_correct", "commitment_failure", "irrelevant_noise"],
-    "uncertain": ["late_or_retroactive_report", "genuine_ambiguity", "sensitive_state"],
+    "uncertain": ["late_or_retroactive_report", "genuine_ambiguity"],
 }
 DOMAINS = [
     ("api-versioning", "supported API version for a mobile client"),
@@ -89,8 +92,12 @@ DOMAINS = [
 VARIANTS = [
     ("direct", "an explicit statement from the authoritative actor"),
     ("operational", "a tool observation with realistic surrounding noise"),
-    ("temporal", "a late, expiring, deleted, or period-bounded observation"),
+    ("temporal", "an observation whose timing must be interpreted from the event record"),
 ]
+LIFECYCLE_FEATURES = {
+    "explicit_expiry", "source_deletion", "derivative_invalidation",
+    "independent_support_survives",
+}
 
 
 def build_authoring_matrix() -> dict[str, Any]:
@@ -110,9 +117,11 @@ def build_authoring_matrix() -> dict[str, Any]:
             }
             relationship_occurrence = ordinal // len(RELATIONSHIPS)
             compatible_features = SECONDARY_FEATURES_BY_RELATIONSHIP[relationship]
-            secondary_feature = compatible_features[
-                relationship_occurrence % len(compatible_features)
-            ]
+            secondary_feature = (
+                compatible_features[
+                    relationship_occurrence % len(compatible_features)
+                ]
+            )
             features = (
                 calibration_features[relationship]
                 if ordinal < 6
@@ -144,15 +153,21 @@ def build_authoring_matrix() -> dict[str, Any]:
                 disposition = "reject_invalid"
                 effect = "none"
                 action = "investigate"
-            if (ordinal >= 6 and relationship == "supports"
-                    and secondary_feature == "preference_reinforcement"):
-                action = "outreach_candidate"
+            # No supports-labeled pair ever renders genuine outreach/contact
+            # context (see initial_authoring.py), so "outreach_candidate" is
+            # never planned; plain supports pairs keep action "none".
             secondary_relationships = [
                 label for label in RELATIONSHIPS if label != relationship
             ]
             relationship_pair_counts = {relationship: 4}
             for offset, label in enumerate(secondary_relationships):
                 relationship_pair_counts[label] = 2 if offset < 3 else 1
+            lifecycle_primary = ordinal >= 6 and secondary_feature in LIFECYCLE_FEATURES
+            if lifecycle_primary:
+                # Lifecycle control events are unrelated on the semantic
+                # dimension; expiry/invalidation is scored independently.
+                relationship_pair_counts[relationship] -= 3
+                relationship_pair_counts["unrelated"] += 3
             opaque_id = sha256_value({
                 "namespace": "lifetime-ai-frozen-g4-family-v1",
                 "domain": domain,
@@ -166,7 +181,7 @@ def build_authoring_matrix() -> dict[str, Any]:
                 "family_id": f"g4-family-{opaque_id}",
                 "domain": domain,
                 "scenario_focus": f"{subject}; {framing}",
-                "primary_relationship": relationship,
+                "primary_relationship": "unrelated" if lifecycle_primary else relationship,
                 "planned_relationship_pair_counts": dict(sorted(relationship_pair_counts.items())),
                 "required_features": features,
                 "planned_dispositions": sorted({

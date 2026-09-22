@@ -1,0 +1,8 @@
+$ UV_CACHE_DIR=/private/tmp/lifetime-ai-uv-cache uv run --frozen pytest -q tests/test_frozen_g4.py tests/test_g3_frozen_smoke.py tests/test_g4_evaluation_config.py tests/test_frozen_g4_authoring_matrix.py
+47 passed in 124.56s (0:02:04)
+
+$ UV_CACHE_DIR=/private/tmp/lifetime-ai-uv-cache uv run --frozen pytest -q
+101 passed in 124.87s (0:02:04)
+
+$ git diff --check
+exit 0

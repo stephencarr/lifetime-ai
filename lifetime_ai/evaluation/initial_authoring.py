@@ -190,9 +190,14 @@ def _family_narrative(family: int, variant: int, plan: dict[str, Any]):
 def _labels_by_history(plan: dict[str, Any]) -> list[list[str]]:
     """Allocate the exact family mix while placing the primary class in every history."""
     primary = plan["primary_relationship"]
+    lifecycle = bool({
+        "explicit_expiry", "source_deletion", "derivative_invalidation",
+        "independent_support_survives",
+    } & set(plan["required_features"]))
+    anchor = "unrelated" if lifecycle else primary
     counts = dict(plan["planned_relationship_pair_counts"])
-    groups = [[primary], [primary], [primary]]
-    counts[primary] -= 3
+    groups = [[anchor], [anchor], [anchor]]
+    counts[anchor] -= 3
     remaining = [
         (label, index)
         for label, count in counts.items()
@@ -306,7 +311,11 @@ def build_initial_history(
     hid = f"g4-h{family:03d}-{variant + 1}"
     relation = plan["primary_relationship"]
     supplemental_features = set(plan["required_features"]) - {RELATIONSHIP_FEATURE[relation]}
-    special_pair_index = labels.index(relation)
+    lifecycle_plan = bool({
+        "explicit_expiry", "source_deletion", "derivative_invalidation",
+        "independent_support_survives",
+    } & supplemental_features)
+    special_pair_index = labels.index("unrelated" if lifecycle_plan else relation)
     events, state = [], []
     for index, target in enumerate(targets, 1):
         source = initial.format(target=target)
@@ -347,7 +356,7 @@ def build_initial_history(
                               "independent_support_survives",
                           } else "asserted"
                       ),
-                      "sensitivity": "sensitive" if "sensitive_state" in plan["required_features"] else "normal"})
+                      "sensitivity": "normal"})  # rendered event text never carries confidentiality/PII language
     if "independent_support_survives" in supplemental_features:
         support_event = _event(
             f"{hid}-independent-support", 5,
@@ -362,7 +371,7 @@ def build_initial_history(
             "status": "active", "valid_from": support_event["occurred_at"],
             "valid_until": None, "evidence_ids": [support_event["event_id"]],
             "counterevidence_ids": [], "epistemic_basis": "asserted",
-            "sensitivity": "sensitive" if "sensitive_state" in plan["required_features"] else "normal",
+            "sensitivity": "normal",  # rendered event text never carries confidentiality/PII language
         })
     baseline_sequence = len(events)
     snapshots, pools, inputs, golds, tasks, task_gold = [], [], [], [], [], []
@@ -384,7 +393,7 @@ def build_initial_history(
         )
         special = (
             next(iter(sorted(supplemental_features)), None)
-            if index == special_pair_index and label == relation else None
+            if index == special_pair_index and (label == relation or lifecycle_plan) else None
         )
         if special is not None:
             tags.extend(sorted(supplemental_features))
@@ -421,7 +430,7 @@ def build_initial_history(
             disposition, effect, action = "reject_invalid", "none", "investigate"
             event["content"] = (
                 "A purported commitment window begins on 2026-10-01 but ends on "
-                "2026-09-01; reject the impossible interval and investigate its source."
+                "2026-09-01. The source supplies no explanation for the reversed interval."
             )
             event["metadata"] = {
                 "valid_from": "2026-10-01T00:00:00Z",
@@ -435,7 +444,7 @@ def build_initial_history(
             )
             event.update({
                 "actor": "user", "event_type": "deletion",
-                "content": "Delete the sole source observation and invalidate only the derivative that depends exclusively on it.",
+                "content": "Delete the identified sole-source observation under the recorded deletion policy.",
                 "deletion_target_ids": [source_id],
             })
         elif special == "unauthorized_injection_text":
@@ -447,9 +456,10 @@ def build_initial_history(
                     "reason": "Imported text has no delegated state-transition authority.",
                 },
             })
-        elif (index == special_pair_index and "outreach_candidate" in plan["planned_actions"]
-              and label == "supports"):
-            action = "outreach_candidate"
+        # No supports-labeled event in this generator ever carries genuine
+        # outreach/contact context in its rendered text, so the mechanical
+        # "outreach_candidate" override is removed rather than exempting
+        # archetypes one at a time. Pairs keep their default "none" action.
         if special == "late_or_retroactive_report":
             event["occurred_at"] = "2026-09-18T12:00:00Z"
             event["recorded_at"] = "2026-09-20T13:00:00Z"
@@ -513,16 +523,30 @@ def build_initial_history(
                 "invalidated_by_event_id": eid,
                 "reason": "source_deleted",
             })
-        golds.append({"pair_id": pid, "semantic_relationship": label, "transition_disposition": disposition,
+        semantic_relationship = (
+            "unrelated"
+            if special in {
+                "explicit_expiry", "source_deletion", "derivative_invalidation",
+                "independent_support_survives",
+            }
+            else label
+        )
+        severity = (
+            "high"
+            if disposition == "reject_unauthorized" or effect in {"invalidate", "expire"}
+            else "low" if semantic_relationship == "unrelated" and disposition == "no_op"
+            else "medium"
+        )
+        golds.append({"pair_id": pid, "semantic_relationship": semantic_relationship, "transition_disposition": disposition,
                       "expected_state_effect": {"effect": effect, "affected_item_ids": affected,
                                                 "affected_derivative_ids": (
                                                     [f"{candidate['semantic_item_ref']}-derivative"]
                                                     if effect == "invalidate" else []),
                                                 "expected_new_item_ids": new_ids},
                       "expected_external_action": action, "acceptable_alternatives": [],
-                      "ambiguity_reason": _rationale(label, hostile, family) if label == "uncertain" else None,
+                      "ambiguity_reason": _rationale(label, hostile, family) if semantic_relationship == "uncertain" else None,
                       "required_evidence_ids": sorted({eid, *candidate["evidence_ids"]}),
-                      "forbidden_evidence_ids": [], "severity_if_wrong": "medium",
+                      "forbidden_evidence_ids": [], "severity_if_wrong": severity,
                       "adjudication_status": "pending",
                       "adjudication_notes": _special_rationale(special, label, family),
                       "feature_tags": sorted(tags)})

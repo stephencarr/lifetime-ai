@@ -120,6 +120,14 @@ def frozen_history_content_sha256(history: dict[str, Any]) -> str:
     content = {key: value for key, value in history.items() if key not in metadata_fields}
     evaluator_only = dict(content["evaluator_only"])
     evaluator_only.pop("generation_and_review_provenance", None)
+    evaluator_only["pair_gold"] = [
+        {
+            key: value
+            for key, value in gold.items()
+            if key not in {"adjudication_status", "adjudication_notes"}
+        }
+        for gold in evaluator_only["pair_gold"]
+    ]
     content["evaluator_only"] = evaluator_only
     return sha256_value(content)
 
@@ -204,7 +212,7 @@ def assign_frozen_g4_families(
         family_id: sha256_value({
             "seed": seed,
             "family_id": family_id,
-            "family_spec_sha256": sha256_value(indexed[family_id]),
+            "stratification_label_sha256": sha256_value(sorted(labels_by_family[family_id])),
         })
         for family_id in indexed
     }
