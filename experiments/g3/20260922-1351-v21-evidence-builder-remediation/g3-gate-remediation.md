@@ -6,15 +6,32 @@
 
 ## Scope and decision
 
-This record closes two post-v21 evidence-tooling findings without changing the
-sealed corpus content or its review provenance:
+This record closes three post-v21 evidence-tooling findings without changing
+the sealed corpus content or its review provenance:
 
 1. `scripts/build_g3_frozen_evidence.py` now writes the caller-supplied
    `expected_manifest` into `g3-gate-record.json`, rather than the legacy v15
    default constant.
-2. The same builder now rejects an open, malformed, or closed-without-rationale
-   review finding. A `resolved` or `rejected` finding must carry a non-empty
-   `summary` rationale before it can be carried into a review record.
+2. `_validate_review_findings()` now rejects an open, malformed, or
+   closed-without-rationale review finding. A `resolved` or `rejected`
+   finding must carry a non-empty `summary` rationale.
+3. **Correction to this document's original wording:** a subsequent review
+   found that fix (2) was only ever called from `build_review_artifacts()`.
+   `build_evidence()` -- the entry point that actually produces the final
+   `g3-gate-record.json` -- copied `review_output`'s raw bytes into the
+   evidence packet without validating its contents at all, so a bare `{}`
+   or any other malformed stand-in for a review record would have been
+   silently accepted. This did not affect the real v20/v21 evidence, which
+   was hand-built and independently verified by direct inspection rather
+   than generated through this script's `evidence` subcommand -- but the
+   script itself was genuinely exploitable. Fixed: `build_evidence()` now
+   loads `review_output` through `_load_hashed_artifact()` against the real
+   review-record JSON schema (the same validator `seal_staged_corpus()`
+   uses) before calling `_validate_review_findings()` on its findings. Three
+   new tests prove this: a malformed `{}` review output is rejected, a
+   schema-valid record with a genuinely open finding is rejected, and the
+   real v20/v21 review record (with 6 real resolved/rejected findings) is
+   still accepted.
 
 The v21 payload is unchanged from v20: development data, holdout data, family
 specifications, assignment manifest, near-duplicate adjudication, and the

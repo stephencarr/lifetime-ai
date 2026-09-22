@@ -20,7 +20,11 @@ from pathlib import Path
 from typing import Any
 
 from lifetime_ai.evaluation.canonical import canonical_bytes, read_jsonl, sha256_value
-from lifetime_ai.evaluation.frozen_g4_pipeline import verify_sealed_corpus
+from lifetime_ai.evaluation.frozen_g4_pipeline import (
+    REVIEW_RECORD_SCHEMA,
+    _load_hashed_artifact,
+    verify_sealed_corpus,
+)
 from lifetime_ai.evaluation.projection import PROJECTION_FORBIDDEN_KEYS
 from lifetime_ai.evaluation.validation import review_content_sha256
 
@@ -328,6 +332,16 @@ def build_evidence(
     sealed_manifest = verify_sealed_corpus(sealed)
     if sealed_manifest.get("manifest_sha256") == expected_manifest:
         raise ValueError("sealed manifest must differ from staging manifest")
+    # build_review_artifacts() already validates review findings when it
+    # builds review_output, but build_evidence() can be invoked on its own
+    # against a pre-built review record, so re-validate here rather than
+    # assume the caller ran that step. _load_hashed_artifact enforces the
+    # full review-record schema (reviewers, history_approvals, findings
+    # shape, and the artifact hash itself) -- a bare {} or other malformed
+    # stand-in for a real review record is rejected here, not just a
+    # findings list with the wrong shape.
+    review_record = _load_hashed_artifact(review_output, REVIEW_RECORD_SCHEMA)
+    _validate_review_findings(review_record.get("review_findings", []))
     histories = read_jsonl(sealed / "development.jsonl") + read_jsonl(
         sealed / "holdout.jsonl"
     )
