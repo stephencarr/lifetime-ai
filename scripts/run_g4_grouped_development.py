@@ -43,12 +43,12 @@ class Case:
     may_request_transition: bool = False
 
 
-def _cases(corpus: Path) -> list[Case]:
+def _cases(corpus: Path, partition: str = "development") -> list[Case]:
     cases: list[Case] = []
-    # This runner opens only the development payload after its pinned hash check.
-    for history in read_jsonl(corpus / "development.jsonl"):
-        if history.get("partition") != "development":
-            raise CorpusValidationError("development payload contains another partition")
+    # Callers choose the partition; development callers authenticate it separately.
+    for history in read_jsonl(corpus / f"{partition}.jsonl"):
+        if history.get("partition") != partition:
+            raise CorpusValidationError(f"{partition} payload contains another partition")
         gold = {item["pair_id"]: item for item in history["evaluator_only"]["pair_gold"]}
         events = {item["event_id"]: item for item in history["timeline"]}
         for pair in history["pair_inputs"]:
@@ -325,7 +325,7 @@ def run(corpus: Path, output: Path, artifacts: Path) -> dict[str, Any]:
     manifest = verify_g4_development_partition(corpus)
     if manifest.get("model_predictions_present") is not False:
         raise CorpusValidationError("sealed corpus must be prediction-free")
-    cases = _cases(corpus)
+    cases = _cases(corpus, "development")
     if len(cases) != 1080 or len({case.family_id for case in cases}) != 90:
         raise CorpusValidationError("unexpected development case or family count")
     results = {}

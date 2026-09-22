@@ -22,6 +22,12 @@ The evaluator must start from the frozen repository state named in that record. 
 4. Write raw outputs, machine-readable results, logs, and the complete error inventory only to the recorded output directory.
 5. Record the commit, authorization digest, run nonce, commands, environment, timing, failures, exclusions, and final decision.
 
+The POC harness is `scripts/run_g4_final_evaluation.py`. Select exactly one
+of its two pinned local models in the authorization record. Its output is
+pair-classification evidence only and deliberately reports
+`full_g4_gate_decision: NOT_EVALUATED` until transition-validator metrics are
+integrated.
+
 No exploratory search, interactive inspection, threshold adjustment, retry beyond the frozen retry limit, or second holdout run is permitted.
 
 ## Immediate abort conditions
