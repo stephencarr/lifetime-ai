@@ -1,0 +1,72 @@
+{
+  "accepted_effects": {
+    "add_scoped_item": 202,
+    "close_and_replace": 77,
+    "reinforce": 84
+  },
+  "accepted_relationships": {
+    "narrows_scope": 202,
+    "supersedes": 77,
+    "supports": 84
+  },
+  "all_preparations_without_write_authority": true,
+  "audit_artifact": "experiments/g4/20260922-1351-local-encoder-development/rehearsal-development-audit.jsonl",
+  "baseline_comparison_run": false,
+  "corpus_manifest_sha256": "9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3",
+  "counts_as_autonomous": false,
+  "effect_predictions_sha256": "461d111e5f2de39d0ce6344c53adff8b6a67e97a374d124b3139f775f3604866",
+  "eligible_decision_count": 1080,
+  "eligible_definition_applied": "a schema-valid six-class prediction for a non-null immutable candidate snapshot with no provider or harness failure",
+  "holdout_accessed": false,
+  "implementation_sha256": {
+    "lifetime_ai/evaluation/g4_transition.py": "f067acac5ef80e077c99df5003727c63fe0e4439af8537e16732bedae2b9229f",
+    "scripts/run_g4_transition_rehearsal_development.py": "6bfb813d6dd2aaa5f74337b0909b27b2071491354e2e52f21eda9b9180543f6e",
+    "scripts/score_g4_preflight_development.py": "d6ca7d4c132a35e62c469b36c9a7c1b0ac4c64092001b0e7675ca8081fcd2d06"
+  },
+  "joint_correct_rehearsed_accept_count": 363,
+  "joint_rehearsed_accept_precision": 1.0,
+  "joint_rehearsed_accept_precision_wilson_95": {
+    "lower": 0.9895282860529357,
+    "upper": 1.0
+  },
+  "model_disposition_is_permission": false,
+  "partition": "development_only",
+  "policy_sha256": "a99d9a4b4497241dcf613b477b004507041440694485d454504e1c229e2f4a99",
+  "real_model_inference_timed": false,
+  "reason_counts": {
+    "effect not in rehearsal policy": 46,
+    "no-op cannot establish unrelatedness": 75,
+    "predicted disposition is not accept": 96,
+    "prepared without write authority": 363,
+    "prior setting lacks source witness": 5,
+    "relationship below or outside single-class gate": 492,
+    "replacement target or new-item count mismatch": 2,
+    "scoped-item target or new-item count mismatch": 1
+  },
+  "rehearsal_policy_sha256": "b0bfe8a64fe606916a30a8a8233e18ab97bcc324ad247213908b8fb8ebf18b95",
+  "rehearsal_policy_status": "DEVELOPMENT_CANDIDATE_NOT_FROZEN_FOR_HOLDOUT",
+  "rehearsed_accept_count": 363,
+  "rehearsed_accept_coverage": 0.33611111111111114,
+  "rehearsed_error_severity": {},
+  "relationship_expected_calibration_error_all_eligible": 0.0198221426939196,
+  "relationship_multiclass_brier_score_all_eligible": 0.1545937763845944,
+  "relationship_precision_among_rehearsed": 1.0,
+  "relationship_precision_wilson_95": {
+    "lower": 0.9895282860529357,
+    "upper": 1.0
+  },
+  "relationship_predictions_sha256": "8e8c7f08ef50c05d67f3b0ac28619c2908f9c8769262ac1435d46cb22b42e315",
+  "relationship_threshold": "0.95",
+  "replacement_reference_pairs_available": 45,
+  "replacement_reference_pairs_exact": 45,
+  "stage_counts": {
+    "disposition_shape": 96,
+    "no_op_exclusion": 75,
+    "preflight": 3,
+    "probability_gate": 492,
+    "rehearsed_accept": 363,
+    "source_witness": 5,
+    "unsupported_effect": 46
+  },
+  "status": "DEVELOPMENT_READ_ONLY_REHEARSAL"
+}

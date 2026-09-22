@@ -1,0 +1,38 @@
+{
+  "corpus_manifest_sha256": "9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3",
+  "counts_as_autonomous": false,
+  "effect_predictions_sha256": "461d111e5f2de39d0ce6344c53adff8b6a67e97a374d124b3139f775f3604866",
+  "gold_dispositions_among_preflight": {
+    "abstain": 4,
+    "accept": 88,
+    "no_op": 46
+  },
+  "gold_dispositions_among_shape_consistent_preflight": {
+    "abstain": 2,
+    "accept": 88,
+    "no_op": 43
+  },
+  "joint_correct_among_shape_consistent_preflight_pairs": 127,
+  "joint_relationship_and_effect_correct_among_preflight": 130,
+  "model_disposition_is_permission": false,
+  "model_disposition_shape_consistent_preflight_pairs": 133,
+  "mutation_committed": false,
+  "partition": "development_only",
+  "preflight_passed_pairs": 138,
+  "preflight_reasons": {
+    "candidate source unavailable": 21,
+    "effect requires separate validator or escalation": 429,
+    "read-only no-op preflight": 54,
+    "reinforcement preflight only": 84
+  },
+  "probability_gated_pairs": 588,
+  "semantic_effect_validation_applied": false,
+  "status": "DEVELOPMENT_PREFLIGHT_DIAGNOSTIC_ONLY",
+  "wrong_preflight_pair_predictions_by_gold_disposition": {
+    "abstain": 4,
+    "accept": 4
+  },
+  "wrong_preflight_pair_predictions_by_pair_severity": {
+    "medium": 8
+  }
+}

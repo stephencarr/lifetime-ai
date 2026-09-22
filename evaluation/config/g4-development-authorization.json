@@ -1,0 +1,14 @@
+{
+  "authorization_version": "g4-development-authorization-v1",
+  "recorded_at": "2026-09-22",
+  "authorized_scope": "development_only",
+  "model_predictions_authorized": true,
+  "threshold_tuning_authorized": true,
+  "holdout_evaluation_authorized": false,
+  "model_families": [
+    "tfidf-ngram-logistic-regression",
+    "sentence-transformers/all-MiniLM-L6-v2@1110a243fdf4706b3f48f1d95db1a4f5529b4d41+logistic-regression"
+  ],
+  "corpus_manifest_sha256": "9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3",
+  "cost_comparison": "deferred"
+}

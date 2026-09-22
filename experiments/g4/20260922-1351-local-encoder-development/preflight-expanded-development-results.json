@@ -1,0 +1,64 @@
+{
+  "corpus_manifest_sha256": "9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3",
+  "counts_as_autonomous": false,
+  "effect_predictions_sha256": "461d111e5f2de39d0ce6344c53adff8b6a67e97a374d124b3139f775f3604866",
+  "gold_dispositions_among_preflight": {
+    "abstain": 4,
+    "accept": 372,
+    "no_op": 46
+  },
+  "gold_dispositions_among_shape_consistent_preflight": {
+    "abstain": 2,
+    "accept": 372,
+    "no_op": 43
+  },
+  "gold_dispositions_among_source_witness": {
+    "accept": 363
+  },
+  "gold_dispositions_among_state_changing_preflight": {
+    "accept": 368
+  },
+  "joint_correct_among_shape_consistent_preflight_pairs": 411,
+  "joint_correct_among_source_witness_pairs": 363,
+  "joint_correct_among_state_changing_preflight": 368,
+  "joint_relationship_and_effect_correct_among_preflight": 414,
+  "model_disposition_is_permission": false,
+  "model_disposition_shape_consistent_preflight_pairs": 417,
+  "mutation_committed": false,
+  "no_op_preflight_is_autonomy_eligible": false,
+  "partition": "development_only",
+  "preflight_passed_pairs": 422,
+  "preflight_reasons": {
+    "candidate source unavailable": 21,
+    "effect requires separate validator or escalation": 142,
+    "read-only no-op preflight": 54,
+    "reinforcement preflight only": 84,
+    "replacement preflight only": 77,
+    "replacement target or new-item count mismatch": 2,
+    "scoped-item preflight only": 207,
+    "scoped-item target or new-item count mismatch": 1
+  },
+  "probability_gated_pairs": 588,
+  "scoped_payload_exact_reference_matches": 152,
+  "scoped_payloads_proposed_from_visible_text": 207,
+  "scoped_reference_mismatch_fields": {},
+  "scoped_reference_payloads_available_for_diagnostic": 152,
+  "semantic_effect_validation_applied": false,
+  "source_witness_passed_pairs": 363,
+  "source_witness_reasons": {
+    "prior setting lacks source witness": 5,
+    "verbatim reinforcement witness only": 84,
+    "verbatim replacement witness only": 77,
+    "verbatim scoped-change witness only": 202
+  },
+  "state_changing_preflight_passed_pairs": 368,
+  "status": "DEVELOPMENT_PREFLIGHT_DIAGNOSTIC_ONLY",
+  "wrong_preflight_pair_predictions_by_gold_disposition": {
+    "abstain": 4,
+    "accept": 4
+  },
+  "wrong_preflight_pair_predictions_by_pair_severity": {
+    "medium": 8
+  },
+  "wrong_state_changing_pair_predictions_by_pair_severity": {}
+}

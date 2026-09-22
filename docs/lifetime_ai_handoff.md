@@ -2,10 +2,12 @@
 
 **Updated:** 22 September 2026
 **Audience:** the engineer continuing architecture and evaluation work  
-**Current phase:** G3 passed (frozen-G4 v0.1 corpus, sealed v21); G4 model-run authorization is the next decision
+**Current phase:** G3 passed; G4 development underway. Holdout evaluation remains unauthorized; sealed v21 is quarantined for a clean-agent evaluation after an accidental broad text search.
 **Gate state:** G0-G3 passed. See `docs/g3_completion_handoff.md` for the full remediation record: the v16/v17 seal was found defective by adversarial content review and superseded by v20, which was itself superseded by v21 for unrelated evaluation-tooling fixes (no corpus content change). Do not cite `experiments/g3/20260921-1207-frozen-g4-v16/` as current evidence.
 
-> **Current continuation note:** This general handoff contains historical pilot context (sections 1-9) that remains accurate. For the current G3 PASS evidence, the v16/v17 defect-and-remediation record, and the exact path to a G4 authorization decision, read [`docs/g3_completion_handoff.md`](g3_completion_handoff.md) first.
+> **Current continuation note:** This general handoff contains historical pilot context (sections 1-9) that remains accurate. For the current G3 PASS evidence, the v16/v17 defect-and-remediation record, and G4 development/holdout authorization boundaries, read [`docs/g3_completion_handoff.md`](g3_completion_handoff.md) first.
+
+> **Holdout incident and owner disposition (22 September 2026):** A broad `rg` search over `docs evaluation scripts` traversed holdout files and returned holdout content, violating the no-access instruction. No holdout results, predictions, scoring, or threshold tuning were produced. The owner chose a clean-agent quarantine rather than automatic replacement: freeze this development candidate, transfer no incident-thread content or holdout data, and require separate authorization before a single final holdout run. The procedural breach must be disclosed; v21 is not literally never-accessed. See `experiments/g4/20260922-1351-local-encoder-development/holdout-access-incident.md`.
 
 ## 1. Read this first
 
@@ -201,9 +203,9 @@ Evidence: `experiments/g3/20260919-1121-complete-pilot-human-review/`.
 
 G3 has passed. The frozen-G4 v0.1 corpus is sealed at `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` (405 histories, 1,620 pair opportunities, 270/135 whole-family split), superseding an earlier v16/v17 seal that adversarial content review found defective (see `docs/g3_completion_handoff.md` for the full defect-and-fix record: three fabricated-content bugs and one holdout-assignment instability, all fixed and independently reverified). The v20 seal that resulted from that remediation was itself superseded one day later by v21: an external PR review found three evaluation-*tooling* bugs (an oracle-baseline temporal leak in the smoke harness, stale v15-pinned evidence-builder constants, and a probability-tolerance policy mismatch) that were fixed and required a reseal, but did not change any corpus content, family assignment, or partition — the existing v20 review record was reused as-is.
 
-The evaluation policy (`evaluation/config/g4-evaluation-v0.1.json`) fixes the provisional G4 decision rule at 95% observed point precision, reported with a Wilson interval, and retains ≥100 autonomous accepts as the later observed holdout sample criterion, per the approved second-freeze plan. It remains `FROZEN_AT_G3_MODEL_FREE` with `model_predictions_authorized: false`.
+The evaluation policy (`evaluation/config/g4-evaluation-v0.1.json`) fixes the provisional G4 decision rule at 95% observed point precision, reported with a Wilson interval, and retains ≥100 autonomous accepts as the later observed holdout sample criterion, per the approved second-freeze plan. It remains sealed at `FROZEN_AT_G3_MODEL_FREE` with holdout authorization false; development-only authorization is recorded separately in `evaluation/config/g4-development-authorization.json`.
 
-The next step is a decision, not more corpus work: the project owner must separately authorize a G4 run before any model call is made against `frozen-g4-v0.1-sealed-v21`. Until that authorization is recorded, do not run models, generate predictions, or tune thresholds against this corpus. “Untouched” holdout means exactly that; an inspected holdout is spent per the governing rule in `docs/gates.md`, and further evaluation requires a new holdout.
+Development model execution and threshold tuning are authorized only on the development partition. The next authorization decision is for the untouched holdout; do not run models, generate predictions, or tune thresholds against it. “Untouched” holdout means exactly that; an inspected holdout is spent per the governing rule in `docs/gates.md`, and further evaluation requires a new holdout.
 
 ## 11. Commands for verification
 
@@ -213,7 +215,7 @@ From the repository root:
 uv run --frozen pytest -q
 uv run --frozen python scripts/stage_frozen_g4_corpus.py verify --corpus evaluation/corpus/frozen-g4-v0.1-sealed-v21
 uv run --frozen python scripts/run_g3_frozen_smoke.py --corpus evaluation/corpus/frozen-g4-v0.1-sealed-v21
-shasum -a 256 -c evaluation/corpus/frozen-g4-v0.1-sealed-v21/manifest.sha256
+(cd evaluation/corpus/frozen-g4-v0.1-sealed-v21 && shasum -a 256 -c manifest.sha256)
 ```
 
 In the managed sandbox, redirect the uv cache if needed:
@@ -222,13 +224,23 @@ In the managed sandbox, redirect the uv cache if needed:
 UV_CACHE_DIR=/tmp/lifetime-ai-uv-cache uv run --frozen pytest -q
 ```
 
-Expected current result: 102 tests pass; `verify_sealed_corpus()` reports the manifest hash `9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3`; the model-free smoke reports `status: PASS` with 0 evaluator leakage failures and 0 learned model calls across all four baseline contracts. The prior `pilot-v0.7` development pilot remains development-only and was never a final gate holdout; it is superseded for G3 purposes by the frozen-G4 corpus above.
+The last full G3 suite recorded 117 passes; the targeted G4 test set subsequently recorded 44 passes. Earlier full sealed-corpus verification reported manifest hash `9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3`; the model-free smoke reported `status: PASS` with 0 evaluator leakage failures and 0 learned model calls across all four baseline contracts. Do not re-run full corpus verification under the current no-holdout-access instruction. The prior `pilot-v0.7` development pilot remains development-only and was never a final gate holdout; it is superseded for G3 purposes by the frozen-G4 corpus above.
+
+The development scoring path is implemented at `scripts/score_g4_development.py`. It accepts a complete precomputed prediction artifact, scores development pairs, and rejects non-development pairs or unauthorized runs by default. Its output is explicitly `DEVELOPMENT_DIAGNOSTIC_ONLY`: artifact-selected candidate accepts are not autonomous decisions, and it does not enforce the frozen transition policy. It does not generate predictions or authorize model execution. Development runners and scorer authenticate the pinned manifest and development payload without opening the holdout; this is intentionally narrower than full sealed-corpus verification.
+
+The local G4 development comparison is recorded in `experiments/g4/20260922-1351-local-encoder-development/`. The initial 216-pair whole-JSON baseline had only 2 candidate accepts per model. The later structured, family-grouped MiniLM protocol produced 588 potential candidate accepts among 1,080 development pairs at the frozen 0.95 probability threshold (54.44% coverage), 578 correct (98.30% precision), with no high-severity errors. These are not autonomous decisions because the deterministic transition validator was not applied; G4 has not passed. Holdout evaluation remains unauthorized.
+
+Separate development-only state-effect and disposition heads now predict out of fold (988/1,080 and 952/1,080 correct, respectively); 569/588 relationship-probability-gated pairs have all three targets correct. A read-only structural preflight passed 138/588, but eight still had a wrong relationship or effect and four had gold disposition `abstain`. Even matching the predicted disposition to proposal shape leaves six wrong pairs and two gold `abstain` cases. These diagnostics cannot authorize writes or count G4 autonomy. Full deterministic effect/permission validation, persistence, and baseline comparisons remain open.
+
+The G4 transition module can prepare read-only no-op, reinforcement, scoped-item, and narrow close-and-replace state candidates while checking payload hashes and source provenance. All positive paths require explicit proposal shape, source authority, and a constrained source-text witness. The scoped-item extractor uses source-visible `child workflow '…'` phrases; the replacement extractor handles explicit setting changes with an effective time and closes the parent. The earlier 138/588 structural-preflight diagnostic grew to 345/588 after scoped-item support, then 422/588 after replacement support. All eight wrong preflight pairs remain no-op proposals; no-op is excluded from the rehearsal. The current state-changing witness slice is 363, all correct in development. This is development-tuned textual matching, not general semantic entailment or independent validation. Resolution, other lifecycle effects, broader semantic correctness, and persistence still need explicit designs and tests. Autonomous G4 decisions remain zero.
+
+The subsequent end-to-end read-only rehearsal (`scripts/run_g4_transition_rehearsal_development.py`) uses an explicit, unfrozen development policy and strips evaluator fields before decisions. It combines the fixed 0.95 single-class gate, no-op exclusion, predicted disposition shape, preflight, source witness, and prepared-state invariants. The initial v0.1 candidate prepared 286/1,080 pairs (26.48%); v0.2 adds a narrow read-only `close_and_replace` path and prepares 363/1,080 (33.61%), all 363 jointly correct with gold `accept` disposition in development. All-eligible relationship ECE is 0.0198. Both prepared replacement payloads match immediate reference snapshots in 45/45 available cases; 32 accepted replacements lack an immediate reference comparison. The full decision audit and hashes are under `experiments/g4/20260922-1351-local-encoder-development/`. No writes, model inference timing, baseline comparison, or holdout access occurred; cost comparison remains deferred. Clearing provisional numbers on development is not a G4 pass or autonomous operation.
 
 ## 12. Phase-gated actions
 
-- **G3 has passed (current phase):** model implementation/predictions and holdout evaluation still require a separate G4 run authorization from the project owner. Do not tune thresholds or revise corpus/configuration in response to holdout outcomes; an inspected holdout is spent, and further evaluation requires a new holdout.
-- **If corpus content changes again for any reason** (further defect found, feature added, etc.): a new stage and fresh review are required; v20-content approvals cannot be reused for different content, per the sealing code's own content-hash binding.
-- **At every phase:** never treat the historical `pilot-v0.7` `pilot_holdout` as a final gate holdout. Production/proprietary connections, embeddings/vector search, or an agent framework/UI are outside the current authorization and require a separately approved scope.
+- **G3 has passed; development G4 is authorized:** model implementation, development predictions, and development threshold tuning are allowed under the separate development authorization artifact. Holdout evaluation still requires separate authorization. Do not tune thresholds or revise corpus/configuration in response to holdout outcomes; an inspected holdout is spent, and further evaluation requires a new holdout.
+- **If corpus content changes again for any reason** (further defect found, feature added, etc.): a new stage and fresh review are required; v21-content approvals cannot be reused for different content, per the sealing code's own content-hash binding.
+- **At every phase:** never treat the historical `pilot-v0.7` `pilot_holdout` as a final gate holdout. The authorized local MiniLM development embeddings do not authorize production/proprietary connections, hosted vector search, or an agent framework/UI; those require separately approved scope.
 
 Mocks (the four baseline contracts exercised by the model-free smoke) are contract tests only and are not experimental baseline results — they establish that all four baselines consume comparable inputs and emit a comparable contract, not that any of them perform well. Real baseline runs are G4/G5 work, separately authorized.
 
@@ -255,11 +267,11 @@ Measure task success, source-anchor correctness, stale and unsupported claims, c
 
 ## 15. Workspace hygiene at handoff
 
-As of this update, work is happening in the git worktree `/private/tmp/lifetime-ai-g3` (branch `codex/complete-g3`), uncommitted on top of commit `b6e407d`. That commit itself contains the now-superseded, defective v16/v17 seal; the corrected state (generator fixes in `lifetime_ai/evaluation/initial_authoring.py`, `lifetime_ai/evaluation/frozen_g4.py`, and `scripts/generate_frozen_g4_authoring_matrix.py`; the updated `evaluation/config/frozen-g4-v0.1.json`; registry-v20; the v20 review/staging/sealed corpus directories; and the updated `docs/gates.md` status table) has not yet been committed. Commit it as a distinct, clearly-labeled correction — do not silently amend or hide the fact that v16/v17 was defective.
+The v21 remediation is committed on branch `codex/complete-g3`. Earlier registries and staging/sealed directories are audit history; do not reset, delete, or overwrite them without explicit owner direction.
 
 Earlier registries (`registry-v2` through `registry-v19`) and their staging/sealed directories are audit history documenting the defect-discovery and remediation process. Do not reset, delete, or overwrite them without explicit owner direction.
 
-The accepted experiment records under `experiments/g0`, `experiments/g1`, and `experiments/g2` remain the authoritative evidence that G0-G2 passed. `experiments/g3/20260921-1600-frozen-g4-v20-remediated/` is authoritative for G3; `experiments/g3/20260921-1207-frozen-g4-v16/` is superseded and must not be cited as current evidence.
+The accepted experiment records under `experiments/g0`, `experiments/g1`, and `experiments/g2` remain the authoritative evidence that G0-G2 passed. The current G3 evidence is `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` plus `experiments/g3/20260922-1351-v21-evidence-builder-remediation/`; the v20 and v16 records are historical and must not be cited as current evidence.
 
 Before editing, always run `git status --short`. Stage only task-specific files.
 
@@ -268,9 +280,9 @@ Before editing, always run `git status --short`. Stage only task-specific files.
 Confirm that you have read:
 
 1. this handoff;
-2. `docs/g3_completion_handoff.md` (the full v16-defect/v20-remediation record — read this before trusting any prior "G3 passed" claim);
+2. `docs/g3_completion_handoff.md` (the full v16-defect/v20-remediation and v21-tooling record — read this before trusting any prior "G3 passed" claim);
 3. the G3 section of `docs/gates.md`;
-4. `experiments/g3/20260921-1600-frozen-g4-v20-remediated/g3-gate-record.md`;
+4. `experiments/g3/20260922-1351-v21-evidence-builder-remediation/g3-gate-remediation.md`;
 5. `evaluation/corpus/frozen-g4-v0.1-sealed-v21/review-record.json`'s `review_findings` array (the three consciously-accepted lower-severity items).
 
-G3 has passed against `evaluation/corpus/frozen-g4-v0.1-sealed-v21/`. Do not run models or generate predictions against it until a separate G4 run is explicitly authorized by the project owner — the evaluation policy config already reflects `model_predictions_authorized: false`. If asked to extend or re-review this corpus, budget for genuine adversarial reading of event/gold content, not only structural/schema/hash validation: that weaker method is what let the original v16/v17 defects through undetected.
+G3 has passed against `evaluation/corpus/frozen-g4-v0.1-sealed-v21/`. Development-only model runs are authorized by `evaluation/config/g4-development-authorization.json`; do not access or generate predictions for the holdout until separately authorized. If asked to extend or re-review this corpus, budget for genuine adversarial reading of event/gold content, not only structural/schema/hash validation: that weaker method is what let the original v16/v17 defects through undetected.

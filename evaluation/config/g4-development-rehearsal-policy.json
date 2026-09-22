@@ -1,0 +1,17 @@
+{
+  "policy_id": "g4-development-rehearsal-v0.2",
+  "status": "DEVELOPMENT_CANDIDATE_NOT_FROZEN_FOR_HOLDOUT",
+  "partition": "development_only",
+  "relationship_threshold_source": "evaluation/config/g4-evaluation-v0.1.json#decision_policy.autonomous_acceptance_threshold",
+  "eligible_decision_source": "evaluation/config/g4-evaluation-v0.1.json#decision_policy.eligible_decision_definition",
+  "single_class_probability_gate": true,
+  "no_op_autonomy_eligible": false,
+  "predicted_disposition_required": "accept",
+  "permitted_effects": ["reinforce", "add_scoped_item", "close_and_replace"],
+  "structural_preflight_required": true,
+  "positive_source_witness_required": true,
+  "prepared_state_invariants_required": true,
+  "write_authorized": false,
+  "mutation_committed": false,
+  "model_disposition_is_permission": false
+}

@@ -1,0 +1,195 @@
+{
+  "corpus_manifest_sha256": "9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3",
+  "models": {
+    "structured_minilm_pair_logistic": {
+      "autonomous_coverage": 0.8194444444444444,
+      "autonomous_decisions": 885,
+      "autonomous_precision": 0.9559322033898305,
+      "confusion_matrix": {
+        "contradicts": {
+          "contradicts": 195,
+          "narrows_scope": 4,
+          "supersedes": 0,
+          "supports": 2,
+          "uncertain": 1,
+          "unrelated": 8
+        },
+        "narrows_scope": {
+          "contradicts": 0,
+          "narrows_scope": 210,
+          "supersedes": 0,
+          "supports": 0,
+          "uncertain": 0,
+          "unrelated": 0
+        },
+        "supersedes": {
+          "contradicts": 0,
+          "narrows_scope": 1,
+          "supersedes": 137,
+          "supports": 9,
+          "uncertain": 0,
+          "unrelated": 3
+        },
+        "supports": {
+          "contradicts": 9,
+          "narrows_scope": 0,
+          "supersedes": 3,
+          "supports": 191,
+          "uncertain": 0,
+          "unrelated": 7
+        },
+        "uncertain": {
+          "contradicts": 4,
+          "narrows_scope": 2,
+          "supersedes": 4,
+          "supports": 8,
+          "uncertain": 106,
+          "unrelated": 11
+        },
+        "unrelated": {
+          "contradicts": 12,
+          "narrows_scope": 9,
+          "supersedes": 3,
+          "supports": 14,
+          "uncertain": 5,
+          "unrelated": 122
+        }
+      },
+      "correct_autonomous_decisions": 846,
+      "eligible_pairs": 1080,
+      "errors_by_gold_class": {
+        "contradicts": 15,
+        "supersedes": 13,
+        "supports": 19,
+        "uncertain": 29,
+        "unrelated": 43
+      },
+      "expected_calibration_error": 0.3623102609758024,
+      "multiclass_brier_score": 0.3385769754733004,
+      "per_class_precision": {
+        "contradicts": 0.8863636363636364,
+        "narrows_scope": 0.9292035398230089,
+        "supersedes": 0.9319727891156463,
+        "supports": 0.8526785714285714,
+        "uncertain": 0.9464285714285714,
+        "unrelated": 0.8079470198675497
+      },
+      "per_class_recall": {
+        "contradicts": 0.9285714285714286,
+        "narrows_scope": 1.0,
+        "supersedes": 0.9133333333333333,
+        "supports": 0.9095238095238095,
+        "uncertain": 0.7851851851851852,
+        "unrelated": 0.7393939393939394
+      },
+      "prediction_artifact": "experiments/g4/20260922-1351-local-encoder-development/grouped-predictions/structured_minilm_pair_logistic-out-of-fold.jsonl",
+      "thresholds_by_outer_fold": [
+        0.35960617661476135,
+        0.3731895089149475,
+        0.3435739278793335,
+        0.3604165315628052,
+        0.3537892699241638
+      ],
+      "wrong_autonomous_decisions": 39
+    },
+    "structured_tfidf_logistic": {
+      "autonomous_coverage": 0.2064814814814815,
+      "autonomous_decisions": 223,
+      "autonomous_precision": 0.9372197309417041,
+      "confusion_matrix": {
+        "contradicts": {
+          "contradicts": 164,
+          "narrows_scope": 6,
+          "supersedes": 20,
+          "supports": 10,
+          "uncertain": 3,
+          "unrelated": 7
+        },
+        "narrows_scope": {
+          "contradicts": 12,
+          "narrows_scope": 169,
+          "supersedes": 17,
+          "supports": 5,
+          "uncertain": 5,
+          "unrelated": 2
+        },
+        "supersedes": {
+          "contradicts": 6,
+          "narrows_scope": 9,
+          "supersedes": 122,
+          "supports": 11,
+          "uncertain": 1,
+          "unrelated": 1
+        },
+        "supports": {
+          "contradicts": 9,
+          "narrows_scope": 11,
+          "supersedes": 23,
+          "supports": 158,
+          "uncertain": 2,
+          "unrelated": 7
+        },
+        "uncertain": {
+          "contradicts": 3,
+          "narrows_scope": 16,
+          "supersedes": 7,
+          "supports": 7,
+          "uncertain": 99,
+          "unrelated": 3
+        },
+        "unrelated": {
+          "contradicts": 8,
+          "narrows_scope": 14,
+          "supersedes": 12,
+          "supports": 13,
+          "uncertain": 4,
+          "unrelated": 114
+        }
+      },
+      "correct_autonomous_decisions": 209,
+      "eligible_pairs": 1080,
+      "errors_by_gold_class": {
+        "contradicts": 46,
+        "narrows_scope": 41,
+        "supersedes": 28,
+        "supports": 52,
+        "uncertain": 36,
+        "unrelated": 51
+      },
+      "expected_calibration_error": 0.22012829459044883,
+      "multiclass_brier_score": 0.3942218779117217,
+      "per_class_precision": {
+        "contradicts": 0.8118811881188119,
+        "narrows_scope": 0.7511111111111111,
+        "supersedes": 0.6069651741293532,
+        "supports": 0.7745098039215687,
+        "uncertain": 0.868421052631579,
+        "unrelated": 0.8507462686567164
+      },
+      "per_class_recall": {
+        "contradicts": 0.780952380952381,
+        "narrows_scope": 0.8047619047619048,
+        "supersedes": 0.8133333333333334,
+        "supports": 0.7523809523809524,
+        "uncertain": 0.7333333333333333,
+        "unrelated": 0.6909090909090909
+      },
+      "prediction_artifact": "experiments/g4/20260922-1351-local-encoder-development/grouped-predictions/structured_tfidf_logistic-out-of-fold.jsonl",
+      "thresholds_by_outer_fold": [
+        0.657929958617802,
+        0.8010530024537916,
+        0.6364822920419441,
+        0.684611853720248,
+        0.683927927563317
+      ],
+      "wrong_autonomous_decisions": 14
+    }
+  },
+  "partition": "development_only",
+  "protocol": "5 outer family folds; 4 inner family folds per outer train; thresholds selected on inner out-of-fold predictions",
+  "sentence_encoder": {
+    "name": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+  },
+  "status": "DEVELOPMENT_COMPLETE"
+}

@@ -1,0 +1,67 @@
+{
+  "corpus_manifest_sha256": "9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3",
+  "disposition_accuracy": 0.8814814814814815,
+  "disposition_confidence_calibrated": false,
+  "disposition_correct": 952,
+  "effect_accuracy": 0.9148148148148149,
+  "effect_confidence_calibrated": false,
+  "effect_confusion": {
+    "add_scoped_item": {
+      "add_scoped_item": 210
+    },
+    "close_and_replace": {
+      "add_scoped_item": 1,
+      "close_and_replace": 137,
+      "none": 7,
+      "reinforce": 5
+    },
+    "expire": {
+      "expire": 3,
+      "none": 6
+    },
+    "invalidate": {
+      "invalidate": 21
+    },
+    "none": {
+      "add_scoped_item": 5,
+      "close_and_replace": 2,
+      "none": 274,
+      "preserve_conflict": 4,
+      "reinforce": 6
+    },
+    "preserve_conflict": {
+      "add_scoped_item": 4,
+      "close_and_replace": 1,
+      "none": 21,
+      "preserve_conflict": 162,
+      "reinforce": 1
+    },
+    "reinforce": {
+      "add_scoped_item": 1,
+      "close_and_replace": 3,
+      "none": 18,
+      "preserve_conflict": 7,
+      "reinforce": 160
+    },
+    "resolve": {
+      "resolve": 21
+    }
+  },
+  "effect_correct": 988,
+  "effect_correct_among_gated": 578,
+  "encoder": {
+    "name": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+  },
+  "joint_relationship_and_effect_correct_among_gated": 576,
+  "joint_relationship_effect_disposition_correct_among_gated": 569,
+  "pair_count": 1080,
+  "partition": "development_only",
+  "predictions_artifact": "experiments/g4/20260922-1351-local-encoder-development/effect-development-predictions.jsonl",
+  "protocol": "5 whole-family outer folds aligned with relationship artifact; effect head trained only on other families",
+  "relationship_artifact_sha256": "8e8c7f08ef50c05d67f3b0ac28619c2908f9c8769262ac1435d46cb22b42e315",
+  "relationship_correct_among_gated": 578,
+  "relationship_probability_gated_pairs": 588,
+  "status": "DEVELOPMENT_DIAGNOSTIC_ONLY",
+  "validator_applied": false
+}

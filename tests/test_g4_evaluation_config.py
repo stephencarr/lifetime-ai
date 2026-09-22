@@ -53,6 +53,7 @@ def test_g4_policy_is_frozen_without_authorizing_model_runs():
     assert config["exclusions"]["prespecified_rules"]
     assert config["semantic_state_matching"]["status"] == "FROZEN_DETERMINISTIC_V1"
     assert config["authorization"]["model_predictions_authorized"] is False
+    assert config["authorization"]["holdout_evaluation_authorized"] is False
 
 
 def test_g4_policy_price_table_hashes_match_referenced_file():

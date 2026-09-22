@@ -2,15 +2,17 @@
 
 **Updated:** 22 September 2026 (superseding the 21 September version)
 **Gate state:** G0-G3 passed (`PASS`, model-free readiness)
-**Current sealed corpus:** `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` (manifest `9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3`). This document's body still refers to `-sealed-v20/` throughout; that content is accurate for corpus/review history, but v20 was superseded one day later by v21 for evaluation-*tooling* bugs only (an oracle-baseline temporal leak, stale evidence-builder pins, and a probability-tolerance policy mismatch — none of which touch corpus content, family assignment, or partitions). Read `experiments/g3/20260921-1600-frozen-g4-v20-remediated/g3-gate-record.md`'s addendum for the full list. Use v21 as current evidence.
+**Current sealed corpus:** `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` (manifest `9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3`). v20 remains the historical corpus-remediation record; v21 superseded it for evaluation-tooling fixes only (an oracle-baseline temporal leak, stale evidence-builder pins, and a probability-tolerance policy mismatch — none of which touch corpus content, family assignment, or partitions). Use v21 and the v21 remediation record as current evidence.
 **Evidence-builder remediation:** `experiments/g3/20260922-1351-v21-evidence-builder-remediation/` records the post-v21 fixes for the evidence builder itself: caller-supplied staged-manifest hashes are now retained in the generated gate record, and closed review findings require a non-empty recorded rationale. The remediation re-ran the full suite, sealed-corpus verification, and model-free smoke. It does not claim a new corpus-content review: the v21 payload and review record remain byte-identical to v20.
-**Next authorization:** G4 model execution and holdout evaluation require a separate explicit authorization.
+**Current authorization:** development-only model execution and threshold tuning are authorized in `evaluation/config/g4-development-authorization.json`; holdout evaluation remains separately unauthorized. The structured, family-grouped MiniLM run in `experiments/g4/20260922-1351-local-encoder-development/` produced 54.44% development candidate coverage at the frozen probability threshold with 98.30% precision, before the required transition validator. The initial 216-pair baselines were superseded by this protocol; G4 has not passed.
+
+**Post-G3 holdout incident:** On 22 September 2026, a broad repository text search accidentally traversed holdout files and returned holdout content. No holdout predictions, results, or scoring were run. The owner chose to quarantine sealed v21 for a separate clean evaluation agent rather than automatically regenerate it. This does not change the historical G3 PASS record. The breach must be disclosed, and separate owner authorization is still required before a final G4 holdout run. See `experiments/g4/20260922-1351-local-encoder-development/holdout-access-incident.md`.
 
 ## Read this first: the v16 seal was defective and is superseded
 
 An earlier version of this document (and the `docs/gates.md` status table) declared G3 passed against the v15/v16 sealed corpus, citing `experiments/g3/20260921-1207-frozen-g4-v16/` with two independent reviewer reports recording "no findings" across all 405 histories.
 
-**That evidence was wrong.** An independent adversarial audit — deliberately reading history content rather than only re-running structural/algorithmic validators — found three real, corpus-wide fabricated-content defects that the prior "no findings" reviews missed entirely, plus one structural defect in the holdout-assignment algorithm discovered while fixing the first three. All four are fixed and independently reverified; see below. **Do not cite `experiments/g3/20260921-1207-frozen-g4-v16/`, the v16/v17 sealed directories, or their manifest hashes as current G3 evidence.** The authoritative record is now `experiments/g3/20260921-1600-frozen-g4-v20-remediated/`.
+**That evidence was wrong.** An independent adversarial audit — deliberately reading history content rather than only re-running structural/algorithmic validators — found three real, corpus-wide fabricated-content defects that the prior "no findings" reviews missed entirely, plus one structural defect in the holdout-assignment algorithm discovered while fixing the first three. All four are fixed and independently reverified; see below. **Do not cite `experiments/g3/20260921-1207-frozen-g4-v16/`, the v16/v17 sealed directories, or their manifest hashes as current G3 evidence.** The v20 record documents the corpus remediation; the current authoritative evidence is the sealed v21 corpus plus the v21 evidence-builder remediation record.
 
 This is left in the handoff deliberately: the prior reviews' method (schema/hash/coverage validation plus templated "reasoning" text) is a materially weaker check than reading actual event/gold content, even when it reports zero findings. Any future review of this corpus, or of similarly-generated corpora, should budget for genuine adversarial content reading, not just structural validation.
 
@@ -18,8 +20,8 @@ This is left in the handoff deliberately: the prior reviews' method (schema/hash
 
 - Blueprint registry: `evaluation/blueprints/frozen-g4-v0.1/registry-v20/`
 - Authoring matrix: `evaluation/blueprints/frozen-g4-v0.1/authoring-matrix.json` (regenerated; byte-identical to pre-fix version except `outreach_candidate` removed from 22 families' `planned_actions` and `sensitive_state` removed from all `required_features`/`SECONDARY_FEATURES_BY_RELATIONSHIP` entries)
-- Staging corpus: `evaluation/corpus/frozen-g4-v0.1-staging-v20b/` (the `b` suffix reflects a restage after a config-file edit landed after the first v20 stage; content is byte-identical to `-v20`)
-- Sealed corpus: `evaluation/corpus/frozen-g4-v0.1-sealed-v20/`
+- Staging corpus: `evaluation/corpus/frozen-g4-v0.1-staging-v21/`
+- Sealed corpus: `evaluation/corpus/frozen-g4-v0.1-sealed-v21/`
 - Size: 135 families, 405 histories, 1,620 pair opportunities
 - Split: 90/45 whole families, producing 270/135 histories and 1,080/540 pairs (numerically identical to the prior split; the underlying family membership changed — see "Defects found and fixed" below)
 - Model predictions: absent
@@ -28,8 +30,8 @@ This is left in the handoff deliberately: the prior reviews' method (schema/hash
 Exact bindings:
 
 ```text
-staging manifest (family_spec_registry_sha256): cc95e911353bf43fdb73e2e409570c77f0638a4fb2f1a9b9c4d5cb96941a7413
-sealed manifest:                                30310fcd9d36e37d0584f60d640164e9d5ec1b893ebaaad13b16bc8ed2834f12
+sealed manifest file:                           1290f62d37f17e9b1734adce9c028fac1629ac3e35726a6a8c9bd8192ac8bf02
+sealed manifest declared hash:                 9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3
 ```
 
 ## Defects found and fixed this session
@@ -64,7 +66,7 @@ Review and evidence packet: `experiments/g3/20260921-1600-frozen-g4-v20-remediat
 
 ## Verification evidence
 
-- Complete repository suite: **101 passed** (re-run after final seal).
+- Complete repository suite: **117 passed** (re-run after G4 metrics and development-scorer additions).
 - `verify_sealed_corpus()` (via `scripts/stage_frozen_g4_corpus.py verify`): **PASS**.
 - Model-free smoke (`scripts/run_g3_frozen_smoke.py`): **PASS**; 405 end-to-end cases, 1,620 retrieval/classification cases.
 - Four deterministic baseline contracts: **PASS** for rolling summary, scheduler, general-LLM interface, and limited oracle.
@@ -72,18 +74,18 @@ Review and evidence packet: `experiments/g3/20260921-1600-frozen-g4-v20-remediat
 - Ordinary projection leakage failures: **0**.
 - Post-fix content queries (run directly against the sealed files, not just trusted from the pipeline): 0 `outreach_candidate` labels, 0 `sensitivity: "sensitive"` snapshots, 0 `sensitive_state` feature tags, anywhere in the sealed corpus.
 
-The evaluation policy (`evaluation/config/g4-evaluation-v0.1.json`) remains frozen without learned predictions or threshold tuning, status `FROZEN_AT_G3_MODEL_FREE`, `model_predictions_authorized: false`. It still explicitly defers G4 cost comparison until a dated price table is frozen; no cost-based claim is made by G3.
+The sealed evaluation policy (`evaluation/config/g4-evaluation-v0.1.json`) remains frozen at `FROZEN_AT_G3_MODEL_FREE` with holdout authorization false. Development authorization is recorded separately and does not alter the sealed policy or corpus. Cost comparison remains deferred until a dated price table is frozen.
 
 ## Post-G3 constraints
 
-1. Preserve `evaluation/corpus/frozen-g4-v0.1-sealed-v20/` as immutable evidence. Do not treat `-sealed-v16` or `-sealed-v17` as current evidence; they remain on disk as audit history only.
-2. Do not run learned evaluation, threshold tuning, or holdout model access until a separate G4 authorization is recorded.
-3. If corpus content or source dependencies change again, create a new stage and obtain new reviews; v20-content approvals and the v20 seal cannot be reused for different content.
+1. Preserve `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` as immutable current evidence. Preserve v20, v16, and v17 as audit history only; do not cite them as current evidence.
+2. Development learned evaluation and threshold tuning are authorized by the separate development authorization record. Do not run holdout evaluation or tune against holdout until separately authorized.
+3. If corpus content or sealed source dependencies change again, create a new stage and obtain new reviews; v21 approvals and the v21 seal cannot be reused for different content.
 4. Freeze and hash a dated price table before making any G4 cost-comparison claim.
 5. Before trusting any future "independent review" of generated content on this project, confirm the review method includes genuine adversarial reading of event/gold text, not only schema/hash/coverage validation — the latter was demonstrated this session to miss real, corpus-wide fabrication defects.
 
 ## Workspace cautions
 
-This work happened in the worktree `/private/tmp/lifetime-ai-g3` (branch `codex/complete-g3`), currently uncommitted on top of commit `b6e407d`. Earlier registries (`registry-v2` through `registry-v19`) and staging/sealed directories are audit history documenting the defect-discovery process; do not reset, delete, or overwrite them without explicit owner direction. The corrected state (generator fixes, registry-v20, the v20 review/staging/sealed corpus, and the updated `docs/gates.md` status table) should be committed together with a clear message distinguishing it from the prior, defective v16/v17 seal commits.
+The current branch is `codex/complete-g3` at the committed v21 remediation state. Earlier registries and staging/sealed directories are audit history documenting the defect-discovery process; do not reset, delete, or overwrite them without explicit owner direction.
 
 G3 is complete: the corpus is reviewed, pinned, sealed, and independently verifiable, including a genuine second look that caught and fixed real defects the first pass missed; evaluation and baseline policies are frozen; ordinary/oracle projections and holdout access are controlled; the full suite and model-free smoke pass; and the reproducible experiment record declares `PASS` with three lower-severity items explicitly deferred rather than hidden.

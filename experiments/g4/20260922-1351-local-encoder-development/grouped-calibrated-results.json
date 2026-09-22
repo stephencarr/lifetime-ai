@@ -1,0 +1,247 @@
+{
+  "corpus_manifest_sha256": "9052977faf208b1400c95fedf6aa4f0183a9d3dfc6ca92dfbaff6483a7c3afe3",
+  "models": {
+    "structured_minilm_pair_logistic": {
+      "tuned_candidate_coverage": 0.7314814814814815,
+      "tuned_candidate_accepts": 790,
+      "tuned_candidate_precision": 0.9582278481012658,
+      "confusion_matrix": {
+        "contradicts": {
+          "contradicts": 195,
+          "narrows_scope": 4,
+          "supersedes": 0,
+          "supports": 2,
+          "uncertain": 1,
+          "unrelated": 8
+        },
+        "narrows_scope": {
+          "contradicts": 0,
+          "narrows_scope": 210,
+          "supersedes": 0,
+          "supports": 0,
+          "uncertain": 0,
+          "unrelated": 0
+        },
+        "supersedes": {
+          "contradicts": 0,
+          "narrows_scope": 1,
+          "supersedes": 137,
+          "supports": 9,
+          "uncertain": 0,
+          "unrelated": 3
+        },
+        "supports": {
+          "contradicts": 9,
+          "narrows_scope": 0,
+          "supersedes": 3,
+          "supports": 191,
+          "uncertain": 0,
+          "unrelated": 7
+        },
+        "uncertain": {
+          "contradicts": 4,
+          "narrows_scope": 2,
+          "supersedes": 4,
+          "supports": 8,
+          "uncertain": 106,
+          "unrelated": 11
+        },
+        "unrelated": {
+          "contradicts": 12,
+          "narrows_scope": 9,
+          "supersedes": 3,
+          "supports": 14,
+          "uncertain": 5,
+          "unrelated": 122
+        }
+      },
+      "correct_tuned_candidate_accepts": 757,
+      "eligible_pairs": 1080,
+      "errors_by_gold_class": {
+        "contradicts": 15,
+        "supersedes": 13,
+        "supports": 19,
+        "uncertain": 29,
+        "unrelated": 43
+      },
+      "expected_calibration_error": 0.0198221426939196,
+      "frozen_0_95_probability_gate_only": {
+        "candidate_accepts": 588,
+        "correct_candidate_accepts": 578,
+        "coverage": 0.5444444444444444,
+        "errors_by_severity": {
+          "low": 1,
+          "medium": 9
+        },
+        "precision": 0.9829931972789115,
+        "validator_applied": false,
+        "wilson_95_interval": {
+          "lower": 0.9689799795490281,
+          "upper": 0.990736497785627
+        }
+      },
+      "multiclass_brier_score": 0.15459377638459407,
+      "per_class_precision": {
+        "contradicts": 0.8863636363636364,
+        "narrows_scope": 0.9292035398230089,
+        "supersedes": 0.9319727891156463,
+        "supports": 0.8526785714285714,
+        "uncertain": 0.9464285714285714,
+        "unrelated": 0.8079470198675497
+      },
+      "per_class_recall": {
+        "contradicts": 0.9285714285714286,
+        "narrows_scope": 1.0,
+        "supersedes": 0.9133333333333333,
+        "supports": 0.9095238095238095,
+        "uncertain": 0.7851851851851852,
+        "unrelated": 0.7393939393939394
+      },
+      "prediction_artifact": "experiments/g4/20260922-1351-local-encoder-development/grouped-calibrated-predictions/structured_minilm_pair_logistic-out-of-fold.jsonl",
+      "temperatures_by_outer_fold": [
+        0.25301417197415565,
+        0.2624369553112832,
+        0.24399760137284032,
+        0.2617650193203479,
+        0.23582517091279928
+      ],
+      "thresholds_by_outer_fold": [
+        0.7722045648613755,
+        0.7948241872770027,
+        0.7610307718282313,
+        0.7558406058593842,
+        0.830549573237881
+      ],
+      "wrong_tuned_candidate_accepts_by_severity": {
+        "low": 9,
+        "medium": 24
+      },
+      "wrong_tuned_candidate_accepts": 33
+    },
+    "structured_tfidf_logistic": {
+      "tuned_candidate_coverage": 0.31574074074074077,
+      "tuned_candidate_accepts": 341,
+      "tuned_candidate_precision": 0.9501466275659824,
+      "confusion_matrix": {
+        "contradicts": {
+          "contradicts": 164,
+          "narrows_scope": 6,
+          "supersedes": 20,
+          "supports": 10,
+          "uncertain": 3,
+          "unrelated": 7
+        },
+        "narrows_scope": {
+          "contradicts": 12,
+          "narrows_scope": 169,
+          "supersedes": 17,
+          "supports": 5,
+          "uncertain": 5,
+          "unrelated": 2
+        },
+        "supersedes": {
+          "contradicts": 6,
+          "narrows_scope": 9,
+          "supersedes": 122,
+          "supports": 11,
+          "uncertain": 1,
+          "unrelated": 1
+        },
+        "supports": {
+          "contradicts": 9,
+          "narrows_scope": 11,
+          "supersedes": 23,
+          "supports": 158,
+          "uncertain": 2,
+          "unrelated": 7
+        },
+        "uncertain": {
+          "contradicts": 3,
+          "narrows_scope": 16,
+          "supersedes": 7,
+          "supports": 7,
+          "uncertain": 99,
+          "unrelated": 3
+        },
+        "unrelated": {
+          "contradicts": 8,
+          "narrows_scope": 14,
+          "supersedes": 12,
+          "supports": 13,
+          "uncertain": 4,
+          "unrelated": 114
+        }
+      },
+      "correct_tuned_candidate_accepts": 324,
+      "eligible_pairs": 1080,
+      "errors_by_gold_class": {
+        "contradicts": 46,
+        "narrows_scope": 41,
+        "supersedes": 28,
+        "supports": 52,
+        "uncertain": 36,
+        "unrelated": 51
+      },
+      "expected_calibration_error": 0.044528321215007355,
+      "frozen_0_95_probability_gate_only": {
+        "candidate_accepts": 303,
+        "correct_candidate_accepts": 292,
+        "coverage": 0.28055555555555556,
+        "errors_by_severity": {
+          "low": 3,
+          "medium": 8
+        },
+        "precision": 0.9636963696369637,
+        "validator_applied": false,
+        "wilson_95_interval": {
+          "lower": 0.9361725680867751,
+          "upper": 0.9796098072154006
+        }
+      },
+      "multiclass_brier_score": 0.327389683040821,
+      "per_class_precision": {
+        "contradicts": 0.8118811881188119,
+        "narrows_scope": 0.7511111111111111,
+        "supersedes": 0.6069651741293532,
+        "supports": 0.7745098039215687,
+        "uncertain": 0.868421052631579,
+        "unrelated": 0.8507462686567164
+      },
+      "per_class_recall": {
+        "contradicts": 0.780952380952381,
+        "narrows_scope": 0.8047619047619048,
+        "supersedes": 0.8133333333333334,
+        "supports": 0.7523809523809524,
+        "uncertain": 0.7333333333333333,
+        "unrelated": 0.6909090909090909
+      },
+      "prediction_artifact": "experiments/g4/20260922-1351-local-encoder-development/grouped-calibrated-predictions/structured_tfidf_logistic-out-of-fold.jsonl",
+      "temperatures_by_outer_fold": [
+        0.39973041146662364,
+        0.38839120218080503,
+        0.39204761378170966,
+        0.38683440426441834,
+        0.42708507071675905
+      ],
+      "thresholds_by_outer_fold": [
+        0.930587234514377,
+        0.9318296433543024,
+        0.9131987377905706,
+        0.9373130485855693,
+        0.9443077495902513
+      ],
+      "wrong_tuned_candidate_accepts_by_severity": {
+        "low": 4,
+        "medium": 13
+      },
+      "wrong_tuned_candidate_accepts": 17
+    }
+  },
+  "partition": "development_only",
+  "protocol": "5 outer family folds; 4 inner family folds per outer train; temperature and threshold selected on inner out-of-fold predictions",
+  "sentence_encoder": {
+    "name": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+  },
+  "status": "DEVELOPMENT_COMPLETE"
+}
