@@ -1,0 +1,14 @@
+# M5 answer contract v0.1 — frozen before the retrieval development run
+
+This contract applies to questions over current, source-linked state. A candidate is only a lead. A response is **supported** only when the cited live source and current claim entail the answer for the requested actor, relation, scope, and time. A single keyword hit has no answer authority.
+
+- `answered`: State the narrowest supported proposition and cite every source used. A dated event supports an answer about that event, never a timeless preference. A current preference supports a current preference question; it does not prove a historical or universal claim.
+- `uncertain`: No live evidence supports the requested proposition, or available evidence is only a related context, actor, or time. Say what is missing. An absent candidate is not proof the user has no such preference.
+- `needs_clarification`: The question lacks a referent or scope needed to choose among materially different compatible claims. Cite the relevant live sources only when explaining the ambiguity.
+- `conflict`: Two live, equally authoritative claims assert incompatible values for the same actor, relation, target, scope, and overlapping time. Different values on different topics, dates, or conditions are not a conflict. Do not choose by arrival order alone.
+
+Candidate retrieval must return a bounded set of live current claims with source text and provenance. At capacity, fail closed with an explicit incomplete-search result. It must never silently turn a partial candidate set into `answered`. The answer check must separately verify actor, target, relation, polarity, contextual scope, and temporal applicability. Unknown structures abstain. A correction is a new source; invalidation removes its derived state from candidate retrieval but does not erase the ledger. The present schema lacks structured scope and actor fields; v0.1 may derive these only for a stated grammar and must abstain outside it.
+
+The deterministic implementation is a development instrument, with a finite query/claim grammar and declared semantic aliases. It is not a general paraphrase engine. General-language coverage would require a local model with a fixed version and weights, explicit support-verification calibration, latency/cost measurements, and fail-closed behavior when unavailable. No model is configured for this run; unsupported phrasings must stay uncertain and are counted as misses. Manual email import is not extractor evidence.
+
+Development thresholds: at least 48 frozen questions; correct source in the bounded candidates for at least 95% of supported questions; zero answered outcomes on actor/scope/time/deletion/near-match unsupported cases; all citations live, exact, and source-backed; at least 90% supported-answer correctness; no false conflict on compatible claims. Record all attempts and per-item failures. This is neither independent sample evidence nor G5.

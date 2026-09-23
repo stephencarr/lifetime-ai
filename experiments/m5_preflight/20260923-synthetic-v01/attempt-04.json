@@ -1,0 +1,1027 @@
+{
+  "criteria": {
+    "minimum_scenarios": 18,
+    "rules": [
+      "Every declared case remains in the report, including failures and exceptions.",
+      "A correction command in the corpus is part of the scripted lifecycle, not an unreported repair.",
+      "A failed expectation counts as one manual repair action; this is a proxy, not measured participant effort.",
+      "No participant data and no G4 holdout material may be used in this run.",
+      "Passing this synthetic set alone does not authorize participant UAT; a participant-approved local sample and deletion-policy review remain required."
+    ],
+    "scope": "Synthetic local-chat workflow only; not participant UAT or G5 evidence",
+    "thresholds": {
+      "active_state_accuracy": 1.0,
+      "answer_outcome_accuracy": 1.0,
+      "citation_accuracy": 1.0,
+      "deleted_canary_leaks": 0,
+      "manual_repair_actions_per_20_messages": 1,
+      "negative_abstention_rate": 1.0,
+      "positive_capture_rate": 0.9,
+      "restart_accuracy": 1.0
+    },
+    "version": "m5-preflight-v0.1"
+  },
+  "failed_expectations": 1,
+  "git_commit": "87996e8dffa5e6b346e2e658233b0cad4b321a2d",
+  "git_dirty": true,
+  "instrument": {
+    "cases_sha256": "9606c62db2df4fbf4ca264cc30f22b0e1976bfbe2ab403761cdd067ba5ff160d",
+    "criteria_sha256": "ce7d451abce8800b0bff73a62938ce355853e3307fc66e002586163cd8cf5d17",
+    "frozen_at": "2026-09-23",
+    "note": "Frozen before the first scored M5 synthetic preflight run. Later implementation changes do not change this instrument."
+  },
+  "message_count": 21,
+  "metrics": {
+    "active_state_accuracy": {
+      "passed": 27,
+      "rate": 1.0,
+      "total": 27
+    },
+    "answer_outcome_accuracy": {
+      "passed": 10,
+      "rate": 0.9090909090909091,
+      "total": 11
+    },
+    "citation_accuracy": {
+      "passed": 11,
+      "rate": 1.0,
+      "total": 11
+    },
+    "deleted_canary_leaks": 0,
+    "manual_repair_actions_per_20_messages": 0.9523809523809523,
+    "negative_abstention_rate": {
+      "passed": 9,
+      "rate": 1.0,
+      "total": 9
+    },
+    "positive_capture_rate": {
+      "passed": 12,
+      "rate": 1.0,
+      "total": 12
+    },
+    "restart_accuracy": {
+      "passed": 4,
+      "rate": 1.0,
+      "total": 4
+    }
+  },
+  "passed": false,
+  "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+  "python": "3.13.11 (main, Dec  5 2025, 16:06:33) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "scenarios": [
+    {
+      "category": "positive_restart_citation",
+      "id": "direct_preference_restart",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:p1",
+                "source_event_id": "p1",
+                "source_text": "I prefer concise answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer concise answers. [source:p1]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "id": "p1",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I prefer concise answers."
+          }
+        },
+        {
+          "actual": {
+            "citations": [
+              {
+                "item_id": "claim:p1",
+                "source_event_id": "p1",
+                "source_text": "I prefer concise answers."
+              }
+            ],
+            "outcome": "answered",
+            "text": "I prefer concise answers. [source:p1]"
+          },
+          "failures": [],
+          "step": {
+            "citations": [
+              "p1"
+            ],
+            "contains": "I prefer concise answers.",
+            "op": "ask",
+            "outcome": "answered",
+            "query": "What do I prefer?"
+          }
+        },
+        {
+          "actual": {
+            "citations": [
+              {
+                "item_id": "claim:p1",
+                "source_event_id": "p1",
+                "source_text": "I prefer concise answers."
+              }
+            ],
+            "outcome": "answered",
+            "text": "I prefer concise answers. [source:p1]"
+          },
+          "failures": [],
+          "step": {
+            "citations": [
+              "p1"
+            ],
+            "contains": "I prefer concise answers.",
+            "op": "restart_ask",
+            "outcome": "answered",
+            "query": "What do I prefer?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "positive_commitment",
+      "id": "direct_commitment",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I will review the draft."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:c1",
+                "source_event_id": "c1",
+                "source_text": "I will review the draft."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed commitment: I will review the draft. [source:c1]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I will review the draft."
+            ],
+            "id": "c1",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I will review the draft."
+          }
+        },
+        {
+          "actual": {
+            "citations": [
+              {
+                "item_id": "claim:c1",
+                "source_event_id": "c1",
+                "source_text": "I will review the draft."
+              }
+            ],
+            "outcome": "answered",
+            "text": "I will review the draft. [source:c1]"
+          },
+          "failures": [],
+          "step": {
+            "citations": [
+              "c1"
+            ],
+            "contains": "I will review the draft.",
+            "op": "ask",
+            "outcome": "answered",
+            "query": "What will I review?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "positive_paraphrase",
+      "id": "ordinary_paraphrase",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I prefer short answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:p2",
+                "source_event_id": "p2",
+                "source_text": "Please keep your answers short."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer short answers. [source:p2]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer short answers."
+            ],
+            "id": "p2",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "Please keep your answers short."
+          }
+        },
+        {
+          "actual": {
+            "citations": [
+              {
+                "item_id": "claim:p2",
+                "source_event_id": "p2",
+                "source_text": "Please keep your answers short."
+              }
+            ],
+            "outcome": "answered",
+            "text": "I prefer short answers. [source:p2]"
+          },
+          "failures": [],
+          "step": {
+            "citations": [
+              "p2"
+            ],
+            "contains": "I prefer short answers.",
+            "op": "ask",
+            "outcome": "answered",
+            "query": "What answers do I prefer?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "negative_irrelevant",
+      "id": "irrelevant_chat",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [],
+            "citations": [],
+            "outcome": "abstained",
+            "text": "I did not capture a durable claim from that message."
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "n1",
+            "op": "send",
+            "outcome": "abstained",
+            "text": "Thanks, that helps."
+          }
+        }
+      ]
+    },
+    {
+      "category": "negative_attribution",
+      "id": "third_party",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [],
+            "citations": [],
+            "outcome": "abstained",
+            "text": "I did not capture a durable claim from that message."
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "n2",
+            "op": "send",
+            "outcome": "abstained",
+            "text": "Mira prefers tea."
+          }
+        }
+      ]
+    },
+    {
+      "category": "negative_quote",
+      "id": "quoted_statement",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [],
+            "citations": [],
+            "outcome": "abstained",
+            "text": "I did not capture a durable claim from that message."
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "n3",
+            "op": "send",
+            "outcome": "abstained",
+            "text": "I prefer tea, Mira wrote in the example."
+          }
+        }
+      ]
+    },
+    {
+      "category": "negative_question",
+      "id": "question_not_assertion",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [],
+            "citations": [],
+            "outcome": "abstained",
+            "text": "I did not capture a durable claim from that message."
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "n4",
+            "op": "send",
+            "outcome": "abstained",
+            "text": "I prefer tea?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "negative_conditional",
+      "id": "conditional_not_stable",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [],
+            "citations": [],
+            "outcome": "abstained",
+            "text": "I did not capture a durable claim from that message."
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "n5",
+            "op": "send",
+            "outcome": "abstained",
+            "text": "I prefer tea if Mira does."
+          }
+        }
+      ]
+    },
+    {
+      "category": "negative_past",
+      "id": "past_preference",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [],
+            "citations": [],
+            "outcome": "abstained",
+            "text": "I did not capture a durable claim from that message."
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "n6",
+            "op": "send",
+            "outcome": "abstained",
+            "text": "I used to prefer tea."
+          }
+        }
+      ]
+    },
+    {
+      "category": "negative_unsupported_scope",
+      "id": "scoped_preference",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [],
+            "citations": [],
+            "outcome": "abstained",
+            "text": "I did not capture a durable claim from that message."
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "n7",
+            "op": "send",
+            "outcome": "abstained",
+            "text": "For this project, I prefer bullet points."
+          }
+        }
+      ]
+    },
+    {
+      "category": "negative_unsupported_time",
+      "id": "dated_commitment",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [],
+            "citations": [],
+            "outcome": "abstained",
+            "text": "I did not capture a durable claim from that message."
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "n8",
+            "op": "send",
+            "outcome": "abstained",
+            "text": "I will send the draft tomorrow."
+          }
+        }
+      ]
+    },
+    {
+      "category": "duplicate_lifecycle",
+      "id": "duplicate_preference",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:d1",
+                "source_event_id": "d1",
+                "source_text": "I prefer concise answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer concise answers. [source:d1]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "id": "d1",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I prefer concise answers."
+          }
+        },
+        {
+          "actual": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "citations": [],
+            "outcome": "abstained",
+            "text": "That claim is already current; I kept the existing source."
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "id": "d2",
+            "op": "send",
+            "outcome": "abstained",
+            "text": "I prefer concise answers."
+          }
+        },
+        {
+          "actual": {
+            "citations": [
+              {
+                "item_id": "claim:d1",
+                "source_event_id": "d1",
+                "source_text": "I prefer concise answers."
+              }
+            ],
+            "outcome": "answered",
+            "text": "I prefer concise answers. [source:d1]"
+          },
+          "failures": [],
+          "step": {
+            "citations": [
+              "d1"
+            ],
+            "op": "ask",
+            "outcome": "answered",
+            "query": "What do I prefer?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "conflict_lifecycle",
+      "id": "conflicting_preference",
+      "passed": false,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I prefer tea."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:f1",
+                "source_event_id": "f1",
+                "source_text": "I prefer tea."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer tea. [source:f1]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer tea."
+            ],
+            "id": "f1",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I prefer tea."
+          }
+        },
+        {
+          "actual": {
+            "active": [
+              "I prefer coffee.",
+              "I prefer tea."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:f2",
+                "source_event_id": "f2",
+                "source_text": "I prefer coffee."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer coffee. [source:f2]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer coffee.",
+              "I prefer tea."
+            ],
+            "id": "f2",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I prefer coffee."
+          }
+        },
+        {
+          "actual": {
+            "citations": [
+              {
+                "item_id": "claim:f1",
+                "source_event_id": "f1",
+                "source_text": "I prefer tea."
+              },
+              {
+                "item_id": "claim:f2",
+                "source_event_id": "f2",
+                "source_text": "I prefer coffee."
+              }
+            ],
+            "outcome": "needs_clarification",
+            "text": "Several compatible claims apply; please specify the topic or scope. [source:f1] [source:f2]"
+          },
+          "failures": [
+            "outcome: expected conflict, got needs_clarification"
+          ],
+          "step": {
+            "citations": [
+              "f1",
+              "f2"
+            ],
+            "op": "ask",
+            "outcome": "conflict",
+            "query": "What do I prefer?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "correction_lifecycle",
+      "id": "explicit_correction",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:r1",
+                "source_event_id": "r1",
+                "source_text": "I prefer concise answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer concise answers. [source:r1]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "id": "r1",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I prefer concise answers."
+          }
+        },
+        {
+          "actual": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:r1",
+                "source_event_id": "r2",
+                "source_text": "I prefer detailed answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Updated claim:r1: I prefer detailed answers. [source:r2]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "id": "r2",
+            "item": "claim:r1",
+            "op": "correct",
+            "outcome": "accepted",
+            "text": "I prefer detailed answers."
+          }
+        },
+        {
+          "actual": {
+            "citations": [
+              {
+                "item_id": "claim:r1",
+                "source_event_id": "r2",
+                "source_text": "I prefer detailed answers."
+              }
+            ],
+            "outcome": "answered",
+            "text": "I prefer detailed answers. [source:r2]"
+          },
+          "failures": [],
+          "step": {
+            "absent": "I prefer concise answers.",
+            "citations": [
+              "r2"
+            ],
+            "contains": "I prefer detailed answers.",
+            "op": "restart_ask",
+            "outcome": "answered",
+            "query": "What do I prefer?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "time_change_lifecycle",
+      "id": "ordinary_time_change",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:t1",
+                "source_event_id": "t1",
+                "source_text": "I prefer concise answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer concise answers. [source:t1]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "id": "t1",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I prefer concise answers."
+          }
+        },
+        {
+          "actual": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:t1",
+                "source_event_id": "t2",
+                "source_text": "I now prefer detailed answers instead of concise answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer detailed answers. [source:t2]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "id": "t2",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I now prefer detailed answers instead of concise answers."
+          }
+        },
+        {
+          "actual": {
+            "citations": [
+              {
+                "item_id": "claim:t1",
+                "source_event_id": "t2",
+                "source_text": "I now prefer detailed answers instead of concise answers."
+              }
+            ],
+            "outcome": "answered",
+            "text": "I prefer detailed answers. [source:t2]"
+          },
+          "failures": [],
+          "step": {
+            "absent": "I prefer concise answers.",
+            "citations": [
+              "t2"
+            ],
+            "contains": "I prefer detailed answers.",
+            "op": "ask",
+            "outcome": "answered",
+            "query": "What do I prefer?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "deletion_lifecycle",
+      "id": "delete_only_source",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I prefer alpine canary tea."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:x1",
+                "source_event_id": "x1",
+                "source_text": "I prefer alpine canary tea."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer alpine canary tea. [source:x1]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer alpine canary tea."
+            ],
+            "id": "x1",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I prefer alpine canary tea."
+          }
+        },
+        {
+          "actual": {
+            "active": [],
+            "changed": true
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "x1",
+            "op": "forget"
+          }
+        },
+        {
+          "actual": {
+            "citations": [],
+            "outcome": "uncertain",
+            "text": "No live claim supports the requested actor, relation, scope, and time."
+          },
+          "failures": [],
+          "step": {
+            "absent": "alpine canary",
+            "citations": [],
+            "op": "restart_ask",
+            "outcome": "uncertain",
+            "query": "What do I prefer?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "deletion_independent_support",
+      "id": "delete_prior_source_keeps_correction",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:y1",
+                "source_event_id": "y1",
+                "source_text": "I prefer concise answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer concise answers. [source:y1]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "id": "y1",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I prefer concise answers."
+          }
+        },
+        {
+          "actual": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:y1",
+                "source_event_id": "y2",
+                "source_text": "I prefer detailed answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Updated claim:y1: I prefer detailed answers. [source:y2]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "id": "y2",
+            "item": "claim:y1",
+            "op": "correct",
+            "outcome": "accepted",
+            "text": "I prefer detailed answers."
+          }
+        },
+        {
+          "actual": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "changed": true
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "id": "y1",
+            "op": "forget"
+          }
+        },
+        {
+          "actual": {
+            "citations": [
+              {
+                "item_id": "claim:y1",
+                "source_event_id": "y2",
+                "source_text": "I prefer detailed answers."
+              }
+            ],
+            "outcome": "answered",
+            "text": "I prefer detailed answers. [source:y2]"
+          },
+          "failures": [],
+          "step": {
+            "absent": "I prefer concise answers.",
+            "citations": [
+              "y2"
+            ],
+            "op": "ask",
+            "outcome": "answered",
+            "query": "What do I prefer?"
+          }
+        }
+      ]
+    },
+    {
+      "category": "deletion_no_resurrection",
+      "id": "delete_current_source_no_resurrection",
+      "passed": true,
+      "steps": [
+        {
+          "actual": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:z1",
+                "source_event_id": "z1",
+                "source_text": "I prefer concise answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Stored a source-backed preference: I prefer concise answers. [source:z1]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer concise answers."
+            ],
+            "id": "z1",
+            "op": "send",
+            "outcome": "accepted",
+            "text": "I prefer concise answers."
+          }
+        },
+        {
+          "actual": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "citations": [
+              {
+                "item_id": "claim:z1",
+                "source_event_id": "z2",
+                "source_text": "I prefer detailed answers."
+              }
+            ],
+            "outcome": "accepted",
+            "text": "Updated claim:z1: I prefer detailed answers. [source:z2]"
+          },
+          "failures": [],
+          "step": {
+            "active": [
+              "I prefer detailed answers."
+            ],
+            "id": "z2",
+            "item": "claim:z1",
+            "op": "correct",
+            "outcome": "accepted",
+            "text": "I prefer detailed answers."
+          }
+        },
+        {
+          "actual": {
+            "active": [],
+            "changed": true
+          },
+          "failures": [],
+          "step": {
+            "active": [],
+            "id": "z2",
+            "op": "forget"
+          }
+        },
+        {
+          "actual": {
+            "citations": [],
+            "outcome": "uncertain",
+            "text": "No live claim supports the requested actor, relation, scope, and time."
+          },
+          "failures": [],
+          "step": {
+            "absent": "I prefer concise answers.",
+            "citations": [],
+            "op": "restart_ask",
+            "outcome": "uncertain",
+            "query": "What do I prefer?"
+          }
+        }
+      ]
+    }
+  ]
+}

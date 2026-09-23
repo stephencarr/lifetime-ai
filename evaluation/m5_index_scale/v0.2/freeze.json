@@ -1,0 +1,6 @@
+{
+  "version": "m5-index-scale-v0.2",
+  "config_sha256": "8a6dc6aae6cc1b4ee94a2c5588dc4a92343118e7a259652b048ba2e484a118f9",
+  "frozen_before_first_score": true,
+  "change_from_v0.1": "Raise HNSW expansion_search from 96 to 1024 after v0.1 recovered only 12/32 planted vectors at one million. All other settings, data seed, and gates remain unchanged."
+}

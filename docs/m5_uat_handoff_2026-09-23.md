@@ -4,6 +4,12 @@
 - Branch: `codex/g4-clean-handoff`
 - Decision: Retire the diagnostic UAT spike. Resume with an M5 product slice and a measured capture preflight. G4 remains paused for review.
 
+> **Later M5 continuation note (23 September):** The local chat and browser slice was built and passed its repaired synthetic capture/lifecycle development preflight, but a live query exposed literal retrieval and unsupported `answered` behavior. Participant UAT is paused pending the retrieval/answerability plan and independent evidence in [`m5_retrieval_answerability_gap_2026-09-23.md`](m5_retrieval_answerability_gap_2026-09-23.md). The earlier “next product slice” below remains historical context, not a readiness claim.
+
+> **POC reset:** The bounded scan and finite answer grammar remain diagnostic scaffolding. The planned model-backed state construction, semantic support/reconciliation, and indexed retrieval must run together before this is evidence of the Lifetime AI concept. See [`m5_poc_architecture_reset_2026-09-23.md`](m5_poc_architecture_reset_2026-09-23.md).
+
+> **Local-model development update (23 September):** An explicit model-backed terminal route now runs those three workflow points with pinned local generation and embedding models, SQLite/FTS5, and USearch HNSW. Its first frozen integrated development run failed badly on false captures and supported answers. See [`m5_model_development_2026-09-23.md`](m5_model_development_2026-09-23.md). This is not UAT or G5 evidence.
+
 ## What is established
 
 - G0–G3 have recorded passes. G0–G2 establish reproducible setup, durable source-linked state, and a typed proposal/validation boundary on controlled inputs. G3 establishes the reviewed evaluation instrument and baseline contracts; it does not establish baseline performance or raw-message capture quality. See `docs/gates.md` and the accepted records under `experiments/g0/` through `experiments/g3/`.

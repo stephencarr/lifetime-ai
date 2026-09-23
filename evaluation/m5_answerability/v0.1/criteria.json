@@ -1,0 +1,9 @@
+{
+  "minimum_questions": 48,
+  "candidate_recall_supported_min": 0.95,
+  "unsupported_false_answers_max": 0,
+  "citation_validity_min": 1,
+  "supported_answer_accuracy_min": 0.9,
+  "false_conflicts_compatible_max": 0,
+  "deleted_source_leaks_max": 0
+}

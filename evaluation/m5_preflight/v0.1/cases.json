@@ -1,0 +1,152 @@
+{
+  "version": "m5-preflight-v0.1",
+  "clock": "2026-09-23T12:00:00+00:00",
+  "scenarios": [
+    {
+      "id": "direct_preference_restart",
+      "category": "positive_restart_citation",
+      "steps": [
+        {"op": "send", "id": "p1", "text": "I prefer concise answers.", "outcome": "accepted", "active": ["I prefer concise answers."]},
+        {"op": "ask", "query": "What do I prefer?", "outcome": "answered", "citations": ["p1"], "contains": "I prefer concise answers."},
+        {"op": "restart_ask", "query": "What do I prefer?", "outcome": "answered", "citations": ["p1"], "contains": "I prefer concise answers."}
+      ]
+    },
+    {
+      "id": "direct_commitment",
+      "category": "positive_commitment",
+      "steps": [
+        {"op": "send", "id": "c1", "text": "I will review the draft.", "outcome": "accepted", "active": ["I will review the draft."]},
+        {"op": "ask", "query": "What will I review?", "outcome": "answered", "citations": ["c1"], "contains": "I will review the draft."}
+      ]
+    },
+    {
+      "id": "ordinary_paraphrase",
+      "category": "positive_paraphrase",
+      "steps": [
+        {"op": "send", "id": "p2", "text": "Please keep your answers short.", "outcome": "accepted", "active": ["I prefer short answers."]},
+        {"op": "ask", "query": "What answers do I prefer?", "outcome": "answered", "citations": ["p2"], "contains": "I prefer short answers."}
+      ]
+    },
+    {
+      "id": "irrelevant_chat",
+      "category": "negative_irrelevant",
+      "steps": [
+        {"op": "send", "id": "n1", "text": "Thanks, that helps.", "outcome": "abstained", "active": []}
+      ]
+    },
+    {
+      "id": "third_party",
+      "category": "negative_attribution",
+      "steps": [
+        {"op": "send", "id": "n2", "text": "Mira prefers tea.", "outcome": "abstained", "active": []}
+      ]
+    },
+    {
+      "id": "quoted_statement",
+      "category": "negative_quote",
+      "steps": [
+        {"op": "send", "id": "n3", "text": "I prefer tea, Mira wrote in the example.", "outcome": "abstained", "active": []}
+      ]
+    },
+    {
+      "id": "question_not_assertion",
+      "category": "negative_question",
+      "steps": [
+        {"op": "send", "id": "n4", "text": "I prefer tea?", "outcome": "abstained", "active": []}
+      ]
+    },
+    {
+      "id": "conditional_not_stable",
+      "category": "negative_conditional",
+      "steps": [
+        {"op": "send", "id": "n5", "text": "I prefer tea if Mira does.", "outcome": "abstained", "active": []}
+      ]
+    },
+    {
+      "id": "past_preference",
+      "category": "negative_past",
+      "steps": [
+        {"op": "send", "id": "n6", "text": "I used to prefer tea.", "outcome": "abstained", "active": []}
+      ]
+    },
+    {
+      "id": "scoped_preference",
+      "category": "negative_unsupported_scope",
+      "steps": [
+        {"op": "send", "id": "n7", "text": "For this project, I prefer bullet points.", "outcome": "abstained", "active": []}
+      ]
+    },
+    {
+      "id": "dated_commitment",
+      "category": "negative_unsupported_time",
+      "steps": [
+        {"op": "send", "id": "n8", "text": "I will send the draft tomorrow.", "outcome": "abstained", "active": []}
+      ]
+    },
+    {
+      "id": "duplicate_preference",
+      "category": "duplicate_lifecycle",
+      "steps": [
+        {"op": "send", "id": "d1", "text": "I prefer concise answers.", "outcome": "accepted", "active": ["I prefer concise answers."]},
+        {"op": "send", "id": "d2", "text": "I prefer concise answers.", "outcome": "abstained", "active": ["I prefer concise answers."]},
+        {"op": "ask", "query": "What do I prefer?", "outcome": "answered", "citations": ["d1"]}
+      ]
+    },
+    {
+      "id": "conflicting_preference",
+      "category": "conflict_lifecycle",
+      "steps": [
+        {"op": "send", "id": "f1", "text": "I prefer tea.", "outcome": "accepted", "active": ["I prefer tea."]},
+        {"op": "send", "id": "f2", "text": "I prefer coffee.", "outcome": "accepted", "active": ["I prefer coffee.", "I prefer tea."]},
+        {"op": "ask", "query": "What do I prefer?", "outcome": "conflict", "citations": ["f1", "f2"]}
+      ]
+    },
+    {
+      "id": "explicit_correction",
+      "category": "correction_lifecycle",
+      "steps": [
+        {"op": "send", "id": "r1", "text": "I prefer concise answers.", "outcome": "accepted", "active": ["I prefer concise answers."]},
+        {"op": "correct", "item": "claim:r1", "id": "r2", "text": "I prefer detailed answers.", "outcome": "accepted", "active": ["I prefer detailed answers."]},
+        {"op": "restart_ask", "query": "What do I prefer?", "outcome": "answered", "citations": ["r2"], "contains": "I prefer detailed answers.", "absent": "I prefer concise answers."}
+      ]
+    },
+    {
+      "id": "ordinary_time_change",
+      "category": "time_change_lifecycle",
+      "steps": [
+        {"op": "send", "id": "t1", "text": "I prefer concise answers.", "outcome": "accepted", "active": ["I prefer concise answers."]},
+        {"op": "send", "id": "t2", "text": "I now prefer detailed answers instead of concise answers.", "outcome": "accepted", "active": ["I prefer detailed answers."]},
+        {"op": "ask", "query": "What do I prefer?", "outcome": "answered", "citations": ["t2"], "contains": "I prefer detailed answers.", "absent": "I prefer concise answers."}
+      ]
+    },
+    {
+      "id": "delete_only_source",
+      "category": "deletion_lifecycle",
+      "steps": [
+        {"op": "send", "id": "x1", "text": "I prefer alpine canary tea.", "outcome": "accepted", "active": ["I prefer alpine canary tea."]},
+        {"op": "forget", "id": "x1", "active": []},
+        {"op": "restart_ask", "query": "What do I prefer?", "outcome": "uncertain", "citations": [], "absent": "alpine canary"}
+      ]
+    },
+    {
+      "id": "delete_prior_source_keeps_correction",
+      "category": "deletion_independent_support",
+      "steps": [
+        {"op": "send", "id": "y1", "text": "I prefer concise answers.", "outcome": "accepted", "active": ["I prefer concise answers."]},
+        {"op": "correct", "item": "claim:y1", "id": "y2", "text": "I prefer detailed answers.", "outcome": "accepted", "active": ["I prefer detailed answers."]},
+        {"op": "forget", "id": "y1", "active": ["I prefer detailed answers."]},
+        {"op": "ask", "query": "What do I prefer?", "outcome": "answered", "citations": ["y2"], "absent": "I prefer concise answers."}
+      ]
+    },
+    {
+      "id": "delete_current_source_no_resurrection",
+      "category": "deletion_no_resurrection",
+      "steps": [
+        {"op": "send", "id": "z1", "text": "I prefer concise answers.", "outcome": "accepted", "active": ["I prefer concise answers."]},
+        {"op": "correct", "item": "claim:z1", "id": "z2", "text": "I prefer detailed answers.", "outcome": "accepted", "active": ["I prefer detailed answers."]},
+        {"op": "forget", "id": "z2", "active": []},
+        {"op": "restart_ask", "query": "What do I prefer?", "outcome": "uncertain", "citations": [], "absent": "I prefer concise answers."}
+      ]
+    }
+  ]
+}

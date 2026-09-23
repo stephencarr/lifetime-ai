@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, replace
 from datetime import datetime
 from typing import Protocol
@@ -131,6 +132,85 @@ class TransitionValidator:
             self.store.record_proposal(proposal.proposal_id, proposal.event_id,
                                        proposal.candidate_item_id, proposal.relationship.value,
                                        proposal.payload(), "rejected", type(error).__name__)
+            return ValidationResult(False, "rejected", type(error).__name__)
+        return ValidationResult(True, "accepted", "validated")
+
+    def validate_capture(self, event: Event, claim: object) -> ValidationResult:
+        """Validate a first-party extractor claim before it can create/update state."""
+        source = self.store.event(event.event_id)
+        if source is None:
+            return ValidationResult(False, "rejected", "missing source event")
+        proposition = getattr(claim, "proposition", "")
+        kind = getattr(claim, "kind", None)
+        confidence = getattr(claim, "confidence", None)
+        item_id = getattr(claim, "item_id", None) or f"claim:{event.event_id}"
+        prior = self.store.state_item(item_id)
+        text = source["text"].strip()
+        correction = (event.metadata or {}).get("correction") == item_id
+        direct = proposition == text and bool(re.fullmatch(
+            r"I (?:prefer|will) .+[.!]?", text, re.IGNORECASE))
+        short = (text.lower() in {"please keep your answers short.",
+                                  "please keep your answers short!"}
+                 and proposition == "I prefer short answers.")
+        change = re.fullmatch(
+            r"I now prefer (?P<new>.+) instead of (?P<old>.+)[.!]", text, re.IGNORECASE)
+        replacement = bool(change and proposition == f"I prefer {change['new']}.")
+        unsafe = re.search(
+            r"\b(if|unless|perhaps|maybe|hypothetically|tomorrow|yesterday|next week)\b"
+            r"|\b(?:said|wrote|asked)\b|[\n\r\"“”]|\?", text, re.IGNORECASE)
+        if source["deleted_at"] is not None:
+            reason = "source event was deleted"
+        elif source["event_type"] != EventType.USER_MESSAGE.value or event.event_type is not EventType.USER_MESSAGE:
+            reason = "capture requires a user message"
+        elif source["text"] != event.text or source["occurred_at"] != event.occurred_at.isoformat():
+            reason = "proposal event differs from ledger source"
+        elif not isinstance(proposition, str) or not proposition.strip():
+            reason = "empty proposition"
+        elif not isinstance(kind, StateKind):
+            reason = "unauthorized state kind"
+        elif not isinstance(confidence, (int, float)) or not 0 <= confidence <= 1:
+            reason = "invalid confidence"
+        elif prior and prior["status"] != StateStatus.ACTIVE.value:
+            reason = "cannot update inactive state"
+        elif prior and prior["kind"] != kind.value:
+            reason = "cannot change state kind"
+        elif prior and prior["sensitivity"] != getattr(claim, "sensitivity", "normal"):
+            reason = "cannot change sensitivity during correction"
+        elif correction and prior is None:
+            reason = "correction target does not exist"
+        elif not correction and (unsafe or not (direct or short or replacement)):
+            reason = "no permitted first-party source witness"
+        elif replacement and (prior is None or prior["proposition"].casefold() !=
+                              f"I prefer {change['old']}.".casefold()):
+            reason = "replacement does not identify prior state"
+        elif prior and not (correction or replacement):
+            reason = "update needs explicit correction or replacement"
+        elif getattr(claim, "valid_from", None) and getattr(claim, "valid_until", None) and (
+                claim.valid_from > claim.valid_until):
+            reason = "invalid temporal interval"
+        else:
+            reason = None
+        payload = json.dumps({"item_id": item_id, "proposition": proposition,
+                              "kind": kind.value if isinstance(kind, StateKind) else None,
+                              "source_event_id": event.event_id}, sort_keys=True)
+        if reason:
+            self.store.record_proposal(f"capture:{event.event_id}", event.event_id, item_id,
+                                       "capture", payload, "rejected", reason)
+            return ValidationResult(False, "rejected", reason)
+        item = StateItem(
+            item_id, kind, proposition.strip(), event.event_id, event.event_type,
+            event.occurred_at, StateStatus.ACTIVE, float(confidence),
+            getattr(claim, "sensitivity", "normal"), getattr(claim, "valid_from", None),
+            getattr(claim, "valid_until", None),
+        )
+        transition = Transition(f"transition:{event.event_id}:capture", event.event_id, item,
+                                reason="validated extractor capture")
+        try:
+            self.store.commit_proposal(f"capture:{event.event_id}", event.event_id, item_id,
+                                       "capture", payload, (transition,))
+        except Exception as error:
+            self.store.record_proposal(f"capture:{event.event_id}", event.event_id, item_id,
+                                       "capture", payload, "rejected", type(error).__name__)
             return ValidationResult(False, "rejected", type(error).__name__)
         return ValidationResult(True, "accepted", "validated")
 

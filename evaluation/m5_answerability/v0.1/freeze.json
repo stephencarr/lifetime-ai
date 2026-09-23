@@ -1,0 +1,9 @@
+{
+  "version": "m5-answerability-v0.1",
+  "cases_sha256": "d0c6aaa3d8d2aa2a63b2bb42588e9d3f509008db652beea1fc8f722f3b58b28a",
+  "criteria_sha256": "4251f2e6c5328d5a44af5be698b9c9e1165f03e71c5f4f7e3fad6082233656b9",
+  "scenario_count": 12,
+  "question_count": 48,
+  "frozen_before_scoring": true,
+  "purpose": "synthetic development only; preserve all failures and attempts"
+}

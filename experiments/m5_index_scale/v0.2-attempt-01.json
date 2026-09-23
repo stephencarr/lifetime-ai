@@ -1,0 +1,92 @@
+{
+  "freeze": {
+    "version": "m5-index-scale-v0.2",
+    "config_sha256": "8a6dc6aae6cc1b4ee94a2c5588dc4a92343118e7a259652b048ba2e484a118f9",
+    "frozen_before_first_score": true,
+    "change_from_v0.1": "Raise HNSW expansion_search from 96 to 1024 after v0.1 recovered only 12/32 planted vectors at one million. All other settings, data seed, and gates remain unchanged."
+  },
+  "config": {
+    "version": "m5-index-scale-v0.2",
+    "scope": "Synthetic ANN capacity only; excludes semantic recall and SQLite",
+    "seed": 20260923,
+    "dimensions": 384,
+    "counts": [
+      10000,
+      100000,
+      1000000
+    ],
+    "batch_size": 2048,
+    "queries_per_count": 32,
+    "top_k": 24,
+    "metric": "cos",
+    "dtype": "f16",
+    "connectivity": 16,
+    "expansion_add": 128,
+    "expansion_search": 1024,
+    "minimum_planted_recall_at_k": 1.0,
+    "maximum_p95_query_seconds": 0.05,
+    "maximum_peak_rss_gib": 8.0,
+    "maximum_total_build_seconds": 900
+  },
+  "status": "complete",
+  "tiers": [
+    {
+      "count": 10000,
+      "planted_recall_at_k": [
+        32,
+        32
+      ],
+      "query_p50_seconds": 0.0029295419808477163,
+      "query_p95_seconds": 0.003557874821126461,
+      "index_bytes": 16910144,
+      "peak_rss_gib": 0.0572662353515625,
+      "cumulative_build_seconds": 1.2262857090681791
+    },
+    {
+      "count": 100000,
+      "planted_recall_at_k": [
+        32,
+        32
+      ],
+      "query_p50_seconds": 0.011281312443315983,
+      "query_p95_seconds": 0.01184712490066886,
+      "index_bytes": 152045312,
+      "peak_rss_gib": 0.14752197265625,
+      "cumulative_build_seconds": 28.047920334152877
+    },
+    {
+      "count": 1000000,
+      "planted_recall_at_k": [
+        31,
+        32
+      ],
+      "query_p50_seconds": 0.016010395484045148,
+      "query_p95_seconds": 0.017180416733026505,
+      "index_bytes": 1333790272,
+      "peak_rss_gib": 1.026397705078125,
+      "cumulative_build_seconds": 377.9778966251761
+    }
+  ],
+  "scope": "Synthetic ANN capacity only; excludes semantic recall and SQLite",
+  "persisted_index_bytes": 916667768,
+  "save_seconds": 4.278372042346746,
+  "load_seconds": 0.6958397910930216,
+  "reloaded": {
+    "count": 1000000,
+    "planted_recall_at_k": [
+      31,
+      32
+    ],
+    "query_p50_seconds": 0.016350812511518598,
+    "query_p95_seconds": 0.019381999969482422,
+    "index_bytes": 1333401664,
+    "peak_rss_gib": 1.033782958984375
+  },
+  "gates": {
+    "planted_recall": false,
+    "query_p95": true,
+    "peak_rss": true,
+    "build_time": true
+  },
+  "passed": false
+}

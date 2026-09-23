@@ -1,0 +1,10 @@
+{
+  "version": "m5-model-poc-v0.1",
+  "cases_sha256": "4fb310598515cfec89b490d8afd2a93b435eb732492757f431d24acf00b731a0",
+  "criteria_sha256": "6427555f91b0bea75f665b3161ef21e9caed9e49a2c2ba77681bb95d22bec46f",
+  "scenario_count": 18,
+  "message_count": 22,
+  "question_count": 22,
+  "frozen_before_scoring": true,
+  "purpose": "Integrated local-model construction, reconciliation, retrieval, and source-supported answers; synthetic development only"
+}

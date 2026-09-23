@@ -1,0 +1,91 @@
+{
+  "freeze": {
+    "version": "m5-index-scale-v0.1",
+    "config_sha256": "51946be972c297452a028384d69e85744dd598affbfe332fbc7062693aad2bf9",
+    "frozen_before_first_score": true
+  },
+  "config": {
+    "version": "m5-index-scale-v0.1",
+    "scope": "Synthetic ANN capacity only; excludes semantic recall and SQLite",
+    "seed": 20260923,
+    "dimensions": 384,
+    "counts": [
+      10000,
+      100000,
+      1000000
+    ],
+    "batch_size": 2048,
+    "queries_per_count": 32,
+    "top_k": 24,
+    "metric": "cos",
+    "dtype": "f16",
+    "connectivity": 16,
+    "expansion_add": 128,
+    "expansion_search": 96,
+    "minimum_planted_recall_at_k": 1.0,
+    "maximum_p95_query_seconds": 0.05,
+    "maximum_peak_rss_gib": 8.0,
+    "maximum_total_build_seconds": 900
+  },
+  "status": "complete",
+  "tiers": [
+    {
+      "count": 10000,
+      "planted_recall_at_k": [
+        32,
+        32
+      ],
+      "query_p50_seconds": 0.0005202293395996094,
+      "query_p95_seconds": 0.0007146671414375305,
+      "index_bytes": 16910144,
+      "peak_rss_gib": 0.0568084716796875,
+      "cumulative_build_seconds": 1.1439223331399262
+    },
+    {
+      "count": 100000,
+      "planted_recall_at_k": [
+        32,
+        32
+      ],
+      "query_p50_seconds": 0.001167000038549304,
+      "query_p95_seconds": 0.0016027078963816166,
+      "index_bytes": 152045312,
+      "peak_rss_gib": 0.14678955078125,
+      "cumulative_build_seconds": 27.633656417019665
+    },
+    {
+      "count": 1000000,
+      "planted_recall_at_k": [
+        12,
+        32
+      ],
+      "query_p50_seconds": 0.0012887914199382067,
+      "query_p95_seconds": 0.002147458028048277,
+      "index_bytes": 1333790272,
+      "peak_rss_gib": 1.027618408203125,
+      "cumulative_build_seconds": 393.614290417172
+    }
+  ],
+  "scope": "Synthetic ANN capacity only; excludes semantic recall and SQLite",
+  "persisted_index_bytes": 916667768,
+  "save_seconds": 4.827564999926835,
+  "load_seconds": 0.7634466253221035,
+  "reloaded": {
+    "count": 1000000,
+    "planted_recall_at_k": [
+      12,
+      32
+    ],
+    "query_p50_seconds": 0.002646166365593672,
+    "query_p95_seconds": 0.004037083126604557,
+    "index_bytes": 1333401664,
+    "peak_rss_gib": 1.035552978515625
+  },
+  "gates": {
+    "planted_recall": false,
+    "query_p95": true,
+    "peak_rss": true,
+    "build_time": true
+  },
+  "passed": false
+}

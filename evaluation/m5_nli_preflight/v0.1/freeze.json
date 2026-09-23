@@ -1,0 +1,10 @@
+{
+  "version": "m5-nli-v0.1",
+  "case_count": 48,
+  "positive_count": 24,
+  "negative_count": 24,
+  "cases_sha256": "5bb3af6ec93780759bd0045a15d26c67db6c70532698ed14b5a0ce3224ca2e38",
+  "frozen_before_first_score": true,
+  "criteria_sha256": "37f6f14a1e0afa4c39e234565ebc0f7744606d83d55e46aa4dee6ea772aa2ec2",
+  "model_lock_sha256": "5dd318ddb97e972469c7794da5f83cfe41616c674c64560cadc1c2b8e92dd4b4"
+}

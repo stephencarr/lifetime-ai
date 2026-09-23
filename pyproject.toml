@@ -8,13 +8,27 @@ version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = []
 
+[project.scripts]
+lifetime-chat = "lifetime_ai.terminal:main"
+lifetime-web = "lifetime_ai.web:main"
+lifetime-model-chat = "lifetime_ai.model_terminal:main"
+
 [dependency-groups]
 dev = [
     "jsonschema==4.25.1",
     "pytest==8.4.2",
+    "usearch==2.26.2",
 ]
 evaluation = [
     "scikit-learn>=1.6,<2",
+]
+m5 = [
+    "usearch==2.26.2",
+]
+m5-nli = [
+    "huggingface-hub==0.36.2",
+    "onnxruntime==1.30.0",
+    "tokenizers==0.23.2",
 ]
 
 [tool.pytest.ini_options]

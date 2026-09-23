@@ -1,0 +1,13 @@
+{
+  "minimum_scenarios": 18,
+  "minimum_messages": 20,
+  "minimum_questions": 20,
+  "clear_capture_rate_min": 0.9,
+  "false_durable_capture_max": 0,
+  "supported_answer_accuracy_min": 0.9,
+  "unsupported_false_answer_max": 0,
+  "candidate_recall_supported_min": 0.95,
+  "citation_validity_min": 1,
+  "deleted_source_leaks_max": 0,
+  "latency_p95_seconds_max": 30
+}

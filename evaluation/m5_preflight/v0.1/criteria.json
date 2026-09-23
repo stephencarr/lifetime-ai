@@ -1,0 +1,22 @@
+{
+  "version": "m5-preflight-v0.1",
+  "scope": "Synthetic local-chat workflow only; not participant UAT or G5 evidence",
+  "minimum_scenarios": 18,
+  "thresholds": {
+    "positive_capture_rate": 0.9,
+    "negative_abstention_rate": 1.0,
+    "active_state_accuracy": 1.0,
+    "answer_outcome_accuracy": 1.0,
+    "citation_accuracy": 1.0,
+    "restart_accuracy": 1.0,
+    "deleted_canary_leaks": 0,
+    "manual_repair_actions_per_20_messages": 1
+  },
+  "rules": [
+    "Every declared case remains in the report, including failures and exceptions.",
+    "A correction command in the corpus is part of the scripted lifecycle, not an unreported repair.",
+    "A failed expectation counts as one manual repair action; this is a proxy, not measured participant effort.",
+    "No participant data and no G4 holdout material may be used in this run.",
+    "Passing this synthetic set alone does not authorize participant UAT; a participant-approved local sample and deletion-policy review remain required."
+  ]
+}

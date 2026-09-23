@@ -1,0 +1,19 @@
+{
+  "version": "m5-index-scale-v0.2",
+  "scope": "Synthetic ANN capacity only; excludes semantic recall and SQLite",
+  "seed": 20260923,
+  "dimensions": 384,
+  "counts": [10000, 100000, 1000000],
+  "batch_size": 2048,
+  "queries_per_count": 32,
+  "top_k": 24,
+  "metric": "cos",
+  "dtype": "f16",
+  "connectivity": 16,
+  "expansion_add": 128,
+  "expansion_search": 1024,
+  "minimum_planted_recall_at_k": 1.0,
+  "maximum_p95_query_seconds": 0.05,
+  "maximum_peak_rss_gib": 8.0,
+  "maximum_total_build_seconds": 900
+}

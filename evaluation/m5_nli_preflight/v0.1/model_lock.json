@@ -1,0 +1,14 @@
+{
+  "repository": "MoritzLaurer/ModernBERT-base-zeroshot-v2.0",
+  "revision": "d421c4545a438fd006fb43f8b981c5d908faa1e1",
+  "format": "onnx-int8",
+  "runtime": "onnxruntime 1.30.0 CPUExecutionProvider",
+  "tokenizers": "0.23.2",
+  "files": {
+    "config.json": "d5c53ad1e5a23066144e958db475b1f8df7e8e45bf0ef6aba8a842c7f6450be1",
+    "tokenizer.json": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
+    "tokenizer_config.json": "c5a7dfd44d93c5d7ed9b2ddcd7a6018e935ec7d53f1de45910ea9868e0ff1c17",
+    "special_tokens_map.json": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
+    "onnx/model_int8.onnx": "d49899e1fa3b04701a3e38b8040119d5b089ca9c0774736a23d1f5c9d9e6571f"
+  }
+}

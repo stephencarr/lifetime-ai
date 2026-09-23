@@ -1,0 +1,1856 @@
+{
+  "instrument": {
+    "version": "m5-answerability-v0.1",
+    "cases_sha256": "d0c6aaa3d8d2aa2a63b2bb42588e9d3f509008db652beea1fc8f722f3b58b28a",
+    "criteria_sha256": "4251f2e6c5328d5a44af5be698b9c9e1165f03e71c5f4f7e3fad6082233656b9",
+    "scenario_count": 12,
+    "question_count": 48,
+    "frozen_before_scoring": true,
+    "purpose": "synthetic development only; preserve all failures and attempts"
+  },
+  "criteria": {
+    "minimum_questions": 48,
+    "candidate_recall_supported_min": 0.95,
+    "unsupported_false_answers_max": 0,
+    "citation_validity_min": 1,
+    "supported_answer_accuracy_min": 0.9,
+    "false_conflicts_compatible_max": 0,
+    "deleted_source_leaks_max": 0
+  },
+  "metrics": {
+    "candidate_recall_supported": [
+      20,
+      20
+    ],
+    "supported_answer_accuracy": [
+      19,
+      20
+    ],
+    "unsupported_false_answers": [
+      0,
+      23
+    ],
+    "citation_validity": [
+      23,
+      23
+    ],
+    "false_conflicts_compatible": [
+      0,
+      5
+    ],
+    "deleted_source_leaks": [
+      0,
+      48
+    ],
+    "all_item_passes": [
+      43,
+      48
+    ]
+  },
+  "gates": {
+    "candidate_recall_supported": true,
+    "supported_answer_accuracy": true,
+    "unsupported_false_answers": true,
+    "citation_validity": true,
+    "false_conflicts_compatible": true,
+    "deleted_source_leaks": true
+  },
+  "passed": true,
+  "items": [
+    {
+      "id": "direct-preference-q1",
+      "family": "direct",
+      "query": "What do I prefer?",
+      "expected": {
+        "id": "direct-preference-q1",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s1"
+        ],
+        "expected_citations": [
+          "s1"
+        ],
+        "expected_content": "concise answers",
+        "acceptable_abstention": false,
+        "family": "direct"
+      },
+      "candidate_sources": [
+        "s1"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer concise answers. [source:s1]",
+        "citations": [
+          {
+            "item_id": "item:s1",
+            "source_event_id": "s1",
+            "source_text": "I prefer concise answers."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "direct-preference-q2",
+      "family": "paraphrase",
+      "query": "How should your replies be worded for me?",
+      "expected": {
+        "id": "direct-preference-q2",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s1"
+        ],
+        "expected_citations": [
+          "s1"
+        ],
+        "expected_content": "concise answers",
+        "acceptable_abstention": false,
+        "family": "paraphrase"
+      },
+      "candidate_sources": [
+        "s1"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer concise answers. [source:s1]",
+        "citations": [
+          {
+            "item_id": "item:s1",
+            "source_event_id": "s1",
+            "source_text": "I prefer concise answers."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "direct-preference-q3",
+      "family": "direct",
+      "query": "Do I prefer concise answers?",
+      "expected": {
+        "id": "direct-preference-q3",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s1"
+        ],
+        "expected_citations": [
+          "s1"
+        ],
+        "expected_content": "concise answers",
+        "acceptable_abstention": false,
+        "family": "direct"
+      },
+      "candidate_sources": [
+        "s1"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer concise answers. [source:s1]",
+        "citations": [
+          {
+            "item_id": "item:s1",
+            "source_event_id": "s1",
+            "source_text": "I prefer concise answers."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "direct-preference-q4",
+      "family": "time",
+      "query": "Did I prefer concise answers last year?",
+      "expected": {
+        "id": "direct-preference-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s1"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "time"
+      },
+      "candidate_sources": [
+        "s1"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The available state does not establish that time or general scope.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "dated-outing-q1",
+      "family": "context",
+      "query": "What did I enjoy at the gym on Saturday?",
+      "expected": {
+        "id": "dated-outing-q1",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s2"
+        ],
+        "expected_citations": [
+          "s2"
+        ],
+        "expected_content": "rock-climbing",
+        "acceptable_abstention": false,
+        "family": "context"
+      },
+      "candidate_sources": [
+        "s2"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I enjoyed a rock-climbing outing at the gym on Saturday. [source:s2]",
+        "citations": [
+          {
+            "item_id": "item:s2",
+            "source_event_id": "s2",
+            "source_text": "I enjoyed a rock-climbing outing at the gym on Saturday."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "dated-outing-q2",
+      "family": "scope",
+      "query": "Do I generally like rock climbing?",
+      "expected": {
+        "id": "dated-outing-q2",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s2"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "scope"
+      },
+      "candidate_sources": [
+        "s2"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The available state does not establish that time or general scope.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "dated-outing-q3",
+      "family": "plural",
+      "query": "Do I generally like rock-climbing outings?",
+      "expected": {
+        "id": "dated-outing-q3",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s2"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "plural"
+      },
+      "candidate_sources": [
+        "s2"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The available state does not establish that time or general scope.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "dated-outing-q4",
+      "family": "generalization",
+      "query": "What is my favorite sport?",
+      "expected": {
+        "id": "dated-outing-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s2"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "generalization"
+      },
+      "candidate_sources": [
+        "s2"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The available state does not establish that time or general scope.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "compatible-drinks-q1",
+      "family": "compatible",
+      "query": "What do I prefer to drink?",
+      "expected": {
+        "id": "compatible-drinks-q1",
+        "expected_outcome": "needs_clarification",
+        "expected_candidate_sources": [
+          "s3a",
+          "s3b"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "compatible"
+      },
+      "candidate_sources": [
+        "s3a",
+        "s3b"
+      ],
+      "actual": {
+        "outcome": "needs_clarification",
+        "text": "Several compatible claims apply; please specify the topic or scope. [source:s3a] [source:s3b]",
+        "citations": [
+          {
+            "item_id": "item:s3a",
+            "source_event_id": "s3a",
+            "source_text": "I prefer tea."
+          },
+          {
+            "item_id": "item:s3b",
+            "source_event_id": "s3b",
+            "source_text": "I prefer coffee after lunch."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": false,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": [
+        "citations"
+      ]
+    },
+    {
+      "id": "compatible-drinks-q2",
+      "family": "scope",
+      "query": "What do I prefer after lunch?",
+      "expected": {
+        "id": "compatible-drinks-q2",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s3b"
+        ],
+        "expected_citations": [
+          "s3b"
+        ],
+        "expected_content": "coffee",
+        "acceptable_abstention": false,
+        "family": "scope"
+      },
+      "candidate_sources": [
+        "s3a",
+        "s3b"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "Only context-specific claims are available; they do not establish a general preference.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": false,
+        "candidate_recall": true,
+        "citations": false,
+        "citation_validity": true,
+        "content": false,
+        "no_deleted_leak": true
+      },
+      "failures": [
+        "outcome",
+        "citations",
+        "content"
+      ]
+    },
+    {
+      "id": "compatible-drinks-q3",
+      "family": "compatible",
+      "query": "Do I prefer tea?",
+      "expected": {
+        "id": "compatible-drinks-q3",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s3a"
+        ],
+        "expected_citations": [
+          "s3a"
+        ],
+        "expected_content": "tea",
+        "acceptable_abstention": false,
+        "family": "compatible"
+      },
+      "candidate_sources": [
+        "s3a",
+        "s3b"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer tea. [source:s3a]",
+        "citations": [
+          {
+            "item_id": "item:s3a",
+            "source_event_id": "s3a",
+            "source_text": "I prefer tea."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "compatible-drinks-q4",
+      "family": "compatible",
+      "query": "Are my tea and coffee preferences contradictory?",
+      "expected": {
+        "id": "compatible-drinks-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s3a",
+          "s3b"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "compatible"
+      },
+      "candidate_sources": [
+        "s3a",
+        "s3b"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "That comparison is outside the supported question grammar.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "true-contradiction-q1",
+      "family": "contradiction",
+      "query": "Do I prefer tea?",
+      "expected": {
+        "id": "true-contradiction-q1",
+        "expected_outcome": "conflict",
+        "expected_candidate_sources": [
+          "s4a",
+          "s4b"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "contradiction"
+      },
+      "candidate_sources": [
+        "s4a",
+        "s4b"
+      ],
+      "actual": {
+        "outcome": "conflict",
+        "text": "Live sources disagree about the same scoped claim. [source:s4a] [source:s4b]",
+        "citations": [
+          {
+            "item_id": "item:s4a",
+            "source_event_id": "s4a",
+            "source_text": "I prefer tea."
+          },
+          {
+            "item_id": "item:s4b",
+            "source_event_id": "s4b",
+            "source_text": "I prefer not to drink tea."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": false,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": [
+        "citations"
+      ]
+    },
+    {
+      "id": "true-contradiction-q2",
+      "family": "contradiction",
+      "query": "What is my tea preference?",
+      "expected": {
+        "id": "true-contradiction-q2",
+        "expected_outcome": "conflict",
+        "expected_candidate_sources": [
+          "s4a",
+          "s4b"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "contradiction"
+      },
+      "candidate_sources": [
+        "s4a",
+        "s4b"
+      ],
+      "actual": {
+        "outcome": "conflict",
+        "text": "Live sources disagree about the same scoped claim. [source:s4a] [source:s4b]",
+        "citations": [
+          {
+            "item_id": "item:s4a",
+            "source_event_id": "s4a",
+            "source_text": "I prefer tea."
+          },
+          {
+            "item_id": "item:s4b",
+            "source_event_id": "s4b",
+            "source_text": "I prefer not to drink tea."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": false,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": [
+        "citations"
+      ]
+    },
+    {
+      "id": "true-contradiction-q3",
+      "family": "contradiction",
+      "query": "What do I prefer?",
+      "expected": {
+        "id": "true-contradiction-q3",
+        "expected_outcome": "conflict",
+        "expected_candidate_sources": [
+          "s4a",
+          "s4b"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "contradiction"
+      },
+      "candidate_sources": [
+        "s4a",
+        "s4b"
+      ],
+      "actual": {
+        "outcome": "conflict",
+        "text": "Live sources disagree about the same scoped claim. [source:s4a] [source:s4b]",
+        "citations": [
+          {
+            "item_id": "item:s4a",
+            "source_event_id": "s4a",
+            "source_text": "I prefer tea."
+          },
+          {
+            "item_id": "item:s4b",
+            "source_event_id": "s4b",
+            "source_text": "I prefer not to drink tea."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": false,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": [
+        "citations"
+      ]
+    },
+    {
+      "id": "true-contradiction-q4",
+      "family": "irrelevant",
+      "query": "Do I prefer coffee?",
+      "expected": {
+        "id": "true-contradiction-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "irrelevant"
+      },
+      "candidate_sources": [
+        "s4a",
+        "s4b"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No live claim supports the requested actor, relation, scope, and time.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "third-party-q1",
+      "family": "actor",
+      "query": "Do I prefer tea?",
+      "expected": {
+        "id": "third-party-q1",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s5"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "actor"
+      },
+      "candidate_sources": [
+        "s5"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No live claim supports the requested actor, relation, scope, and time.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "third-party-q2",
+      "family": "actor",
+      "query": "Does Maya prefer tea?",
+      "expected": {
+        "id": "third-party-q2",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s5"
+        ],
+        "expected_citations": [
+          "s5"
+        ],
+        "expected_content": "Maya prefers tea",
+        "acceptable_abstention": false,
+        "family": "actor"
+      },
+      "candidate_sources": [
+        "s5"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "Maya prefers tea. [source:s5]",
+        "citations": [
+          {
+            "item_id": "item:s5",
+            "source_event_id": "s5",
+            "source_text": "Maya prefers tea."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "third-party-q3",
+      "family": "relation",
+      "query": "What does Maya drink?",
+      "expected": {
+        "id": "third-party-q3",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s5"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "relation"
+      },
+      "candidate_sources": [
+        "s5"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The question is outside the supported relation grammar.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "third-party-q4",
+      "family": "actor",
+      "query": "What do I prefer?",
+      "expected": {
+        "id": "third-party-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s5"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "actor"
+      },
+      "candidate_sources": [
+        "s5"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No live claim supports the requested actor, relation, scope, and time.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "correction-q1",
+      "family": "correction",
+      "query": "What do I prefer for answers?",
+      "expected": {
+        "id": "correction-q1",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s6new"
+        ],
+        "expected_citations": [
+          "s6new"
+        ],
+        "expected_content": "short answers",
+        "acceptable_abstention": false,
+        "family": "correction"
+      },
+      "candidate_sources": [
+        "s6new"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer short answers. [source:s6new]",
+        "citations": [
+          {
+            "item_id": "item:s6new",
+            "source_event_id": "s6new",
+            "source_text": "I prefer short answers."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "correction-q2",
+      "family": "correction",
+      "query": "Do I currently prefer long answers?",
+      "expected": {
+        "id": "correction-q2",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "correction"
+      },
+      "candidate_sources": [
+        "s6new"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No live claim supports the requested actor, relation, scope, and time.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "correction-q3",
+      "family": "paraphrase",
+      "query": "How verbose should your replies be?",
+      "expected": {
+        "id": "correction-q3",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s6new"
+        ],
+        "expected_citations": [
+          "s6new"
+        ],
+        "expected_content": "short answers",
+        "acceptable_abstention": false,
+        "family": "paraphrase"
+      },
+      "candidate_sources": [
+        "s6new"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer short answers. [source:s6new]",
+        "citations": [
+          {
+            "item_id": "item:s6new",
+            "source_event_id": "s6new",
+            "source_text": "I prefer short answers."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "correction-q4",
+      "family": "history",
+      "query": "What did I prefer before the correction?",
+      "expected": {
+        "id": "correction-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "history"
+      },
+      "candidate_sources": [
+        "s6new"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The available state does not establish that time or general scope.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "deletion-q1",
+      "family": "deletion",
+      "query": "Do I prefer sunrise hikes?",
+      "expected": {
+        "id": "deletion-q1",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "deletion"
+      },
+      "candidate_sources": [],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No live claim supports the requested actor, relation, scope, and time.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "deletion-q2",
+      "family": "deletion",
+      "query": "What outdoor activity do I prefer?",
+      "expected": {
+        "id": "deletion-q2",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "deletion"
+      },
+      "candidate_sources": [],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No live claim supports the requested actor, relation, scope, and time.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "deletion-q3",
+      "family": "deletion",
+      "query": "What do I prefer?",
+      "expected": {
+        "id": "deletion-q3",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "deletion"
+      },
+      "candidate_sources": [],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No live claim supports the requested actor, relation, scope, and time.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "deletion-q4",
+      "family": "deletion",
+      "query": "Did I say anything about hikes?",
+      "expected": {
+        "id": "deletion-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "deletion"
+      },
+      "candidate_sources": [],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The question is outside the supported relation grammar.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "commitment-q1",
+      "family": "commitment",
+      "query": "What will I do on Friday?",
+      "expected": {
+        "id": "commitment-q1",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s8"
+        ],
+        "expected_citations": [
+          "s8"
+        ],
+        "expected_content": "call Alex",
+        "acceptable_abstention": false,
+        "family": "commitment"
+      },
+      "candidate_sources": [
+        "s8"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I will call Alex on Friday. [source:s8]",
+        "citations": [
+          {
+            "item_id": "item:s8",
+            "source_event_id": "s8",
+            "source_text": "I will call Alex on Friday."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "commitment-q2",
+      "family": "commitment",
+      "query": "Will I call Alex on Friday?",
+      "expected": {
+        "id": "commitment-q2",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s8"
+        ],
+        "expected_citations": [
+          "s8"
+        ],
+        "expected_content": "call Alex",
+        "acceptable_abstention": false,
+        "family": "commitment"
+      },
+      "candidate_sources": [
+        "s8"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I will call Alex on Friday. [source:s8]",
+        "citations": [
+          {
+            "item_id": "item:s8",
+            "source_event_id": "s8",
+            "source_text": "I will call Alex on Friday."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "commitment-q3",
+      "family": "generalization",
+      "query": "Do I always call Alex on Fridays?",
+      "expected": {
+        "id": "commitment-q3",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s8"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "generalization"
+      },
+      "candidate_sources": [
+        "s8"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The available state does not establish that time or general scope.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "commitment-q4",
+      "family": "relation",
+      "query": "Do I prefer calling Alex?",
+      "expected": {
+        "id": "commitment-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s8"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "relation"
+      },
+      "candidate_sources": [
+        "s8"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No live claim supports the requested actor, relation, scope, and time.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "hiking-variant-q1",
+      "family": "paraphrase",
+      "query": "Do I like to hike?",
+      "expected": {
+        "id": "hiking-variant-q1",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s9"
+        ],
+        "expected_citations": [
+          "s9"
+        ],
+        "expected_content": "hiking",
+        "acceptable_abstention": false,
+        "family": "paraphrase"
+      },
+      "candidate_sources": [
+        "s9"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer hiking. [source:s9]",
+        "citations": [
+          {
+            "item_id": "item:s9",
+            "source_event_id": "s9",
+            "source_text": "I prefer hiking."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "hiking-variant-q2",
+      "family": "inflection",
+      "query": "Do I prefer hikes?",
+      "expected": {
+        "id": "hiking-variant-q2",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s9"
+        ],
+        "expected_citations": [
+          "s9"
+        ],
+        "expected_content": "hiking",
+        "acceptable_abstention": false,
+        "family": "inflection"
+      },
+      "candidate_sources": [
+        "s9"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer hiking. [source:s9]",
+        "citations": [
+          {
+            "item_id": "item:s9",
+            "source_event_id": "s9",
+            "source_text": "I prefer hiking."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "hiking-variant-q3",
+      "family": "underspecified",
+      "query": "What about hiking?",
+      "expected": {
+        "id": "hiking-variant-q3",
+        "expected_outcome": "needs_clarification",
+        "expected_candidate_sources": [
+          "s9"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "underspecified"
+      },
+      "candidate_sources": [
+        "s9"
+      ],
+      "actual": {
+        "outcome": "needs_clarification",
+        "text": "Please ask about a preference, event, or commitment.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "hiking-variant-q4",
+      "family": "relation",
+      "query": "Did I hike yesterday?",
+      "expected": {
+        "id": "hiking-variant-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s9"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "relation"
+      },
+      "candidate_sources": [
+        "s9"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The available state does not establish that time or general scope.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "answer-style-q1",
+      "family": "paraphrase",
+      "query": "Should you be brief?",
+      "expected": {
+        "id": "answer-style-q1",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s10"
+        ],
+        "expected_citations": [
+          "s10"
+        ],
+        "expected_content": "short answers",
+        "acceptable_abstention": false,
+        "family": "paraphrase"
+      },
+      "candidate_sources": [
+        "s10"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer short answers. [source:s10]",
+        "citations": [
+          {
+            "item_id": "item:s10",
+            "source_event_id": "s10",
+            "source_text": "I prefer short answers."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "answer-style-q2",
+      "family": "paraphrase",
+      "query": "What length of response do I favor?",
+      "expected": {
+        "id": "answer-style-q2",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s10"
+        ],
+        "expected_citations": [
+          "s10"
+        ],
+        "expected_content": "short answers",
+        "acceptable_abstention": false,
+        "family": "paraphrase"
+      },
+      "candidate_sources": [
+        "s10"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer short answers. [source:s10]",
+        "citations": [
+          {
+            "item_id": "item:s10",
+            "source_event_id": "s10",
+            "source_text": "I prefer short answers."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "answer-style-q3",
+      "family": "polarity",
+      "query": "Do I want longer responses?",
+      "expected": {
+        "id": "answer-style-q3",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s10"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "polarity"
+      },
+      "candidate_sources": [
+        "s10"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The question is outside the supported relation grammar.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "answer-style-q4",
+      "family": "time",
+      "query": "Are short replies my permanent preference?",
+      "expected": {
+        "id": "answer-style-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s10"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "time"
+      },
+      "candidate_sources": [
+        "s10"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "The available state does not establish that time or general scope.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "near-match-q1",
+      "family": "near-match",
+      "query": "Do I prefer the Java programming language?",
+      "expected": {
+        "id": "near-match-q1",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s11"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "near-match"
+      },
+      "candidate_sources": [
+        "s11"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No programming-language claim supports that question.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "near-match-q2",
+      "family": "direct",
+      "query": "What coffee do I prefer?",
+      "expected": {
+        "id": "near-match-q2",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s11"
+        ],
+        "expected_citations": [
+          "s11"
+        ],
+        "expected_content": "Java coffee",
+        "acceptable_abstention": false,
+        "family": "direct"
+      },
+      "candidate_sources": [
+        "s11"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer Java coffee. [source:s11]",
+        "citations": [
+          {
+            "item_id": "item:s11",
+            "source_event_id": "s11",
+            "source_text": "I prefer Java coffee."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "near-match-q3",
+      "family": "direct",
+      "query": "Do I prefer Java coffee?",
+      "expected": {
+        "id": "near-match-q3",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s11"
+        ],
+        "expected_citations": [
+          "s11"
+        ],
+        "expected_content": "Java coffee",
+        "acceptable_abstention": false,
+        "family": "direct"
+      },
+      "candidate_sources": [
+        "s11"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer Java coffee. [source:s11]",
+        "citations": [
+          {
+            "item_id": "item:s11",
+            "source_event_id": "s11",
+            "source_text": "I prefer Java coffee."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "near-match-q4",
+      "family": "near-match",
+      "query": "Which programming language do I use?",
+      "expected": {
+        "id": "near-match-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "near-match"
+      },
+      "candidate_sources": [
+        "s11"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "No programming-language claim supports that question.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "different-topics-q1",
+      "family": "paraphrase",
+      "query": "What display theme do I prefer?",
+      "expected": {
+        "id": "different-topics-q1",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s12a"
+        ],
+        "expected_citations": [
+          "s12a"
+        ],
+        "expected_content": "dark mode",
+        "acceptable_abstention": false,
+        "family": "paraphrase"
+      },
+      "candidate_sources": [
+        "s12a",
+        "s12b"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer dark mode. [source:s12a]",
+        "citations": [
+          {
+            "item_id": "item:s12a",
+            "source_event_id": "s12a",
+            "source_text": "I prefer dark mode."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "different-topics-q2",
+      "family": "paraphrase",
+      "query": "How should answers be formatted?",
+      "expected": {
+        "id": "different-topics-q2",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s12b"
+        ],
+        "expected_citations": [
+          "s12b"
+        ],
+        "expected_content": "short answers",
+        "acceptable_abstention": false,
+        "family": "paraphrase"
+      },
+      "candidate_sources": [
+        "s12a",
+        "s12b"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer short answers. [source:s12b]",
+        "citations": [
+          {
+            "item_id": "item:s12b",
+            "source_event_id": "s12b",
+            "source_text": "I prefer short answers."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "different-topics-q3",
+      "family": "compatible",
+      "query": "What are my preferences?",
+      "expected": {
+        "id": "different-topics-q3",
+        "expected_outcome": "answered",
+        "expected_candidate_sources": [
+          "s12a",
+          "s12b"
+        ],
+        "expected_citations": [
+          "s12a",
+          "s12b"
+        ],
+        "expected_content": null,
+        "acceptable_abstention": false,
+        "family": "compatible"
+      },
+      "candidate_sources": [
+        "s12a",
+        "s12b"
+      ],
+      "actual": {
+        "outcome": "answered",
+        "text": "I prefer dark mode.; I prefer short answers. [source:s12a] [source:s12b]",
+        "citations": [
+          {
+            "item_id": "item:s12a",
+            "source_event_id": "s12a",
+            "source_text": "I prefer dark mode."
+          },
+          {
+            "item_id": "item:s12b",
+            "source_event_id": "s12b",
+            "source_text": "I prefer short answers."
+          }
+        ]
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    },
+    {
+      "id": "different-topics-q4",
+      "family": "compatible",
+      "query": "Do these two preferences conflict?",
+      "expected": {
+        "id": "different-topics-q4",
+        "expected_outcome": "uncertain",
+        "expected_candidate_sources": [
+          "s12a",
+          "s12b"
+        ],
+        "expected_citations": [],
+        "expected_content": null,
+        "acceptable_abstention": true,
+        "family": "compatible"
+      },
+      "candidate_sources": [
+        "s12a",
+        "s12b"
+      ],
+      "actual": {
+        "outcome": "uncertain",
+        "text": "That comparison is outside the supported question grammar.",
+        "citations": []
+      },
+      "checks": {
+        "outcome": true,
+        "candidate_recall": true,
+        "citations": true,
+        "citation_validity": true,
+        "content": true,
+        "no_deleted_leak": true
+      },
+      "failures": []
+    }
+  ]
+}

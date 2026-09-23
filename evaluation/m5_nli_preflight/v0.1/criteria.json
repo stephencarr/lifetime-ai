@@ -1,0 +1,7 @@
+{
+  "support_probability_threshold": 0.9,
+  "minimum_positive_recall": 0.9,
+  "maximum_false_supports": 0,
+  "minimum_items": 48,
+  "max_p95_inference_seconds": 1.0
+}

@@ -1,0 +1,794 @@
+{
+  "version": "m5-answerability-v0.1",
+  "status": "frozen development instrument",
+  "scenarios": [
+    {
+      "id": "direct-preference",
+      "sources": [
+        {
+          "id": "s1",
+          "text": "I prefer concise answers.",
+          "kind": "preference"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "direct-preference-q1",
+          "query": "What do I prefer?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s1"
+          ],
+          "expected_citations": [
+            "s1"
+          ],
+          "expected_content": "concise answers",
+          "acceptable_abstention": false,
+          "family": "direct"
+        },
+        {
+          "id": "direct-preference-q2",
+          "query": "How should your replies be worded for me?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s1"
+          ],
+          "expected_citations": [
+            "s1"
+          ],
+          "expected_content": "concise answers",
+          "acceptable_abstention": false,
+          "family": "paraphrase"
+        },
+        {
+          "id": "direct-preference-q3",
+          "query": "Do I prefer concise answers?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s1"
+          ],
+          "expected_citations": [
+            "s1"
+          ],
+          "expected_content": "concise answers",
+          "acceptable_abstention": false,
+          "family": "direct"
+        },
+        {
+          "id": "direct-preference-q4",
+          "query": "Did I prefer concise answers last year?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s1"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "time"
+        }
+      ]
+    },
+    {
+      "id": "dated-outing",
+      "sources": [
+        {
+          "id": "s2",
+          "text": "I enjoyed a rock-climbing outing at the gym on Saturday.",
+          "kind": "fact"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "dated-outing-q1",
+          "query": "What did I enjoy at the gym on Saturday?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s2"
+          ],
+          "expected_citations": [
+            "s2"
+          ],
+          "expected_content": "rock-climbing",
+          "acceptable_abstention": false,
+          "family": "context"
+        },
+        {
+          "id": "dated-outing-q2",
+          "query": "Do I generally like rock climbing?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s2"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "scope"
+        },
+        {
+          "id": "dated-outing-q3",
+          "query": "Do I generally like rock-climbing outings?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s2"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "plural"
+        },
+        {
+          "id": "dated-outing-q4",
+          "query": "What is my favorite sport?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s2"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "generalization"
+        }
+      ]
+    },
+    {
+      "id": "compatible-drinks",
+      "sources": [
+        {
+          "id": "s3a",
+          "text": "I prefer tea.",
+          "kind": "preference"
+        },
+        {
+          "id": "s3b",
+          "text": "I prefer coffee after lunch.",
+          "kind": "preference"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "compatible-drinks-q1",
+          "query": "What do I prefer to drink?",
+          "expected_outcome": "needs_clarification",
+          "expected_candidate_sources": [
+            "s3a",
+            "s3b"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "compatible"
+        },
+        {
+          "id": "compatible-drinks-q2",
+          "query": "What do I prefer after lunch?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s3b"
+          ],
+          "expected_citations": [
+            "s3b"
+          ],
+          "expected_content": "coffee",
+          "acceptable_abstention": false,
+          "family": "scope"
+        },
+        {
+          "id": "compatible-drinks-q3",
+          "query": "Do I prefer tea?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s3a"
+          ],
+          "expected_citations": [
+            "s3a"
+          ],
+          "expected_content": "tea",
+          "acceptable_abstention": false,
+          "family": "compatible"
+        },
+        {
+          "id": "compatible-drinks-q4",
+          "query": "Are my tea and coffee preferences contradictory?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s3a",
+            "s3b"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "compatible"
+        }
+      ]
+    },
+    {
+      "id": "true-contradiction",
+      "sources": [
+        {
+          "id": "s4a",
+          "text": "I prefer tea.",
+          "kind": "preference"
+        },
+        {
+          "id": "s4b",
+          "text": "I prefer not to drink tea.",
+          "kind": "preference"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "true-contradiction-q1",
+          "query": "Do I prefer tea?",
+          "expected_outcome": "conflict",
+          "expected_candidate_sources": [
+            "s4a",
+            "s4b"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "contradiction"
+        },
+        {
+          "id": "true-contradiction-q2",
+          "query": "What is my tea preference?",
+          "expected_outcome": "conflict",
+          "expected_candidate_sources": [
+            "s4a",
+            "s4b"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "contradiction"
+        },
+        {
+          "id": "true-contradiction-q3",
+          "query": "What do I prefer?",
+          "expected_outcome": "conflict",
+          "expected_candidate_sources": [
+            "s4a",
+            "s4b"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "contradiction"
+        },
+        {
+          "id": "true-contradiction-q4",
+          "query": "Do I prefer coffee?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "irrelevant"
+        }
+      ]
+    },
+    {
+      "id": "third-party",
+      "sources": [
+        {
+          "id": "s5",
+          "text": "Maya prefers tea.",
+          "kind": "fact"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "third-party-q1",
+          "query": "Do I prefer tea?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s5"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "actor"
+        },
+        {
+          "id": "third-party-q2",
+          "query": "Does Maya prefer tea?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s5"
+          ],
+          "expected_citations": [
+            "s5"
+          ],
+          "expected_content": "Maya prefers tea",
+          "acceptable_abstention": false,
+          "family": "actor"
+        },
+        {
+          "id": "third-party-q3",
+          "query": "What does Maya drink?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s5"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "relation"
+        },
+        {
+          "id": "third-party-q4",
+          "query": "What do I prefer?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s5"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "actor"
+        }
+      ]
+    },
+    {
+      "id": "correction",
+      "sources": [
+        {
+          "id": "s6old",
+          "text": "I prefer long answers.",
+          "kind": "preference"
+        },
+        {
+          "id": "s6new",
+          "text": "I prefer short answers.",
+          "kind": "preference"
+        }
+      ],
+      "deleted_sources": [
+        "s6old"
+      ],
+      "questions": [
+        {
+          "id": "correction-q1",
+          "query": "What do I prefer for answers?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s6new"
+          ],
+          "expected_citations": [
+            "s6new"
+          ],
+          "expected_content": "short answers",
+          "acceptable_abstention": false,
+          "family": "correction"
+        },
+        {
+          "id": "correction-q2",
+          "query": "Do I currently prefer long answers?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "correction"
+        },
+        {
+          "id": "correction-q3",
+          "query": "How verbose should your replies be?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s6new"
+          ],
+          "expected_citations": [
+            "s6new"
+          ],
+          "expected_content": "short answers",
+          "acceptable_abstention": false,
+          "family": "paraphrase"
+        },
+        {
+          "id": "correction-q4",
+          "query": "What did I prefer before the correction?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "history"
+        }
+      ]
+    },
+    {
+      "id": "deletion",
+      "sources": [
+        {
+          "id": "s7",
+          "text": "I prefer sunrise hikes.",
+          "kind": "preference"
+        }
+      ],
+      "deleted_sources": [
+        "s7"
+      ],
+      "questions": [
+        {
+          "id": "deletion-q1",
+          "query": "Do I prefer sunrise hikes?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "deletion"
+        },
+        {
+          "id": "deletion-q2",
+          "query": "What outdoor activity do I prefer?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "deletion"
+        },
+        {
+          "id": "deletion-q3",
+          "query": "What do I prefer?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "deletion"
+        },
+        {
+          "id": "deletion-q4",
+          "query": "Did I say anything about hikes?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "deletion"
+        }
+      ]
+    },
+    {
+      "id": "commitment",
+      "sources": [
+        {
+          "id": "s8",
+          "text": "I will call Alex on Friday.",
+          "kind": "commitment"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "commitment-q1",
+          "query": "What will I do on Friday?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s8"
+          ],
+          "expected_citations": [
+            "s8"
+          ],
+          "expected_content": "call Alex",
+          "acceptable_abstention": false,
+          "family": "commitment"
+        },
+        {
+          "id": "commitment-q2",
+          "query": "Will I call Alex on Friday?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s8"
+          ],
+          "expected_citations": [
+            "s8"
+          ],
+          "expected_content": "call Alex",
+          "acceptable_abstention": false,
+          "family": "commitment"
+        },
+        {
+          "id": "commitment-q3",
+          "query": "Do I always call Alex on Fridays?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s8"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "generalization"
+        },
+        {
+          "id": "commitment-q4",
+          "query": "Do I prefer calling Alex?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s8"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "relation"
+        }
+      ]
+    },
+    {
+      "id": "hiking-variant",
+      "sources": [
+        {
+          "id": "s9",
+          "text": "I prefer hiking.",
+          "kind": "preference"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "hiking-variant-q1",
+          "query": "Do I like to hike?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s9"
+          ],
+          "expected_citations": [
+            "s9"
+          ],
+          "expected_content": "hiking",
+          "acceptable_abstention": false,
+          "family": "paraphrase"
+        },
+        {
+          "id": "hiking-variant-q2",
+          "query": "Do I prefer hikes?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s9"
+          ],
+          "expected_citations": [
+            "s9"
+          ],
+          "expected_content": "hiking",
+          "acceptable_abstention": false,
+          "family": "inflection"
+        },
+        {
+          "id": "hiking-variant-q3",
+          "query": "What about hiking?",
+          "expected_outcome": "needs_clarification",
+          "expected_candidate_sources": [
+            "s9"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "underspecified"
+        },
+        {
+          "id": "hiking-variant-q4",
+          "query": "Did I hike yesterday?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s9"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "relation"
+        }
+      ]
+    },
+    {
+      "id": "answer-style",
+      "sources": [
+        {
+          "id": "s10",
+          "text": "I prefer short answers.",
+          "kind": "preference"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "answer-style-q1",
+          "query": "Should you be brief?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s10"
+          ],
+          "expected_citations": [
+            "s10"
+          ],
+          "expected_content": "short answers",
+          "acceptable_abstention": false,
+          "family": "paraphrase"
+        },
+        {
+          "id": "answer-style-q2",
+          "query": "What length of response do I favor?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s10"
+          ],
+          "expected_citations": [
+            "s10"
+          ],
+          "expected_content": "short answers",
+          "acceptable_abstention": false,
+          "family": "paraphrase"
+        },
+        {
+          "id": "answer-style-q3",
+          "query": "Do I want longer responses?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s10"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "polarity"
+        },
+        {
+          "id": "answer-style-q4",
+          "query": "Are short replies my permanent preference?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s10"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "time"
+        }
+      ]
+    },
+    {
+      "id": "near-match",
+      "sources": [
+        {
+          "id": "s11",
+          "text": "I prefer Java coffee.",
+          "kind": "preference"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "near-match-q1",
+          "query": "Do I prefer the Java programming language?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s11"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "near-match"
+        },
+        {
+          "id": "near-match-q2",
+          "query": "What coffee do I prefer?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s11"
+          ],
+          "expected_citations": [
+            "s11"
+          ],
+          "expected_content": "Java coffee",
+          "acceptable_abstention": false,
+          "family": "direct"
+        },
+        {
+          "id": "near-match-q3",
+          "query": "Do I prefer Java coffee?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s11"
+          ],
+          "expected_citations": [
+            "s11"
+          ],
+          "expected_content": "Java coffee",
+          "acceptable_abstention": false,
+          "family": "direct"
+        },
+        {
+          "id": "near-match-q4",
+          "query": "Which programming language do I use?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "near-match"
+        }
+      ]
+    },
+    {
+      "id": "different-topics",
+      "sources": [
+        {
+          "id": "s12a",
+          "text": "I prefer dark mode.",
+          "kind": "preference"
+        },
+        {
+          "id": "s12b",
+          "text": "I prefer short answers.",
+          "kind": "preference"
+        }
+      ],
+      "deleted_sources": [],
+      "questions": [
+        {
+          "id": "different-topics-q1",
+          "query": "What display theme do I prefer?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s12a"
+          ],
+          "expected_citations": [
+            "s12a"
+          ],
+          "expected_content": "dark mode",
+          "acceptable_abstention": false,
+          "family": "paraphrase"
+        },
+        {
+          "id": "different-topics-q2",
+          "query": "How should answers be formatted?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s12b"
+          ],
+          "expected_citations": [
+            "s12b"
+          ],
+          "expected_content": "short answers",
+          "acceptable_abstention": false,
+          "family": "paraphrase"
+        },
+        {
+          "id": "different-topics-q3",
+          "query": "What are my preferences?",
+          "expected_outcome": "answered",
+          "expected_candidate_sources": [
+            "s12a",
+            "s12b"
+          ],
+          "expected_citations": [
+            "s12a",
+            "s12b"
+          ],
+          "expected_content": null,
+          "acceptable_abstention": false,
+          "family": "compatible"
+        },
+        {
+          "id": "different-topics-q4",
+          "query": "Do these two preferences conflict?",
+          "expected_outcome": "uncertain",
+          "expected_candidate_sources": [
+            "s12a",
+            "s12b"
+          ],
+          "expected_citations": [],
+          "expected_content": null,
+          "acceptable_abstention": true,
+          "family": "compatible"
+        }
+      ]
+    }
+  ]
+}
