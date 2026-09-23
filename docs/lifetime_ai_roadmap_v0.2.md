@@ -350,14 +350,11 @@ Thresholds may be marked provisional while designing an experiment, but they mus
 
 ## 15. Current checkpoint
 
-As of 18 September 2026:
+As of 23 September 2026, G0–G3 have recorded passes. G4 has promising development-only results but no gate pass; its experiment is paused for review, and the quarantined holdout remains outside this work. G5–G8 have not started as formal gate evaluations.
 
-- A small model-free persistence skeleton has been generated.
-- Its tests have not yet been executed because the active interpreter was Python 3.9 and pytest was unavailable.
-- G0 is therefore **not yet passed**.
-- G1 is **in progress**, not complete.
+The diagnostic UAT spike was retired. It used a separate local store, heuristic extraction, and keyword retrieval, so it did not exercise the G2 canonical-state path or demonstrate the M5 continuity claim. A qualitative review of 157 captured claims found no email-derived claim usable as stored. This is evidence about the spike's captured outputs, not a measured classifier precision or recall result.
 
-The next action is to reproduce the project under Python 3.12+, run the complete test suite, audit the persistence invariants in G1, and record the evidence.
+The next product work belongs to **M5 implementation and preflight**: one natural chat → source-backed state → cited answer path with restart, revision, and deletion, followed by a predeclared realistic capture trial. These are not new research gates or a requirement to resume G4 first. A participant UAT can assess this path once its readiness criteria are met; it does not itself pass G5. Formal G5 still requires the paired baseline comparison in `gates.md`. See `docs/m5_uat_handoff_2026-09-23.md` for the scoped handoff.
 
 ## 16. North star
 

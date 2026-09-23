@@ -30,7 +30,7 @@ UV_PROJECT_ENVIRONMENT=/tmp/lifetime-ai-g0-second uv run --frozen pytest -q
 
 ## Scope
 
-The current implementation contains typed events and state, SQLite persistence, source-linked atomic transitions, restart recovery, and tests. It intentionally contains no LLM, embeddings, vector storage, agent framework, or user interface.
+The core runtime contains typed events and state, SQLite persistence, source-linked atomic transitions, restart recovery, and tests. Separate evaluation code includes a local MiniLM development candidate. There is no active chat interface or integrated product path, and no hosted model dependency.
 
 ## Inspecting state provenance
 
@@ -42,14 +42,6 @@ uv run --frozen python -m lifetime_ai.inspect_db path/to/state.sqlite
 
 SQLite schema changes are versioned through `PRAGMA user_version` and the `schema_migrations` table. The current schema version is 2.
 
-## G3 development pilot
+## Current handoff
 
-The evaluation pilot is mock-only and remains pending human review. It can be regenerated and verified with:
-
-```sh
-uv run --frozen python scripts/generate_g3_pilot.py
-uv run --frozen python scripts/run_g3_pilot_smoke.py
-uv run --frozen pytest -q
-```
-
-These commands make no model calls and create no final gate holdout. Review the generated cases in `evaluation/corpus/pilot-v0.1/reviews/pilot_review_packet.md` before authorizing expansion.
+G0–G3 have recorded passes. G4 has a development-only candidate and is paused for review; it has not passed. The diagnostic UAT spike was retired after exposing serious raw-message capture failures. See [the M5 and UAT handoff](docs/m5_uat_handoff_2026-09-23.md) for the current evidence, next product slice, and UAT readiness criteria. The historical G3 pilot is not current gate evidence.
