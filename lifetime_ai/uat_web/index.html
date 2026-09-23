@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Lifetime AI · UAT workbench</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="brand"><span class="brand-mark">L</span><span>Lifetime AI<small>UAT workbench</small></span></div>
+      <nav id="nav" class="nav">
+        <button class="nav-item active" data-view="overview">Overview</button>
+        <button class="nav-item" data-view="review">Captures <span id="nav-pending" class="nav-count">0</span></button>
+        <button class="nav-item" data-view="memory">Stored memory</button>
+        <button class="nav-item" data-view="sources">Sources</button>
+        <button class="nav-item" data-view="retrieval">Retrieval lab</button>
+        <button class="nav-item" data-view="findings">UAT findings <span id="nav-findings" class="nav-count">0</span></button>
+        <button class="nav-item" data-view="import">Import & setup</button>
+      </nav>
+      <div class="sidebar-foot"><span class="live-dot"></span> Local workspace<br><span id="adapter-name">Loading adapter…</span></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><p class="eyebrow">SUPERVISED PRODUCT TEST</p><h1 id="view-title">Overview</h1><p id="view-subtitle" class="subtitle">Test whether useful context persists across sessions.</p></div>
+        <div class="top-actions"><span class="privacy-pill">● Local only</span><button id="refresh" class="button quiet">Refresh</button></div>
+      </header>
+      <div id="notice" class="notice"><strong>Prototype boundary</strong><span>Sources and captured items stay in this local SQLite workspace. No hosted model or external service is called. One confirmed import captures local rule matches; inspect and correct them afterward. Delete and reset are permanent.</span></div>
+
+      <section id="view-overview" class="view active" aria-labelledby="view-title">
+        <div class="hero"><div><p class="eyebrow">MEMORY CONTINUITY TEST</p><h2>Does useful context survive the session?</h2><p>Import a small, relevant conversation slice once. Candidate memories are captured by local rules, then tested through retrieval and participant corrections.</p></div><button class="button light" data-go="retrieval">Try retrieval →</button></div>
+        <div id="metrics" class="metric-grid"></div>
+        <div class="overview-grid"><div class="panel"><div class="panel-heading"><div><h2>Captured candidates</h2><p>Local rule matches and their outcomes</p></div><button class="text-button" data-go="review">Inspect captures →</button></div><div id="outcome-chart"></div></div><div class="panel"><div class="panel-heading"><div><h2>Candidate types</h2><p>Labels proposed by the current adapter</p></div></div><div id="type-chart"></div></div></div>
+        <div class="overview-grid"><div class="panel"><div class="panel-heading"><div><h2>UAT feedback</h2><p>Human observations, not accuracy scores</p></div><button class="text-button" data-go="findings">View all →</button></div><div id="finding-chart"></div></div><div class="panel insight"><h2>How to use this workbench</h2><ol><li>Import a small, relevant source slice once.</li><li>Ask a question in <strong>Retrieval lab</strong> and inspect its cited source.</li><li>Correct a wrong or stale memory, then ask again to see whether the correction persists.</li><li>Delete test memory that should no longer be retrieved. Tag failures when useful.</li></ol></div></div>
+      </section>
+
+      <section id="view-review" class="view">
+        <div class="section-head"><div><h2>Capture inspector</h2><p>Inspect what the local rules captured during a confirmed import. This is optional; participants do not approve claims one by one.</p></div></div>
+        <div class="panel"><div class="toolbar"><label class="search-label">Search suggestions<input id="review-search" type="search" placeholder="Claim, source, or context"></label><label>Outcome<select id="review-status"><option value="all">All outcomes</option><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="edited">Edited</option><option value="rejected">Rejected</option><option value="deferred">Deferred</option></select></label><label>Type<select id="review-type"><option value="all">All types</option><option value="fact">Fact</option><option value="preference">Preference</option><option value="commitment">Commitment</option></select></label></div><div id="review-list"></div><div id="review-pager" class="pager"></div></div>
+      </section>
+
+      <section id="view-memory" class="view">
+        <div class="section-head"><div><h2>Stored memory</h2><p>These accepted test items can affect retrieval. Their source evidence is one click away.</p></div></div>
+        <div class="panel"><div class="toolbar"><label class="search-label">Search memory<input id="memory-search" type="search" placeholder="Claim, source, or context"></label><label>Type<select id="memory-type"><option value="all">All types</option><option value="fact">Fact</option><option value="preference">Preference</option><option value="commitment">Commitment</option></select></label><label>Feedback<select id="memory-feedback"><option value="all">All items</option><option value="flagged">Flagged only</option></select></label></div><div id="memory-list"></div><div id="memory-pager" class="pager"></div></div>
+      </section>
+
+      <section id="view-sources" class="view">
+        <div class="section-head"><div><h2>Sources</h2><p>Original imported excerpts, linked to their suggestion and any stored memory.</p></div></div>
+        <div class="panel"><div class="toolbar"><label class="search-label">Search sources<input id="source-search" type="search" placeholder="Title, context, or excerpt"></label><label>Sort<select id="source-sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label><label>Feedback<select id="source-feedback"><option value="all">All sources</option><option value="flagged">Flagged only</option></select></label></div><div id="source-list"></div><div id="source-pager" class="pager"></div></div>
+      </section>
+
+      <section id="view-retrieval" class="view">
+        <div class="section-head"><div><h2>Retrieval lab</h2><p>Ask questions against confirmed test state and inspect each supporting source.</p></div></div>
+        <div class="panel"><form id="question-form" class="question-form"><label for="question">Question</label><div class="question-row"><input id="question" name="question" placeholder="What did we decide about planning?" required><button class="button primary">Retrieve</button></div></form><p class="muted">Local keyword matching; a missing result is not proof that the information is absent.</p><div id="results" aria-live="polite"></div></div>
+      </section>
+
+      <section id="view-findings" class="view">
+        <div class="section-head"><div><h2>UAT findings</h2><p>Structured human observations linked to records. These counts describe the inspected examples, not model accuracy.</p></div></div>
+        <div class="panel"><div id="finding-summary" class="finding-summary"></div><div id="finding-list"></div></div>
+      </section>
+
+      <section id="view-import" class="view">
+        <div class="section-head"><div><h2>Import & setup</h2><p>Confirm one local import to capture candidates in one step. Low-signal messages may produce no candidate. Review and correct memory afterward.</p></div></div>
+        <div class="setup-grid"><div class="panel"><h2>Load synthetic fixtures</h2><p>Three short sample sources for a safe first pass.</p><button id="load-fixtures" class="button primary">Load fixtures</button></div><div class="panel"><h2>Import JSON</h2><p>Source-only <code>lifetime-ai-uat-sources/v1</code> format.</p><input id="json-file" type="file" accept=".json,application/json"><button id="import-json" class="button secondary">Preview JSON</button><div id="json-preview" class="preview"></div></div><div class="panel"><h2>Import Gmail Takeout MBOX</h2><p>Up to 200 messages per batch. Attachments are ignored; parsing is local.</p><input id="mbox-file" type="file" accept=".mbox,application/mbox"><button id="import-mbox" class="button secondary">Preview MBOX</button><div id="mbox-preview" class="preview"></div></div><div class="panel"><h2>Add one source</h2><form id="source-form" class="stacked"><label>Title<input name="title" required></label><label>Date<input name="date" type="date" required></label><label>Context<input name="context" required></label><label>Approved excerpt<textarea name="excerpt" required></textarea></label><button class="button secondary">Preview source</button></form></div></div>
+        <div class="panel danger-zone"><div><h2>Reset disposable workspace</h2><p>Removes local sources, suggestions, state, UAT findings, and interaction history.</p></div><button id="reset" class="button danger">Reset workspace</button></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="drawer-scrim" class="drawer-scrim" hidden></div>
+  <aside id="drawer" class="drawer" aria-label="Record details" aria-hidden="true"><div class="drawer-head"><div><p class="eyebrow">RECORD INSPECTOR</p><h2 id="drawer-title">Details</h2></div><button id="drawer-close" class="icon-button" aria-label="Close details">×</button></div><div id="drawer-body" class="drawer-body"></div></aside>
+  <dialog id="confirm-dialog" class="confirm-dialog"><form method="dialog"><p class="eyebrow">CONFIRM LOCAL CHANGE</p><h2 id="confirm-title"></h2><div id="confirm-body"></div><div class="dialog-actions"><button value="cancel" class="button quiet">Cancel</button><button id="confirm-yes" value="confirm" class="button primary">Confirm</button></div></form></dialog>
+  <dialog id="edit-dialog" class="confirm-dialog"><form id="edit-form"><p class="eyebrow">PREVIEW CHANGE</p><h2 id="edit-title">Edit item</h2><p id="edit-current" class="muted"></p><label for="edit-value">New text</label><textarea id="edit-value" required></textarea><div class="dialog-actions"><button type="button" id="edit-cancel" class="button quiet">Cancel</button><button class="button primary">Review change</button></div></form></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

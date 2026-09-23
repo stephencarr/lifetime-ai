@@ -1,0 +1,34 @@
+{
+  "format": "lifetime-ai-uat-sources/v1",
+  "description": "Synthetic project notes for supervised Lifetime AI UAT.",
+  "sources": [
+    {
+      "source_id": "synthetic:planning-review",
+      "title": "Synthetic planning review",
+      "occurred_at": "2026-09-18",
+      "context": "Weekly project planning",
+      "excerpt": "The team decided to review open decisions every Friday and keep the project log as the source of truth."
+    },
+    {
+      "source_id": "synthetic:launch-checklist",
+      "title": "Synthetic launch coordination",
+      "occurred_at": "2026-09-20",
+      "context": "Launch readiness discussion",
+      "excerpt": "Maya will prepare the launch checklist by 2026-10-02, with a Friday progress check."
+    },
+    {
+      "source_id": "synthetic:status-updates",
+      "title": "Synthetic communication preference",
+      "occurred_at": "2026-09-21",
+      "context": "Team working agreement",
+      "excerpt": "The project prefers concise status updates with links to the supporting source."
+    },
+    {
+      "source_id": "synthetic:ambiguous-review",
+      "title": "Synthetic tentative note",
+      "occurred_at": "2026-09-22",
+      "context": "Scheduling discussion",
+      "excerpt": "We might move the review to Thursday if schedules allow."
+    }
+  ]
+}
