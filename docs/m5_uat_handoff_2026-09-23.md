@@ -45,7 +45,7 @@ Passing this preflight authorizes a bounded product UAT; it is **not** a G5 pass
 - Run the repository suite with `uv run --frozen pytest -q` in a provisioned environment. In an offline environment with the existing `.venv`, use `.venv/bin/python -m pytest -q` to avoid dependency fetches.
 - Keep `.uat/` out of Git. Its contents are private diagnostic data, not gate evidence.
 - Preserve the G4 quarantine. Do not access the v21 holdout, its labels, or holdout-derived content for product implementation or UAT.
-- Three archive copies of earlier documents were present before this cleanup and remain uncommitted. The original `docs/g3_evaluation_design_proposal.md` path was restored from its byte-identical archive copy because pilot tests still require it; the other two tracked document moves were left untouched.
+- The historical G2 mutation boundary and G3 completion handoff now live under `docs/archive/`. The G3 evaluation design proposal is also archived, while its original root copy remains for byte-bound historical pilot manifests and generators. The archived copies have the same content as their originals.
 
 ## Validation at handoff
 

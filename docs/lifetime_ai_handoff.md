@@ -1,11 +1,11 @@
 # Lifetime AI — Engineering Handoff
 
-**Updated:** 22 September 2026
+**Updated:** 23 September 2026
 **Audience:** the engineer continuing architecture and evaluation work  
-**Current phase:** G3 passed; G4 development underway. Holdout evaluation remains unauthorized; sealed v21 is quarantined for a clean-agent evaluation after an accidental broad text search.
-**Gate state:** G0-G3 passed. See `docs/g3_completion_handoff.md` for the full remediation record: the v16/v17 seal was found defective by adversarial content review and superseded by v20, which was itself superseded by v21 for unrelated evaluation-tooling fixes (no corpus content change). Do not cite `experiments/g3/20260921-1207-frozen-g4-v16/` as current evidence.
+**Current phase:** G3 passed; G4 development is paused for review. M5 product implementation and capture preflight are next. Holdout evaluation remains unauthorized; sealed v21 is quarantined for a clean-agent evaluation after an accidental broad text search.
+**Gate state:** G0-G3 passed. See `docs/archive/g3_completion_handoff.md` for the full remediation record: the v16/v17 seal was found defective by adversarial content review and superseded by v20, which was itself superseded by v21 for unrelated evaluation-tooling fixes (no corpus content change). Do not cite `experiments/g3/20260921-1207-frozen-g4-v16/` as current evidence.
 
-> **Current continuation note:** This general handoff contains historical pilot context (sections 1-9) that remains accurate. For the current G3 PASS evidence, the v16/v17 defect-and-remediation record, and G4 development/holdout authorization boundaries, read [`docs/g3_completion_handoff.md`](g3_completion_handoff.md) first.
+> **Current continuation note:** This general handoff contains historical pilot context (sections 1-9) that remains accurate. For the current G3 PASS evidence, the v16/v17 defect-and-remediation record, and G4 development/holdout authorization boundaries, read [`docs/archive/g3_completion_handoff.md`](archive/g3_completion_handoff.md) first. For the current M5 product direction, read [`docs/m5_uat_handoff_2026-09-23.md`](m5_uat_handoff_2026-09-23.md).
 
 > **Holdout incident and owner disposition (22 September 2026):** A broad `rg` search over `docs evaluation scripts` traversed holdout files and returned holdout content, violating the no-access instruction. No holdout results, predictions, scoring, or threshold tuning were produced. The owner chose a clean-agent quarantine rather than automatic replacement: freeze this development candidate, transfer no incident-thread content or holdout data, and require separate authorization before a single final holdout run. The procedural breach must be disclosed; v21 is not literally never-accessed. See `experiments/g4/20260922-1351-local-encoder-development/holdout-access-incident.md`.
 
@@ -106,7 +106,7 @@ Why this matters:
 - The classifier and proposal builder have no `Store` reference.
 - Only `TransitionValidator` invokes the canonical mutation operation.
 - Support, contradiction, narrowing, supersession, irrelevance, uncertainty, authorization failures, and rollback are covered.
-- Evidence: `experiments/g2/20260917-2200-typed-pipeline/` and `docs/g2_mutation_boundary.md`.
+- Evidence: `experiments/g2/20260917-2200-typed-pipeline/` and `docs/archive/g2_mutation_boundary.md`.
 
 ### Current automated state
 
@@ -133,11 +133,11 @@ The approved design protects against the main ways this project could fool itsel
 - G4, G5, G6, and G7 will require separate final holdout families;
 - cases hostile to the proposed architecture are required.
 
-Design source: `docs/g3_evaluation_design_proposal.md`.
+Design source: `docs/archive/g3_evaluation_design_proposal.md`. The original root path remains for historical pilot manifests and generators.
 
 ## 7. Development-pilot G3 artifacts (historical; superseded by section 10)
 
-> This section describes the 30-history development pilot that predates the final 405-history frozen-G4 corpus. It remains accurate as history but is not the current G3 evidence — see section 10 and `docs/g3_completion_handoff.md` for the corpus that actually satisfied the G3 gate.
+> This section describes the 30-history development pilot that predates the final 405-history frozen-G4 corpus. It remains accurate as history but is not the current G3 evidence — see section 10 and `docs/archive/g3_completion_handoff.md` for the corpus that actually satisfied the G3 gate.
 
 The development pilot was `evaluation/corpus/pilot-v0.7/`: **30 histories, 120 pairs**, split across 21 development and 9 pilot-holdout histories. Two independent agent reviews passed; human signoff was waived by the project owner and is not claimed. The final holdouts for G4–G7 have not been created or accessed. Manifest status is `AGENT_REVIEWED`; G3 remains open.
 
@@ -201,7 +201,7 @@ Evidence: `experiments/g3/20260919-1121-complete-pilot-human-review/`.
 
 ## 10. Exact next step
 
-G3 has passed. The frozen-G4 v0.1 corpus is sealed at `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` (405 histories, 1,620 pair opportunities, 270/135 whole-family split), superseding an earlier v16/v17 seal that adversarial content review found defective (see `docs/g3_completion_handoff.md` for the full defect-and-fix record: three fabricated-content bugs and one holdout-assignment instability, all fixed and independently reverified). The v20 seal that resulted from that remediation was itself superseded one day later by v21: an external PR review found three evaluation-*tooling* bugs (an oracle-baseline temporal leak in the smoke harness, stale v15-pinned evidence-builder constants, and a probability-tolerance policy mismatch) that were fixed and required a reseal, but did not change any corpus content, family assignment, or partition — the existing v20 review record was reused as-is.
+G3 has passed. The frozen-G4 v0.1 corpus is sealed at `evaluation/corpus/frozen-g4-v0.1-sealed-v21/` (405 histories, 1,620 pair opportunities, 270/135 whole-family split), superseding an earlier v16/v17 seal that adversarial content review found defective (see `docs/archive/g3_completion_handoff.md` for the full defect-and-fix record: three fabricated-content bugs and one holdout-assignment instability, all fixed and independently reverified). The v20 seal that resulted from that remediation was itself superseded one day later by v21: an external PR review found three evaluation-*tooling* bugs (an oracle-baseline temporal leak in the smoke harness, stale v15-pinned evidence-builder constants, and a probability-tolerance policy mismatch) that were fixed and required a reseal, but did not change any corpus content, family assignment, or partition — the existing v20 review record was reused as-is.
 
 The evaluation policy (`evaluation/config/g4-evaluation-v0.1.json`) fixes the provisional G4 decision rule at 95% observed point precision, reported with a Wilson interval, and retains ≥100 autonomous accepts as the later observed holdout sample criterion, per the approved second-freeze plan. It remains sealed at `FROZEN_AT_G3_MODEL_FREE` with holdout authorization false; development-only authorization is recorded separately in `evaluation/config/g4-development-authorization.json`.
 
@@ -280,7 +280,7 @@ Before editing, always run `git status --short`. Stage only task-specific files.
 Confirm that you have read:
 
 1. this handoff;
-2. `docs/g3_completion_handoff.md` (the full v16-defect/v20-remediation and v21-tooling record — read this before trusting any prior "G3 passed" claim);
+2. `docs/archive/g3_completion_handoff.md` (the full v16-defect/v20-remediation and v21-tooling record — read this before trusting any prior "G3 passed" claim);
 3. the G3 section of `docs/gates.md`;
 4. `experiments/g3/20260922-1351-v21-evidence-builder-remediation/g3-gate-remediation.md`;
 5. `evaluation/corpus/frozen-g4-v0.1-sealed-v21/review-record.json`'s `review_findings` array (the three consciously-accepted lower-severity items).
