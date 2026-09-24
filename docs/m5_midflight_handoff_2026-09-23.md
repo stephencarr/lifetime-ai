@@ -1,5 +1,10 @@
 # M5 semantic product work — mid-flight handoff, 23 September 2026
 
+> **Superseded, 24 September 2026.** Work on this branch has stopped. See
+> [the closing note](m5_closing_note_2026-09-24.md) for why, what was measured, and what
+> a future attempt would need. The branch-state and retained-evidence sections below
+> remain accurate; the "next engineering decision" section is no longer the plan.
+
 ## State of the branch
 
 This is a work-in-progress engineering snapshot on `codex/m5-semantic-wip`. It preserves the diagnostic chat/UI work, the first local-model construction and answer path, all frozen synthetic development instruments, and every scored failure. The local-model path is a terminal route; the browser still runs the diagnostic rule path. Neither route is approved as evidence that the Lifetime AI concept works for ordinary participant use. Participant UAT remains paused. Formal G5 is a separate paired baseline comparison.
